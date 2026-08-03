@@ -33,8 +33,8 @@ export function SiteNav() {
     <>
       <div className="border-t border-[color:var(--ar-border)]">
         <MarketStrip />
-        <div className="mx-auto flex max-w-full items-center justify-between gap-2 px-3 py-1.5 sm:gap-4 sm:px-4 sm:py-2 lg:px-6">
-          <div className="nav-pill-shell flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto rounded-2xl border p-1 shadow-sm [-webkit-overflow-scrolling:touch] sm:gap-1">
+        <div className="mx-auto flex max-w-full items-center justify-between gap-4 px-4 py-2 lg:px-6">
+          <div className="nav-pill-shell flex items-center gap-1 rounded-2xl border p-1 shadow-sm">
             {mainSections.map((item) => {
               const active = section.id === item.id;
               const Icon = item.icon;
@@ -42,7 +42,7 @@ export function SiteNav() {
                 <Link
                   key={item.id}
                   className={cn(
-                    "relative flex shrink-0 items-center gap-1.5 rounded-xl px-2.5 py-2 text-sm font-semibold transition-all sm:gap-2 sm:px-4",
+                    "relative flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all",
                     active ? "btn-nav-active text-ink" : "text-muted hover:bg-[color:var(--ar-panel)] hover:text-ink",
                   )}
                   href={item.href as Route}
@@ -61,7 +61,7 @@ export function SiteNav() {
                   >
                     <Icon className="h-4 w-4" />
                   </motion.span>
-                  <span className="relative">{item.label}</span>
+                  <span className="relative hidden sm:inline">{item.label}</span>
                 </Link>
               );
             })}
@@ -76,7 +76,7 @@ export function SiteNav() {
             >
               <Search className="h-3.5 w-3.5" />
               <span className="hidden md:inline">Search</span>
-              <kbd className="hidden rounded border border-stone-200 bg-stone-50 px-1.5 py-0.5 font-mono text-[10px] text-stone-500 dark:border-stone-700 dark:bg-stone-900/80 dark:text-stone-500 sm:inline">
+              <kbd className="rounded border border-stone-200 bg-stone-50 px-1.5 py-0.5 font-mono text-[10px] text-stone-500 dark:border-stone-700 dark:bg-stone-900/80 dark:text-stone-500">
                 ⌘K
               </kbd>
             </button>

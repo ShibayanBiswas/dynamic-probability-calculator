@@ -42,22 +42,19 @@ export function AppPage({
       </div>
       <header className="brand-header sticky top-0 z-50 font-ui">
         <div className="brand-header-glow" />
-        <div className="relative mx-auto flex max-w-full flex-wrap items-center justify-between gap-2 px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3 lg:px-6">
-          <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
+        <div className="relative mx-auto flex max-w-full items-center justify-between gap-4 px-4 py-3 lg:px-6">
+          <div className="flex min-w-0 items-center gap-4">
             <BrandLogo />
-            <div className="min-w-0 border-l border-[color:var(--ar-border)] pl-2 sm:pl-4">
-              <h1 className="brand-title truncate">Dynamic Probability Calculator</h1>
+            <div className="min-w-0 border-l border-[color:var(--ar-border)] pl-4">
+              <h1 className="brand-title">Dynamic Probability Calculator</h1>
             </div>
           </div>
-          {actions ? <div className="header-actions flex shrink-0 flex-wrap items-center justify-end gap-1.5 sm:gap-2">{actions}</div> : null}
+          {actions}
         </div>
         <SiteNav />
       </header>
       <main
-        className={cn(
-          "relative z-10 mx-auto w-full max-w-full min-w-0 flex-1 px-3 sm:px-4 lg:px-6",
-          dense ? "py-2.5 sm:py-3" : "py-4 sm:py-5",
-        )}
+        className={cn("relative z-10 mx-auto w-full max-w-full flex-1 px-4 lg:px-6", dense ? "py-3" : "py-5")}
       >
         <PageEnter>{children}</PageEnter>
       </main>
@@ -322,6 +319,8 @@ const kpiIcons: Record<string, LucideIcon> = {
   "Live Notional": Wallet,
   Products: Package,
   "Avg Coupon": Calculator,
+  "Avg Absolute Return": BarChart3,
+  "Avg Absolute Return at Last Obs": BarChart3,
   "Observation Due in 3M": LineChart,
   "Observation Due in 2M": LineChart,
   "Observation Due in 1M": LineChart,
@@ -336,6 +335,7 @@ function resolveKpiIcon(label: string): LucideIcon {
   if (kpiIcons[label]) return kpiIcons[label]!;
   if (/Prob/i.test(label)) return Calculator;
   if (/^Value\b|^Mark\b|^AUM\b|^Book Amount/i.test(label)) return Wallet;
+  if (/Absolute Return/i.test(label)) return BarChart3;
   if (/Coupon/i.test(label)) return Calculator;
   if (/Days|Expiry|Observation|Tenor/i.test(label)) return LineChart;
   return Calculator;
@@ -354,19 +354,22 @@ export function KpiBand({
       ? { cyan: "#c9a040", purple: "#b8956a", green: "#4ade80", amber: "#d4b24c", rose: "#a8821f" }
       : { cyan: "#a8821f", purple: "#7a1e2c", green: "#15803d", amber: "#b45309", rose: "#be123c" };
   const count = items.length;
-  /** ≤5 tiles fill the full row (Probability KPIs). 6+ scroll (Home Live Notional strip). */
-  const scrollRow = count >= 6;
+  const denseColumns = count >= 8 ? 4 : count >= 5 ? Math.min(count, 5) : undefined;
 
   return (
     <div
       className={cn(
-        "w-full gap-3 md:gap-4",
-        scrollRow ? "kpi-band-scroll" : "kpi-band-grid kpi-band-fill",
-        scrollRow && count >= 7 && "kpi-band-scroll-dense",
-        !scrollRow && count === 5 && "kpi-band-five",
+        "kpi-band-grid kpi-band-fill w-full gap-3 md:gap-4",
+        count >= 5 && "kpi-band-dense",
+        count >= 8 && "kpi-band-wide",
       )}
       role="list"
       aria-label="Headline metrics"
+      style={
+        denseColumns
+          ? ({ gridTemplateColumns: `repeat(${denseColumns}, minmax(0, 1fr))` } as CSSProperties)
+          : undefined
+      }
     >
       {items.map((item, index) => {
         const accent = accents[index % accents.length] ?? "cyan";
@@ -376,25 +379,35 @@ export function KpiBand({
             key={item.label}
             role="listitem"
             animate={{ opacity: 1, y: 0 }}
-            className={cn(
-              "kpi-card kpi-card-fill kpi-card-live min-w-0",
-              scrollRow && "kpi-card-scroll kpi-card-dense",
-            )}
-            initial={false}
+            className={cn("kpi-card kpi-card-fill kpi-card-live min-w-0", count >= 5 && "kpi-card-dense")}
+            initial={{ opacity: 0, y: 16, scale: 0.96 }}
             style={{ "--kpi-accent": colors[accent] } as CSSProperties}
-            transition={{ delay: Math.min(index * 0.04, 0.2), duration: 0.35, ease: deskEase }}
-            whileHover={{ scale: 1.02, y: -2 }}
+            transition={{ delay: index * 0.07, duration: 0.45, ease: deskEase }}
+            whileHover={{ scale: 1.035, y: -3 }}
           >
             <div className="flex items-start justify-between gap-2">
               <p className="kpi-card-label flex-1">{item.label}</p>
-              <div
+              <motion.div
                 className="shrink-0 rounded-xl p-1.5 md:p-2"
                 style={{ backgroundColor: `${colors[accent]}20`, color: colors[accent] }}
+                animate={{ rotate: [0, -8, 8, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
               >
                 <Icon className="h-3.5 w-3.5 md:h-4 md:w-4" />
-              </div>
+              </motion.div>
             </div>
-            <p className="kpi-card-value mt-2 md:mt-3">{item.value}</p>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={item.value}
+                className="kpi-card-value mt-2 md:mt-3"
+                initial={{ opacity: 0.4, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.3 }}
+              >
+                {item.value}
+              </motion.p>
+            </AnimatePresence>
           </motion.div>
         );
       })}

@@ -6,7 +6,7 @@ Five-pass checklist against the inception prompt. Status as of the Dynamic Proba
 
 | Requirement | Status | Where |
 |-------------|--------|-------|
-| Dashboard same format/styling as Primary SP | **PASS** | `app/globals.css`, `components/layout/*` |
+| Dashboard same format/styling as Primary SP | **PASS** | Shared `--ar-*` tokens, KpiBand motion/grid, Desk Category Lanes, Absolute Return analytics, nav/brand shell |
 | Tabs: ongoing, obs 3m/2m/1m | **PASS** | `UI_LIFECYCLE_FILTERS` in `lib/product-lifecycle.ts` |
 | Forget expired products | **PASS** | Lifecycle index skip; filter `"expired"` → `[]` |
 | No Expiring 3M / 1M tabs | **PASS** | Removed from UI pills, headline KPIs, market strip, status enum |
@@ -67,7 +67,7 @@ Five-pass checklist against the inception prompt. Status as of the Dynamic Proba
 
 | Requirement | Status | Where |
 |-------------|--------|-------|
-| KPI cards full horizontal width like Primary SP | **PASS** | `KpiBand` + `.kpi-band-fill` / `.kpi-band-dense` |
+| KPI cards full horizontal width like Primary SP | **PASS** | Primary `KpiBand` motion + dense fill grid restored |
 | Desk tab = Initial + Current Probability only | **PASS** | `components/dashboard/desk-hub.tsx` |
 | Probability / Initial / Current = Primary Valuation spine | **PASS** | Filter → Interface/Product List → Inputs → Report as-of → Reveal + downloads in footer |
 | Past-final inside Reveal: Specs → Results cards → Payoff → Obs | **PASS** | `past-final-observation-panels.tsx` |

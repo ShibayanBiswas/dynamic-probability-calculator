@@ -22,6 +22,7 @@ const SPREAD_METRICS = [
   { key: "initialLevel", label: "Initial Level", accent: "level" as const, format: "level" as const },
   { key: "finalLevel", label: "Target Level", accent: "level" as const, format: "level" as const },
   { key: "fullCoupon", label: "Full Coupon", accent: "coupon" as const, format: "coupon" as const },
+  { key: "currentCoupon", label: "Absolute Return", accent: "coupon" as const, format: "coupon" as const },
 ] as const;
 
 const clientStatsCache = new Map<string, LifecycleCategoryStats>();
@@ -107,6 +108,10 @@ function AnalyticsSpreadTable({
           {sections.map((section) => {
             const metrics = SPREAD_METRICS.map((metric) => ({
               ...metric,
+              label:
+                metric.key === "currentCoupon" && atLastObs
+                  ? "Absolute Return at Last Observation"
+                  : metric.label,
               stat: section[metric.key],
             }));
 
@@ -299,7 +304,13 @@ function LifecycleCategoryPanel({
             items={[
               { label: "AUM", value: formatKpiNotional(effectiveStats.aum) },
               { label: "Avg Full Coupon", value: formatPercent(effectiveStats.averageCoupon) },
-              { label: "Products", value: formatNumber(pool.length) },
+              {
+                label: filter === "expired" ? "Avg Absolute Return at Last Obs" : "Avg Absolute Return",
+                value:
+                  effectiveStats.currentCoupon.count > 0 && effectiveStats.currentCoupon.avg != null
+                    ? formatPercent(effectiveStats.currentCoupon.avg, 1)
+                    : "—",
+              },
               { label: "Listed", value: formatPercent(effectiveStats.listedShare) },
             ]}
           />

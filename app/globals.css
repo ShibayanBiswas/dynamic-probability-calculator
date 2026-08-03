@@ -1829,7 +1829,7 @@ textarea {
   }
 
   .brand-title {
-    @apply text-base font-bold text-ink sm:text-xl md:text-2xl;
+    @apply text-xl font-bold text-ink md:text-2xl;
     font-family: var(--font-serif), Georgia, "Times New Roman", serif;
     letter-spacing: -0.02em;
   }
