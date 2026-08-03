@@ -1,0 +1,20 @@
+# Local MongoDB for SP Dashboard (no auth — dev only).
+# Start: docker compose up -d
+# Stop:  docker compose down
+services:
+  mongo:
+    image: mongo:7
+    container_name: sp-dashboard-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - sp_dashboard_mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  sp_dashboard_mongo_data:

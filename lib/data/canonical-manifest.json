@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-07-31T13:44:03.424Z",
+  "workbookName": "New Product Master_.xlsx",
+  "deskCanonicalProducts": 4179,
+  "deskCanonicalFormulas": 4151,
+  "liveNotionalCr": 38192.53,
+  "deskBookNotionalCr": 34388.77,
+  "protectedCallIsin": "INE804I07RK0",
+  "explorerGrids": {
+    "primaryRows": 4499,
+    "rolloverRows": 635,
+    "newPrimaryRows": 4879
+  },
+  "merge": {
+    "totalRows": 4879,
+    "primaryInputRows": 4499,
+    "rolloverInputRows": 635,
+    "duplicatePhase2Removed": 255,
+    "byPhase": {
+      "blank": 3859,
+      "phase1": 380,
+      "phase2": 255,
+      "tenyears": 385,
+      "other": 0
+    }
+  }
+}

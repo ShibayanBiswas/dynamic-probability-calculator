@@ -1,0 +1,38 @@
+.next
+node_modules
+dist
+out
+.tools
+backend/python/.venv
+backend/python/__pycache__
+.python-api.pid
+*.log
+.env
+.env.local
+tsconfig.tsbuildinfo
+
+# LibreOffice / editor lock files
+.~lock.*#
+
+# Local master backups
+*.backup.xlsx
+*~.xlsx
+
+# Local Excel masters (keep on disk; not versioned)
+*.xlsx
+*.xlsm
+*.pdf
+# Bundled desk copy for Download Master Excel in production
+!public/data/New Product Master_.xlsx
+
+# Generated at build from lib/data/master-seed.json
+public/data/master-seed.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea
+.vscode
+
+# Cursor
+.cursor

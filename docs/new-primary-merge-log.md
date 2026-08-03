@@ -1,0 +1,119 @@
+# NEW PRIMARY merge log
+
+Generated: 2026-07-31T13:42:49.776Z
+
+## Summary
+
+- Primary input rows: 4499
+- Rollover input rows: 635
+- Merged rows: 4879
+- Duplicate Phase II removed: 255
+- Unique ISINs: 4617
+- Rows without ISIN: 4
+- By phase: blank=3859 · 10years=385 · Phase I=380 · Phase II=255
+
+## Issues
+
+By code: {"ROW_APPENDED":380,"DUPLICATE_PHASE2_SKIPPED":255}
+
+- **ROW_APPENDED** INE093J07U58 · Protected Call - 242 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07U66 · Nifty Accelerator - 311 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07U74 · Nifty Accelerator - 312 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07V08 · Protected Call - 245 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07V16 · Nifty Accelerator - 315 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07V24 · Protected Call - 246 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07V32 · Nifty Accelerator - 316 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07V40 · Nifty Accelerator - 317 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07V57 · Protected Call - 247 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07W07 · Modi-Fied protected Call 1 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07W15 · Modi-Fied protected Call 2 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07W31 · Protected call - 249 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07W49 · Nifty Accelerator - 319 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07X48 · Modi-Fied protected Call 3 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07X89 · Protected call - 253 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07X97 · Nifty Accelerator - 323 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07Y05 · Nifty Accelerator 79%- 324 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07X55 · Protected call - 254 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07X63 · Nifty Accelerator - 325 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07X71 · Protected call 50.1%- 255 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07Z61 · Protected call - 261 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07Z79 · Nifty Accelerator - 331 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J07Z87 · Protected call - 262 46.5% (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J073A8 · Protected call - 264 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J074A6 · Nifty Accelerator - 333 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J075A3 · Protected call - 265 - 51.5% (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J076A1 · Nifty Accelerator - 334 (25%PP) (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J077A9 · Nifty Accelerator - 335 - (30%PP) (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J078A7 · Nifty Magnifier - 97 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J072B8 · Nifty Accelerator - 337 - (30%PP) (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J075B1 · Protected call - 267 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J076B9 · Nifty Magnifier - 99 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J079B3 · Nifty Magnifier - 101 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J073C4 · Nifty Accelerator - 339 - (30%PP) (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J077C5 · Protected call - 270 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J078C3 · Nifty Magnifier - 103 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J070D8 · Nifty Accelerator - 342 - (30%PP) (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J073D2 · Nifty Accelerator - 344 - (30%PP) (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J076D5 · Protected call - 272 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J077D3 · Nifty Magnifier - 105 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J071E4 · Protected call - 275 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J072E2 · Nifty Magnifier - 107 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J075E5 · Protected call - 277 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J076E3 · Nifty Magnifier - 109 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J079E7 · Nifty Accelerator - 346 - (30%PP) (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J070F3 · Nifty Accelerator - 347 - 80% (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J071F1 · Nifty Accelerator - 348 - 80% (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J074F5 · Nifty Accelerator - 350 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J075F2 · Nifty Accelerator - 351 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J076F0 · Customised Nifty Magnifier 110 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J079F4 · Nifty Accelerator - 353 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J072G7 · Nifty Magnifier - 112 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J073G5 · Nifty Magnifier - 113 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J078G4 · Nifty Magnifier - 115 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J071H7 · Protected call - 281 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J072H5 · Nifty Magnifier - 117 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J079H0 · Nifty Magnifier - 120 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J075H8 · Nifty Accelerator - 356 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J076H6 · Customised Protected call - 281 - 50.1 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J078H2 · Nifty Magnifier - 119 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J074I9 · Nifty Magnifier - 123 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J075I6 · Protected call - 284 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J078I0 · Nifty Accelerator - 358 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J071J3 · Nifty Magnifier - 125 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J072J1 · Protected call - 286 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J075J4 · Nifty Accelerator - 360 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J076J2 · Nifty Accelerator - 361 - 80% (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J079J6 · Nifty Magnifier - 127 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J073K7 · Nifty Accelerator - 364- 75% (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J074K5 · Nifty Accelerator - 365- 79% (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J075K2 · Nifty Accelerator - 366-80% (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J078K6 · Nifty Magnifier - 129 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J079K4 · Protected call - 289 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J072L7 · Nifty Accelerator - 368 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J075L0 · Protected call - 291 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J079L2 · Customised Uncapped Accelerator - 97 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J070M9 · Customised Nifty Magnifier - 131 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J074M1 · Customised nifty employee structure 80.5% (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J078L4 · Nifty Accelerator - 370 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J073M3 · Nifty Magnifier - 133 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J078M2 · Nifty Magnifier - 136 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J079M0 · Protected call - 294 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J072N3 · Nifty Accelerator - 372 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J077N2 · Nifty Magnifier - 138 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J078N0 · Protected call - 296 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J072O1 · Nifty Accelerator - 375 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J074O7 · Nifty Accelerator - 376 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J077O0 · Nifty Magnifier - 140 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J078O8 · Protected call - 298 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J079O6 · Nifty Magnifier - 141 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J070P2 · Nifty Accelerator - 377 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J072P8 · Nifty Magnifier - 143 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J077P7 · Nifty Accelerator - 379 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J071Q8 · Protected call - 300 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J072Q6 · Nifty Magnifier - 148 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J071R6 · Nifty Accelerator - 384 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J073Q4 · Protected call - 301 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J074Q2 · Nifty Magnifier - 149 (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J077Q5 · Nifty Accelerator - 381- 84% (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- **ROW_APPENDED** INE093J078Q3 · Nifty Accelerator - 382-84% (ROLLOVER PHASE 1) — Rollover row appended to NEW PRIMARY
+- … and 535 more

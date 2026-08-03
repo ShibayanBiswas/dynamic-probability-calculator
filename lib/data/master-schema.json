@@ -1,0 +1,76 @@
+{
+  "master": {
+    "workbook": "New Product Master_.xlsx",
+    "categorySheets": {
+      "Primary": {
+        "headerRow": 2,
+        "columnCount": 39,
+        "columns": [
+          "Month",
+          "Trade Date/Opening date",
+          "Name on Signup Form",
+          "Underlying",
+          "Series",
+          "Issuer",
+          "ISIN No.",
+          "Actual Entry Level",
+          "Target Nifty",
+          "Average 1",
+          "Avg. 2",
+          "Avg. 3",
+          "Avg. 4",
+          "Avg. 5",
+          "Avg. 6",
+          "Avg. 7",
+          "Observation Months",
+          "Last Observation Date",
+          "Trade Amount",
+          "Maturity",
+          "Product Type",
+          "Principal Protection",
+          "Listing",
+          "Formulae",
+          "Product Explanation",
+          "Allotment Date",
+          "POED",
+          "Coupon / PR / DM",
+          "Coupon (%)",
+          "Tenor",
+          "price per debenture",
+          "Classification based on tenor",
+          "Arranger Fees (%)",
+          "Upfront fees (%)",
+          "Arranger Fees (Rs.)",
+          "Upfront fees (Rs.)"
+        ]
+      }
+    }
+  },
+  "dashboardWorkbooks": {
+    "primaryValuation": {
+      "actual": "Actual_Primary Structured Products Valuation - 31st May 26.xlsm",
+      "working": "Primary Structured Products Valuation - 31st May 26.xlsm",
+      "sheets": ["Valuation", "Product List", "Working"]
+    },
+    "primaryPayoff": {
+      "actual": "Actual_Automated Primary SP Dashboard - 31 May 26.xlsm",
+      "working": "Automated Primary SP Dashboard - 31 May 26.xlsm",
+      "sheets": ["Non PP SP Details Input", "Product Search", "Non PP SP Details"]
+    }
+  },
+  "laneMapping": {
+    "Primary": {
+      "lane": "primary",
+      "valuationWorkbook": "Primary Structured Products Valuation",
+      "payoffWorkbook": "Automated Primary SP Dashboard"
+    }
+  },
+  "expectedCounts": {
+    "Primary": { "products": 4179, "formulas": 4151 },
+    "explorerGrids": {
+      "primaryRows": 4499,
+      "rolloverRows": 635,
+      "newPrimaryRows": 4879
+    }
+  }
+}

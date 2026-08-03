@@ -1,0 +1,5127 @@
+{
+  "workbook": "Automated Primary SP Dashboard - 31 May 26.xlsm",
+  "sheets": [
+    {
+      "name": "Master",
+      "state": "visible",
+      "path": "xl/worksheets/sheet1.xml",
+      "dimension": "A1:Z4875",
+      "sampleRows": [
+        {
+          "C1": 1,
+          "D1": {
+            "formula": "C1+1",
+            "cached": 2
+          },
+          "E1": {
+            "formula": "D1+1",
+            "cached": 3
+          },
+          "F1": 4,
+          "G1": 5,
+          "H1": 6,
+          "I1": 7,
+          "J1": 8,
+          "K1": 9,
+          "L1": 10,
+          "M1": 11,
+          "N1": 12,
+          "O1": 13,
+          "P1": 14,
+          "Q1": 15,
+          "R1": 16,
+          "S1": 17,
+          "T1": {
+            "formula": "S1+1",
+            "cached": 18
+          },
+          "U1": {
+            "formula": "T1+1",
+            "cached": 19
+          },
+          "V1": {
+            "formula": "U1+1",
+            "cached": 20
+          },
+          "W1": {
+            "formula": "V1+1",
+            "cached": 21
+          }
+        },
+        {
+          "B2": "Trade Date",
+          "C2": "Name on Signup Form",
+          "D2": "Underlying",
+          "E2": "Series",
+          "F2": "Issuer",
+          "G2": "ISIN No.",
+          "H2": "Entry Level",
+          "I2": "Target Level",
+          "J2": "Final Observation Dates ",
+          "K2": "Initial Investment (Rs.)",
+          "L2": "Maturity",
+          "M2": "Product Type",
+          "N2": "Principal Protection",
+          "O2": "Listing",
+          "P2": "Formulae",
+          "Q2": "Product Explanation",
+          "R2": "Allotment Date",
+          "S2": "Tenor",
+          "T2": "Payoff tenor",
+          "U2": "Actual POED tenure",
+          "V2": "Put Option Excerise Date"
+        },
+        {
+          "B3": 41354,
+          "C3": "Nifty Accelerator - 8",
+          "D3": "Nifty",
+          "E3": "ARG/FY2013/MAR/03",
+          "F3": "ARGFL",
+          "G3": "INE093J07221",
+          "H3": 5658.75,
+          "I3": 0,
+          "J3": "30-Jun-16",
+          "K3": 53500000,
+          "L3": 42572,
+          "M3": "Equity",
+          "N3": "Non-Principal Protected",
+          "O3": "Unlisted",
+          "P3": "IF(Z>0%,MIN(90%,Z*900%),Z)",
+          "Q3": "1. For Final Nifty Levels upto 110% of Initial Level, 900% participation i.e. for every 1% rise in the Nifty the coupon increases by 9% and is capped at 90%\n2. On the downside there is 1:1 fall i.e. for every 1% fall in Nifty the principal erodes by 1%",
+          "R3": 41355,
+          "S3": 1217,
+          "T3": 1217,
+          "V3": "NA",
+          "W3": {
+            "formula": "VLOOKUP(C3,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B4": 42534,
+          "C4": "5 year Nifty Accelerator - 1",
+          "D4": "Nifty",
+          "E4": "ARG17SUBNCD02 - Series III",
+          "F4": "ARGFL",
+          "G4": "INE093J08047",
+          "H4": 8110.6,
+          "I4": 9801,
+          "J4": "31-Dec-20",
+          "K4": 10000000,
+          "L4": 44389,
+          "M4": "Equity",
+          "N4": "Non-Principal Protected",
+          "O4": "Unlisted",
+          "P4": "IF(Z>4.8%,Min(128%,836.7%*(Z-4.8%)),Max(-100%,(Z-4.8%)*1.2))",
+          "Q4": "1. For Final Nifty Levels greater than 104.8% Initial Nifty the product offers a PR of 836.7% for the first 15.3% rise in Nifty after which the coupon is capped at 128%. \n2. For Final Nifty Level at or below 104.8% of Initial Nifty the Principal erodes by 1.2 times for every 1% fall in Nifty",
+          "R4": 42549,
+          "S4": 1840,
+          "T4": 1840,
+          "V4": "NA",
+          "W4": {
+            "formula": "VLOOKUP(C4,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": "5 Years"
+          }
+        },
+        {
+          "B5": 42515,
+          "C5": "5 Year Protected Call - 1",
+          "D5": "Nifty",
+          "E5": "ARG17SUBNCD01",
+          "F5": "ARGFL",
+          "G5": "INE093J08013",
+          "H5": 7934.9,
+          "I5": 8300,
+          "J5": "31-Dec-20",
+          "K5": 75500000,
+          "L5": 44362,
+          "M5": "Debt",
+          "N5": "Non-Principal Protected",
+          "O5": "Unlisted",
+          "P5": "IF(Z>=4.6%,96%,MAX(-100%,96%+((Z-4.6%)*3)))",
+          "Q5": "1. For Final Nifty Levels greater than or equal to 104.6% of Initial Nifty a flat coupon of 96%.  \n2. For Nifty levels less than 104.6% of Intial Nifty level, first the coupon erodes by 3 times the nifty performance and after which the Principal starts eroding by 3 times the nifty performance.",
+          "R5": 42522,
+          "S5": 1840,
+          "T5": 1840,
+          "V5": "NA",
+          "W5": {
+            "formula": "VLOOKUP(C5,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": "5 Years"
+          }
+        },
+        {
+          "B6": 42573,
+          "C6": "5 Year Protected Call - 10",
+          "D6": "Nifty",
+          "E6": "ARG17SUBNCD08 - Series II",
+          "F6": "ARGFL",
+          "G6": "INE093J08112",
+          "H6": 8541.2,
+          "I6": 8900,
+          "J6": "30-Jun-21",
+          "K6": 10000000,
+          "L6": 44579,
+          "M6": "Debt",
+          "N6": "Non-Principal Protected",
+          "O6": "Unlisted",
+          "P6": "IF(Z>=4.2%,99.5%,MAX(-100%,99.5%+((Z-4.2%)*3)))",
+          "Q6": "1. For Final Nifty Levels at or above 104.2% of Initial Nifty a flat coupon of 99.5%.  \n2. For Nifty levels below 104.2% of Intial Nifty level, first the coupon erodes by 3 times the nifty performance and after which the Principal starts eroding by 3 times the nifty performance.",
+          "R6": 42669,
+          "S6": 1910,
+          "T6": 1910,
+          "V6": "NA",
+          "W6": {
+            "formula": "VLOOKUP(C6,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": "5 Years"
+          }
+        },
+        {
+          "B7": 42607,
+          "C7": "5 Year Protected Call - 11",
+          "D7": "Nifty",
+          "E7": "ARG17SUBNCD08 - Series III",
+          "F7": "ARGFL",
+          "G7": "INE093J08120",
+          "H7": 8800,
+          "I7": 8800,
+          "J7": "30-Jun-21",
+          "K7": 40000000,
+          "L7": 44579,
+          "M7": "Debt",
+          "N7": "Non-Principal Protected",
+          "O7": "Unlisted",
+          "P7": "IF(Z>=0%,92.5%,MAX(-100%,92.5%+Z*3))",
+          "Q7": "1. For Final Nifty Levels greater than or equal to Initial Nifty a flat coupon of 92.5%.  \n2. For Nifty levels less than Intial Nifty level, first the coupon erodes by 3 times the nifty performance and after which the Principal starts eroding by 3 times the nifty performance.",
+          "R7": 42669,
+          "S7": 1910,
+          "T7": 1910,
+          "V7": "NA",
+          "W7": {
+            "formula": "VLOOKUP(C7,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": "5 Years"
+          }
+        },
+        {
+          "B8": 42698,
+          "C8": "5 Year Protected Call - 12",
+          "D8": "Nifty",
+          "E8": "ARG17SUBNCD09",
+          "F8": "ARGFL",
+          "G8": "INE093J08138",
+          "H8": 7965.5,
+          "I8": 8300,
+          "J8": "31-Dec-21",
+          "K8": 20000000,
+          "L8": 44574,
+          "M8": "Debt",
+          "N8": "Non-Principal Protected",
+          "O8": "Unlisted",
+          "P8": "IF(Z>=4.2%,95%,MAX(-100%,95%+((Z-4.2%)*3)))",
+          "Q8": "1. For Final Nifty Levels at or above 104.2% of Initial Nifty a flat coupon of 95%.  \n2. For Nifty levels below 104.2% of Intial Nifty level, first the coupon erodes by 3 times the nifty performance,after which the Principal starts eroding by 3 times the nifty performance.",
+          "R8": 42704,
+          "S8": 1870,
+          "T8": 1870,
+          "V8": "NA",
+          "W8": {
+            "formula": "VLOOKUP(C8,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": "5 Years"
+          }
+        },
+        {
+          "B9": 42534,
+          "C9": "5 Year Protected Call - 2",
+          "D9": "Nifty",
+          "E9": "ARG17SUBNCD02 - Series I",
+          "F9": "ARGFL",
+          "G9": "INE093J08021",
+          "H9": 8110.6,
+          "I9": 8500,
+          "J9": "31-Dec-20",
+          "K9": 152000000,
+          "L9": 44389,
+          "M9": "Debt",
+          "N9": "Non-Principal Protected",
+          "O9": "Unlisted",
+          "P9": "IF(Z>=4.8%,96%,MAX(-100%,96%+((Z-4.8%)*3)))",
+          "Q9": "1. For Final Nifty Levels greater than or equal to 104.8% of Initial Nifty a flat coupon of 96%.  \n2. For Nifty levels less than 104.8% of Intial Nifty level, first the coupon erodes by 3 times the nifty performance and after which the Principal starts eroding by 3 times the nifty performance.",
+          "R9": 42549,
+          "S9": 1840,
+          "T9": 1840,
+          "V9": "NA",
+          "W9": {
+            "formula": "VLOOKUP(C9,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": "5 Years"
+          }
+        },
+        {
+          "B10": 42527,
+          "C10": "5 Year Protected Call - 3",
+          "D10": "Nifty",
+          "E10": "ARG17SUBNCD02 - Series II",
+          "F10": "ARGFL",
+          "G10": "INE093J08039",
+          "H10": 8300,
+          "I10": 8300,
+          "J10": "31-Dec-20",
+          "K10": 40000000,
+          "L10": 44389,
+          "M10": "Debt",
+          "N10": "Non-Principal Protected",
+          "O10": "Unlisted",
+          "P10": "IF(Z>=0%,90%,MAX(-100%,90%+Z*3))",
+          "Q10": "1. For Final Nifty Levels greater than or equal to Initial Nifty a flat coupon of 90%.  \n2. For Nifty levels less than Intial Nifty level, first the coupon erodes by 3 times the nifty performance and after which the Principal starts eroding by 3 times the nifty performance.",
+          "R10": 42549,
+          "S10": 1840,
+          "T10": 1840,
+          "V10": "NA",
+          "W10": {
+            "formula": "VLOOKUP(C10,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": "5 Years"
+          }
+        },
+        {
+          "B11": 42558,
+          "C11": "5 Year Protected Call - 4",
+          "D11": "Nifty",
+          "E11": "ARG17SUBNCD03 ",
+          "F11": "ARGFL",
+          "G11": "INE093J08054",
+          "H11": 8337.9,
+          "I11": 8700,
+          "J11": "31-Dec-20",
+          "K11": 250000000,
+          "L11": 44482,
+          "M11": "Debt",
+          "N11": "Non-Principal Protected",
+          "O11": "Unlisted",
+          "P11": "IF(Z>=4.34%,100.44%,MAX(-100%,100.44%+((Z-4.34%)*3)))",
+          "Q11": "1. For Final Nifty Levels greater than or equal to 104.34% of Initial Nifty a flat coupon of 100.44%.  \n2. For Nifty levels less than 104.34% of Intial Nifty level, first the coupon erodes by 3 times the nifty performance and after which the Principal starts eroding by 3 times the nifty performance.",
+          "R11": 42566,
+          "S11": 1916,
+          "T11": 1912,
+          "V11": "NA",
+          "W11": {
+            "formula": "VLOOKUP(C11,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": "5 Years"
+          }
+        },
+        {
+          "B12": 42573,
+          "C12": "5 Year Protected Call - 5",
+          "D12": "Nifty",
+          "E12": "ARG17SUBNCD04",
+          "F12": "ARGFL",
+          "G12": "INE093J08062",
+          "H12": 8541.2,
+          "I12": 8900,
+          "J12": "30-Jun-21",
+          "K12": 116000000,
+          "L12": 44499,
+          "M12": "Debt",
+          "N12": "Non-Principal Protected",
+          "O12": "Unlisted",
+          "P12": "IF(Z>=4.20%,100.00%,MAX(-100%,100.00%+((Z-4.20%)*3)))",
+          "Q12": "1. For Final Nifty Levels greater than or equal to 104.20% of Initial Nifty a flat coupon of 100%.  \n2. For Nifty levels less than 104.20% of Intial Nifty level, first the coupon erodes by 3 times the nifty performance and after which the Principal starts eroding by 3 times the nifty performance.",
+          "R12": 42583,
+          "S12": 1916,
+          "T12": 1916,
+          "V12": "NA",
+          "W12": {
+            "formula": "VLOOKUP(C12,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": "5 Years"
+          }
+        },
+        {
+          "B13": 42594,
+          "C13": "5 Year Protected Call - 6",
+          "D13": "Nifty",
+          "E13": "ARG17SUBNCD05",
+          "F13": "ARGFL",
+          "G13": "INE093J08070",
+          "H13": 8672.15,
+          "I13": 9100,
+          "J13": "30-Jun-21",
+          "K13": 140000000,
+          "L13": 44490,
+          "M13": "Debt",
+          "N13": "Non-Principal Protected",
+          "O13": "Unlisted",
+          "P13": "IF(Z>=4.93%,98%,MAX(-100%,98%+((Z-4.93%)*3)))",
+          "Q13": "1. For Final Nifty Levels greater than or equal to 104.93% of Initial Nifty a flat coupon of 100%.  \n2. For Nifty levels less than 104.93% of Intial Nifty level, first the coupon erodes by 3 times the nifty performance and after which the Principal starts eroding by 3 times the nifty performance.",
+          "R13": 42601,
+          "S13": 1889,
+          "T13": 1885,
+          "V13": "NA",
+          "W13": {
+            "formula": "VLOOKUP(C13,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": "5 Years"
+          }
+        },
+        {
+          "B14": 42620,
+          "C14": "5 Year Protected Call - 7",
+          "D14": "Nifty",
+          "E14": "ARG17SUBNCD06",
+          "F14": "ARGFL",
+          "G14": "INE093J08088",
+          "H14": 8917.95,
+          "I14": 9300,
+          "J14": "30-Jun-21",
+          "K14": 30000000,
+          "L14": 44497,
+          "M14": "Debt",
+          "N14": "Non-Principal Protected",
+          "O14": "Unlisted",
+          "P14": "IF(Z>=4.28%,95%,MAX(-100%,95%+((Z-4.28%)*3)))",
+          "Q14": "1. For Final Nifty Levels greater than or equal to 104.28% of Initial Nifty a flat coupon of 95%.  \n2. For Nifty levels less than 104.28% of Intial Nifty level, first the coupon erodes by 3 times the nifty performance and after which the Principal starts eroding by 3 times the nifty performance.",
+          "R14": 42628,
+          "S14": 1869,
+          "T14": 1870,
+          "V14": "NA",
+          "W14": {
+            "formula": "VLOOKUP(C14,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": "5 Years"
+          }
+        },
+        {
+          "B15": 42628,
+          "C15": "5 Year Protected Call - 8",
+          "D15": "Nifty",
+          "E15": "ARG17SUBNCD07",
+          "F15": "ARGFL",
+          "G15": "INE093J08096",
+          "H15": 9100,
+          "I15": 9100,
+          "J15": "30-Jun-21",
+          "K15": 10000000,
+          "L15": 44504,
+          "M15": "Debt",
+          "N15": "Non-Principal Protected",
+          "O15": "Unlisted",
+          "P15": "IF(Z>=0%,95%,MAX(-100%,95%+Z*3))",
+          "Q15": "1. For Final Nifty Levels greater than or equal to Initial Nifty a flat coupon of 95%.  \n2. For Nifty levels less than Intial Nifty level, first the coupon erodes by 3 times the nifty performance and after which the Principal starts eroding by 3 times the nifty performance.",
+          "R15": 42634,
+          "S15": 1870,
+          "T15": 1870,
+          "V15": "NA",
+          "W15": {
+            "formula": "VLOOKUP(C15,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": "5 Years"
+          }
+        },
+        {
+          "B16": 42661,
+          "C16": "5 Year Protected Call - 9",
+          "D16": "Nifty",
+          "E16": "ARG17SUBNCD08 - Series I",
+          "F16": "ARGFL",
+          "G16": "INE093J08104",
+          "H16": 8677.9,
+          "I16": 9100,
+          "J16": "30-Jun-21",
+          "K16": 70000000,
+          "L16": 44579,
+          "M16": "Debt",
+          "N16": "Non-Principal Protected",
+          "O16": "Unlisted",
+          "P16": "IF(Z>=4.86%,96%,MAX(-100%,95%+((Z-4.86%)*3)))",
+          "Q16": "1. For Final Nifty Levels at or above 104.86% of Initial Nifty a flat coupon of 96%.  \n2. For Nifty levels below 104.86% of Intial Nifty level, first the coupon erodes by 3 times the nifty performance and after which the Principal starts eroding by 3 times the nifty performance.",
+          "R16": 42669,
+          "S16": 1910,
+          "T16": 1910,
+          "V16": "NA",
+          "W16": {
+            "formula": "VLOOKUP(C16,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": "5 Years"
+          }
+        },
+        {
+          "B17": 41585,
+          "C17": "80 - 20",
+          "D17": "Nifty",
+          "E17": "ARG/FY2013/OCT/02",
+          "F17": "ARGFL",
+          "G17": "INE093J07700",
+          "H17": 6200,
+          "I17": 0,
+          "J17": "31-Dec-16",
+          "K17": 8500000,
+          "L17": 42821,
+          "M17": "Equity",
+          "N17": "Non-Principal Protected",
+          "O17": "Unlisted",
+          "P17": "IF(Z>=20%,80%,MAX(-100%,80%-2.15*(20%-Z)))",
+          "Q17": "1. For Final Nifty Levels at or above 120% of Initial Level flat coupon of 80%\n2. For Final Nifty Levels below 120% of Initial Level there is a decay of 2.15 from the coupon i.e. for every 1% fall in Nifty, first coupon reduces by 2.15% upto (-17%) after which the principal gets eroded by 2.15% for every 1% fall",
+          "R17": 41590,
+          "S17": 1231,
+          "T17": 1223,
+          "V17": "NA",
+          "W17": {
+            "formula": "VLOOKUP(C17,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B18": 41612,
+          "C18": "Assured Alpha - 1",
+          "D18": "Nifty",
+          "E18": "ARG/FY2013/NOV/02",
+          "F18": "ARGFL",
+          "G18": "INE093J07742",
+          "H18": 6200,
+          "I18": 0,
+          "J18": "31-Dec-16",
+          "K18": 7500000,
+          "L18": 42877,
+          "M18": "Equity",
+          "N18": "Non-Principal Protected",
+          "O18": "Unlisted",
+          "P18": "IF(Z>=-20%,40%+(Z-20%),1.25*(Z+20%))",
+          "Q18": "1. An alpha of 20% on the Nifty returns, if the Final Nifty Level is at or above 80% of Initial Level i.e. if Nifty Nifty returns are -10% then product returns will be  = -10% + 20% = 10%\n2. Below 80% of Initial Level, the principal erodes by 1.25% for every % fall in Nifty.",
+          "R18": 41617,
+          "S18": 1260,
+          "T18": 1260,
+          "V18": "NA",
+          "W18": {
+            "formula": "VLOOKUP(C18,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B19": 41702,
+          "C19": "Assured Coupon - 10",
+          "D19": "Nifty",
+          "E19": "F7C401",
+          "F19": "Edelweiss",
+          "G19": "INE804I07TV3",
+          "H19": 6297.95,
+          "I19": 0,
+          "J19": "31-Aug-16, 30-Nov-16, 28-Feb-17",
+          "K19": 15000000,
+          "L19": 42922,
+          "M19": "Debt",
+          "N19": "Principal Protected",
+          "O19": "Listed",
+          "P19": "IF(Z>=2%,48%,20%)",
+          "Q19": "1. It is a principal protected structure\n2. For Final Fixing Levels above 102% of Initial Fixing Level flat coupon of 48% else a fixed coupon of 20%",
+          "R19": 41705,
+          "S19": 1217,
+          "T19": 1217,
+          "V19": "NA",
+          "W19": {
+            "formula": "VLOOKUP(C19,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B20": 41876,
+          "C20": "Assured Coupon - 11",
+          "D20": "Nifty",
+          "E20": "B/257",
+          "F20": "RCL",
+          "G20": "INE013A07C15",
+          "H20": 7906.3,
+          "I20": 0,
+          "J20": "31-Aug-15",
+          "K20": 19500000,
+          "L20": 42334,
+          "M20": "Debt",
+          "N20": "Principal Protected",
+          "O20": "Listed",
+          "P20": "IF(Z>=0%,12.40%,8.40%)",
+          "Q20": "1. It is a Prinicpal Protected Structure\n2. For Final Nifty Levels greater than or equal to Initial Nifty the product offers a coupon of 12.40%.  \n3. For Final Nifty Levels below Initial Nifty the product offers a coupon of 8.40%.\n",
+          "R20": 41876,
+          "S20": 458,
+          "T20": 458,
+          "V20": "NA",
+          "W20": {
+            "formula": "VLOOKUP(C20,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B21": 41925,
+          "C21": "Assured Coupon - 12",
+          "D21": "Nifty",
+          "E21": "AR15MLD06A - Series I",
+          "F21": "ARGFL",
+          "G21": "INE093J07CF0",
+          "H21": 7900,
+          "I21": 0,
+          "J21": "31-Dec-17",
+          "K21": 2500000,
+          "L21": 43195,
+          "M21": "Debt",
+          "N21": "Principal Protected",
+          "O21": "Unlisted",
+          "P21": "IF(Z>1.27%,MIN(48%,25%+(115%*Z)),25%)",
+          "Q21": "1. For Final Nifty Levels greater than or equal to 101.27% Products offers 25% coupon plus 115% PR for the next 20% rise  in Nifty beyond which the coupon is capped at 48% \n2. For Final Nifty Levels below 101.27% of Initial Nifty Level product provides 25% coupon (Principal Protected)",
+          "R21": 41953,
+          "S21": 1242,
+          "T21": 1242,
+          "V21": "NA",
+          "W21": {
+            "formula": "VLOOKUP(C21,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B22": 42215,
+          "C22": "Assured Coupon - 14",
+          "D22": "Nifty",
+          "E22": "G8L501C",
+          "F22": "Edelweiss",
+          "G22": "INE918K07BH4",
+          "H22": 8421.8,
+          "I22": 0,
+          "J22": "31-Jul-16, 31-Aug-16, 30-Sep-16, 31-Oct-16",
+          "K22": 10000000,
+          "L22": 42765,
+          "M22": "Debt",
+          "N22": "Principal Protected",
+          "O22": "Listed",
+          "P22": "9.17% + Max(0, 50% * Nifty Performance)",
+          "Q22": "-",
+          "R22": 42215,
+          "S22": 550,
+          "T22": 550,
+          "V22": "NA",
+          "W22": {
+            "formula": "VLOOKUP(C22,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B23": 42648,
+          "C23": "Auto Call - 12",
+          "D23": "Nifty",
+          "E23": "B/383 Type - IV",
+          "F23": "RCL",
+          "G23": "INE013A072G3",
+          "H23": 8743.95,
+          "I23": "#N/A",
+          "J23": "30-Sep-17, 31-Oct-17, 30-Nov-17, 31-Dec-17, 31-Jan-18, 28-Feb-18, 31-Mar-18, 30-Apr-18, 31-May-18",
+          "K23": 15000000,
+          "L23": 43378,
+          "M23": "Debt",
+          "N23": "Principal Protected",
+          "O23": "Listed",
+          "P23": "-",
+          "Q23": "1. If on any Observation Dates if the Final Fixing Level is greater than or equal to 111% of Initial Fixing Level then coupon of 11.75% p.a plus lag period interest of 1 month @ 10%.\n2. If on any observation date if the Final Fixing Level stays below 111% of Initial Level, then 0% coupon with Principal Protection",
+          "R23": 42648,
+          "S23": 730,
+          "T23": 730,
+          "V23": "NA",
+          "W23": {
+            "formula": "VLOOKUP(C23,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B24": 42076,
+          "C24": "AutoCall - 6",
+          "D24": "Nifty",
+          "E24": "RCL B/296",
+          "F24": "Reliance",
+          "G24": "INE013A07M21",
+          "H24": 8647.75,
+          "I24": 0,
+          "J24": "29-Feb-16, 31-May-16, 31-Aug-16, 30-Nov-16, 28-Feb-17, 31-May-17, 31-Aug-17, 30-Nov-17, 28-Feb-18",
+          "K24": 16000000,
+          "L24": 43328,
+          "M24": "Debt",
+          "N24": "Principal Protected",
+          "O24": "Listed",
+          "P24": "-",
+          "Q24": "1. If On any Observation date if the Final Fixing Level is greater than or equal to 122% of Initla Fixing Level then coupon of 17.5% p.a.\n2. If on any observation date if the Final Fixing Level stays below 122% of Initla Level, then 0% coupon with Principal Protection",
+          "R24": 42077,
+          "S24": 1251,
+          "T24": 1251,
+          "V24": "NA",
+          "W24": {
+            "formula": "VLOOKUP(C24,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B25": 42153,
+          "C25": "AutoCall - 7",
+          "D25": "Nifty",
+          "E25": "B/303",
+          "F25": "Reliance",
+          "G25": "0",
+          "H25": 8433.65,
+          "I25": "#N/A",
+          "J25": "31-Mar-16, 31-May-16, 31-Jul-16, 30-Sep-16, 30-Nov-16, 31-Jan-17",
+          "K25": 20000000,
+          "L25": 42891,
+          "M25": "Debt",
+          "N25": "Principal Protected",
+          "O25": "Listed",
+          "P25": "IF(Z>=15%,17%*607/365,0%)",
+          "Q25": "1. If On any Observation date if the Final Fixing Level is greater than or equal to 115% of Initla Fixing Level then coupon of 17% p.a.\n2. If on any observation date if the Final Fixing Level stays below 115% of Initial Level, then 0% coupon with Principal Protection\n(Product Returns have been calculated assuming product will be autocalled on its Final Observation)",
+          "R25": 42159,
+          "S25": 732,
+          "T25": 732,
+          "V25": "NA",
+          "W25": {
+            "formula": "VLOOKUP(C25,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B26": 42432,
+          "C26": "Cap Pro Accelerator - 1",
+          "D26": "Nifty",
+          "E26": "F8C601A",
+          "F26": "Edelweiss",
+          "G26": "INE804I07M67",
+          "H26": 7700,
+          "I26": "#N/A",
+          "J26": "30-Jun-18",
+          "K26": 57500000,
+          "L26": 43342,
+          "M26": "Debt",
+          "N26": "Principal Protected",
+          "O26": "Listed",
+          "P26": "IF(Z>0%,Min(347%*Z,36%),0%)",
+          "Q26": "1. For Final Nifty Levels greater than Initial Nifty the product offers a PR of 347% for the first ~10.3% rise in Nifty after which the coupon is capped at 36%. \n2. For Final Nifty Level below or equal to Initial Nifty the Principal is Protected",
+          "R26": 42432,
+          "S26": 910,
+          "T26": 910,
+          "V26": "NA",
+          "W26": {
+            "formula": "VLOOKUP(C26,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B27": 42440,
+          "C27": "Cap Pro Accelerator - 2",
+          "D27": "Nifty",
+          "E27": "F8C602A",
+          "F27": "Edelweiss",
+          "G27": "INE804I07N41",
+          "H27": 7700,
+          "I27": "#N/A",
+          "J27": "30-Jun-18",
+          "K27": 42500000,
+          "L27": 43350,
+          "M27": "Debt",
+          "N27": "Principal Protected",
+          "O27": "Listed",
+          "P27": "IF(Z>0%,Min(347%*Z,36%),0%)",
+          "Q27": "1. For Final Nifty Levels greater than Initial Nifty the product offers a PR of 347% for the first ~10.3% rise in Nifty after which the coupon is capped at 36%. \n2. For Final Nifty Level below or equal to Initial Nifty the Principal is Protected",
+          "R27": 42440,
+          "S27": 910,
+          "T27": 910,
+          "V27": "NA",
+          "W27": {
+            "formula": "VLOOKUP(C27,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B28": 42429,
+          "C28": "Cap Pro Accelerator - 3",
+          "D28": "Nifty",
+          "E28": "B8B601D",
+          "F28": "Edelweiss",
+          "G28": "INE804I07M42",
+          "H28": 7030,
+          "I28": "#N/A",
+          "J28": "31-Dec-17",
+          "K28": 10000000,
+          "L28": 43279,
+          "M28": "Debt",
+          "N28": "Principal Protected",
+          "O28": "Listed",
+          "P28": "IF(Z>0%,Min(336%*Z,33.5%),0%)",
+          "Q28": "1. For Final Nifty Levels greater than Initial Nifty the product offers a PR of 336.48% for the first ~11.8% rise in Nifty after which the coupon is capped at 33.5%. \n2. For Final Nifty Level below or equal to Initial Nifty the Principal is Protected",
+          "R28": 42429,
+          "S28": 850,
+          "T28": 850,
+          "V28": "NA",
+          "W28": {
+            "formula": "VLOOKUP(C28,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B29": 42460,
+          "C29": "Cap Pro Accelerator - 4",
+          "D29": "Nifty",
+          "E29": "F8D601A",
+          "F29": "ECL Finance Ltd",
+          "G29": "INE804I07Q48",
+          "H29": 7738.4,
+          "I29": "#N/A",
+          "J29": "30-Jun-18",
+          "K29": 70000000,
+          "L29": 43376,
+          "M29": "Debt",
+          "N29": "Principal Protected",
+          "O29": "Listed",
+          "P29": "IF(Z>2.09%,Min(300%*(Z-2.09%),36%),0%)",
+          "Q29": "1. For Final Nifty Levels greater than 102.09% of Initial Nifty the product offers a PR of 300% for the first ~12% rise in Nifty after which the coupon is capped at 36%. \n2. For Final Nifty Level below or equal to 102.09% of Initial Nifty the Principal is Protected.",
+          "R29": 42465,
+          "S29": 911,
+          "T29": 911,
+          "V29": "NA",
+          "W29": {
+            "formula": "VLOOKUP(C29,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B30": 42487,
+          "C30": "Cap Pro Accelerator - 5",
+          "D30": "Nifty",
+          "E30": "D9G601D",
+          "F30": "ECL Finance Ltd",
+          "G30": "INE804I07S61",
+          "H30": 7800,
+          "I30": "#N/A",
+          "J30": "31-Dec-17",
+          "K30": 30000000,
+          "L30": 43144,
+          "M30": "Debt",
+          "N30": "Principal Protected",
+          "O30": "Listed",
+          "P30": "IF(Z>0%,Min(23%,256.24%*Z),0%)",
+          "Q30": "1. For Final Nifty Levels greater than Initial Nifty the product offers a PR of 256.24% for the first ~8.97% rise in Nifty after which the coupon is capped at 23%. \n2. For Final Nifty Level below or equal to Initial Nifty the Principal is Protected",
+          "R30": 42487,
+          "S30": 657,
+          "T30": 657,
+          "V30": "NA",
+          "W30": {
+            "formula": "VLOOKUP(C30,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B31": 42495,
+          "C31": "Cap Pro Accelerator - 6",
+          "D31": "Nifty",
+          "E31": "D9E601D",
+          "F31": "Edelweiss",
+          "G31": "INE804I07U34",
+          "H31": 7800,
+          "I31": "#N/A",
+          "J31": "31-Dec-17",
+          "K31": 25000000,
+          "L31": 43152,
+          "M31": "Debt",
+          "N31": "Principal Protected",
+          "O31": "Listed",
+          "P31": "IF(Z>0%,Min(23%,256.24%*Z),0%)",
+          "Q31": "1. For Final Nifty Levels greater than Initial Nifty the product offers a PR of 256.24% for the first ~9% rise in Nifty after which the coupon is capped at 23%. \n2. For Final Nifty Level below or equal to Initial Nifty the Principal is Protected",
+          "R31": 42495,
+          "S31": 657,
+          "T31": 657,
+          "V31": "NA",
+          "W31": {
+            "formula": "VLOOKUP(C31,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B32": 41892,
+          "C32": "Contingent Coupon - 5",
+          "D32": "Nifty",
+          "E32": "B/262 - Type III",
+          "F32": "RCL",
+          "G32": "INE013A07D48",
+          "H32": 8094.1,
+          "I32": 0,
+          "J32": "LastThursdayofeveryMonthfromDec2014tillAug2017",
+          "K32": 27000000,
+          "L32": 43152,
+          "M32": "Debt",
+          "N32": "Principal Protected",
+          "O32": "Listed",
+          "P32": "-",
+          "Q32": "-",
+          "R32": 41892,
+          "S32": 1260,
+          "T32": 1260,
+          "V32": "NA",
+          "W32": {
+            "formula": "VLOOKUP(C32,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B33": 41530,
+          "C33": "Gold Debenture - 3",
+          "D33": "Reliance 24 Karat Index",
+          "E33": "B/175 - Type 1",
+          "F33": "RCL",
+          "G33": "INE013A07XA4",
+          "H33": 2954.17,
+          "I33": 0,
+          "J33": "30-Nov-15, 29-Feb-16, 31-May-16, 31-Aug-16",
+          "K33": 6000000,
+          "L33": 42755,
+          "M33": "Commodity",
+          "N33": "Principal Protected",
+          "O33": "Listed",
+          "P33": "MAX(0%,99%*Z)",
+          "Q33": "1. It is a principal protected structure\n2. For Final Fixing Levels above Initial Fixing Level 99% PR i.e. for every 1% rise in Index from its initial Level the coupon will increase by 0.99% ",
+          "R33": "-",
+          "S33": 1220,
+          "T33": 1220,
+          "V33": "NA",
+          "W33": {
+            "formula": "VLOOKUP(C33,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B34": 41547,
+          "C34": "Gold Debenture - 4",
+          "D34": "Reliance 24 Karat Index",
+          "E34": "B/180 - Type 2",
+          "F34": "RCL",
+          "G34": "INE013A07XF3",
+          "H34": 2934.01,
+          "I34": 0,
+          "J34": "31-Dec-15, 31-Mar-16, 30-Jun-16, 30-Sep-16",
+          "K34": 10500000,
+          "L34": 42769,
+          "M34": "Commodity",
+          "N34": "Principal Protected",
+          "O34": "Listed",
+          "P34": "MAX(0%,99%*Z)",
+          "Q34": "1. It is a principal protected structure\n2. For Final Fixing Levels above Initial Fixing Level 99% PR i.e. for every 1% rise in Index from its initial Level the coupon will increase by 0.99% ",
+          "R34": "-",
+          "S34": 1218,
+          "T34": 1218,
+          "V34": "NA",
+          "W34": {
+            "formula": "VLOOKUP(C34,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B35": 41617,
+          "C35": "Gold Debenture - 5",
+          "D35": "Reliance 24 Karat Index",
+          "E35": "B/191 - Type I",
+          "F35": "RCL",
+          "G35": "INE013A07YG9",
+          "H35": 2631.56,
+          "I35": "#N/A",
+          "J35": "29-Feb-16, 31-May-16, 31-Aug-16, 30-Nov-16",
+          "K35": 10000000,
+          "L35": 42837,
+          "M35": "Commodity",
+          "N35": "Principal Protected",
+          "O35": "Listed",
+          "P35": "MAX(0%,99%*Z)",
+          "Q35": "1. It is a principal protected structure\n2. For Final Fixing Levels above Initial Fixing Level 99% PR i.e. for every 1% rise in Index from its initial Level the coupon will increase by 0.99% ",
+          "R35": "-",
+          "S35": 1218,
+          "T35": 1218,
+          "V35": "NA",
+          "W35": {
+            "formula": "VLOOKUP(C35,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B36": 41957,
+          "C36": "Golden Cushion - 22",
+          "D36": "Nifty",
+          "E36": "J6K402",
+          "F36": "Edelweiss",
+          "G36": "INE918K07482",
+          "H36": 8389.9,
+          "I36": 0,
+          "J36": "31-Aug-16, 30-Sep-16, 31-Oct-16",
+          "K36": 12500000,
+          "L36": 42781,
+          "M36": "Debt",
+          "N36": "Principal Protected",
+          "O36": "Listed",
+          "P36": "IF(Z>=-5%,27%,0%)",
+          "Q36": "1. It is a principal protected structure\n2. For Final Fixing Levels above 95% of Initial Fixing Level flat coupon of 27%",
+          "R36": 41957,
+          "S36": 824,
+          "T36": 824,
+          "V36": "NA",
+          "W36": {
+            "formula": "VLOOKUP(C36,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B37": 41985,
+          "C37": "Golden Cushion - 23",
+          "D37": "Nifty",
+          "E37": "K6L402",
+          "F37": "Edelweiss",
+          "G37": "INE918K07607",
+          "H37": 8224.1,
+          "I37": 0,
+          "J37": "30-Sep-16, 31-Oct-16, 30-Nov-16",
+          "K37": 10000000,
+          "L37": 42809,
+          "M37": "Debt",
+          "N37": "Principal Protected",
+          "O37": "Listed",
+          "P37": "IF(Z>=95%,27.5%,0%)",
+          "Q37": "1. It is a principal protected structure\n2. For Final Fixing Levels above 95% of Initial Fixing Level flat coupon of 27.5%",
+          "R37": 41985,
+          "S37": 824,
+          "T37": 824,
+          "V37": "NA",
+          "W37": {
+            "formula": "VLOOKUP(C37,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B38": 42522,
+          "C38": "Golden Cushion - 24",
+          "D38": "Nifty",
+          "E38": "E8F604A",
+          "F38": "ECL Finance Ltd",
+          "G38": "INE918K07EX5",
+          "H38": 8194.55,
+          "I38": "#N/A",
+          "J38": "28-Feb-18, 31-Mar-18, 30-Apr-18, 31-May-18",
+          "K38": 12500000,
+          "L38": 43438,
+          "M38": "Debt",
+          "N38": "Principal Protected",
+          "O38": "Listed",
+          "P38": "IF(Z>0%,Min(34%,Max(0%,(Z-2%)*340%)),0%)",
+          "Q38": "1. For Final Nifty Levels greater than 102.00% of Initial Nifty the product offers a PR of 340% for first 10% rise in Nifty, after which the coupon is capped at 34%.\n2. For Nifty Levels less than or equal to 102.00% of Initial Nifty, the Principal is protected.",
+          "R38": 42522,
+          "S38": 916,
+          "T38": 916,
+          "V38": "NA",
+          "W38": {
+            "formula": "VLOOKUP(C38,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B39": 42530,
+          "C39": "Golden Cushion - 25",
+          "D39": "Nifty",
+          "E39": "F8F603A",
+          "F39": "ECL Finance Ltd",
+          "G39": "INE804I07X72",
+          "H39": 8203.6,
+          "I39": "#N/A",
+          "J39": "31-Mar-18, 30-Apr-18, 31-May-18, 30-Jun-18",
+          "K39": 31000000,
+          "L39": 43446,
+          "M39": "Debt",
+          "N39": "Principal Protected",
+          "O39": "Listed",
+          "P39": "IF(Z>0%,Min(34%,Max(0%,(Z-2%)*340%)),0%)",
+          "Q39": "1. For Final Nifty Levels greater than 102.00% of Initial Nifty the product offers a PR of 340% for first 10% rise in Nifty, after which the coupon is capped at 34%.\n2. For Nifty Levels less than or equal to 102.00% of Initial Nifty, the Principal is protected.",
+          "R39": 42530,
+          "S39": 916,
+          "T39": 916,
+          "V39": "NA",
+          "W39": {
+            "formula": "VLOOKUP(C39,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        },
+        {
+          "B40": 42550,
+          "C40": "Golden Cushion - 26",
+          "D40": "Nifty",
+          "E40": "F9F601C",
+          "F40": "ECL Finance Ltd",
+          "G40": "INE918K07FA0",
+          "H40": 8204,
+          "I40": "#N/A",
+          "J40": "31-Mar-18, 30-Apr-18, 31-May-18, 30-Jun-18",
+          "K40": 17700000,
+          "L40": 43466,
+          "M40": "Debt",
+          "N40": "Principal Protected",
+          "O40": "Listed",
+          "P40": "IF(Z>0%,Min(34%,Max(0%,(Z-2%)*340%)),0%)",
+          "Q40": "1. For Final Nifty Levels greater than 102.00% of Initial Nifty the product offers a PR of 340% for first 10% rise in Nifty, after which the coupon is capped at 34%.\n2. For Nifty Levels less than or equal to 102.00% of Initial Nifty, the Principal is protected.",
+          "R40": 42550,
+          "S40": 916,
+          "T40": 916,
+          "V40": "NA",
+          "W40": {
+            "formula": "VLOOKUP(C40,[1]Sheet1!$D$3:$AS$2832,42,0)",
+            "cached": 0
+          }
+        }
+      ],
+      "formulaFunctions": [
+        [
+          "VLOOKUP",
+          3735
+        ],
+        [
+          "IF",
+          3
+        ],
+        [
+          "MIN",
+          2
+        ]
+      ],
+      "formulaSheetRefs": [
+        [
+          "Sheet1",
+          3735
+        ]
+      ],
+      "sampleFormulas": [
+        {
+          "cell": "D1",
+          "formula": "C1+1",
+          "cached": null
+        },
+        {
+          "cell": "E1",
+          "formula": "D1+1",
+          "cached": null
+        },
+        {
+          "cell": "T1",
+          "formula": "S1+1",
+          "cached": null
+        },
+        {
+          "cell": "U1",
+          "formula": "T1+1",
+          "cached": null
+        },
+        {
+          "cell": "V1",
+          "formula": "U1+1",
+          "cached": null
+        },
+        {
+          "cell": "W1",
+          "formula": "V1+1",
+          "cached": null
+        },
+        {
+          "cell": "W3",
+          "formula": "VLOOKUP(C3,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W4",
+          "formula": "VLOOKUP(C4,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W5",
+          "formula": "VLOOKUP(C5,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W6",
+          "formula": "VLOOKUP(C6,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W7",
+          "formula": "VLOOKUP(C7,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W8",
+          "formula": "VLOOKUP(C8,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W9",
+          "formula": "VLOOKUP(C9,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W10",
+          "formula": "VLOOKUP(C10,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W11",
+          "formula": "VLOOKUP(C11,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W12",
+          "formula": "VLOOKUP(C12,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W13",
+          "formula": "VLOOKUP(C13,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W14",
+          "formula": "VLOOKUP(C14,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W15",
+          "formula": "VLOOKUP(C15,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W16",
+          "formula": "VLOOKUP(C16,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W17",
+          "formula": "VLOOKUP(C17,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W18",
+          "formula": "VLOOKUP(C18,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W19",
+          "formula": "VLOOKUP(C19,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W20",
+          "formula": "VLOOKUP(C20,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        },
+        {
+          "cell": "W21",
+          "formula": "VLOOKUP(C21,[1]Sheet1!$D$3:$AS$2832,42,0)",
+          "cached": null
+        }
+      ],
+      "formulaCount": 3885,
+      "rowSampleCount": 40
+    },
+    {
+      "name": "Sheet1",
+      "state": "visible",
+      "path": "xl/worksheets/sheet2.xml",
+      "dimension": "B1:R39",
+      "sampleRows": [
+        {
+          "B1": "FORMULAE"
+        },
+        {
+          "B2": "IF(Z>=-20%,MAX(0%,MIN(60%,(Z*100%+MAX(0%,(Z-8%)*1633%)))+MAX(-30%,MIN(0%,(35%-Z)*6))),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q2": {
+            "formula": "IF(B2=Master!P1837,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B3": "IF(Z>=-20%,MIN(79%,MAX(0%,Z)+MAX(0%,(Z-18%)*1933.33%)),MAX(-100%,MAX((-30%*1.3),Z*1.3)+MIN(0%,(Z+30%)*0.3)))",
+          "Q3": {
+            "formula": "IF(B3=Master!P1838,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B4": "IF(Z>=-20%,MIN(59.5%,MAX(0%,Z)+MAX(0%,(Z-18%)*1283.33%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q4": {
+            "formula": "IF(B4=Master!P1839,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B5": "IF(Z>=-20%,MIN(50%,MAX(0%,Z)+MAX(0%,(Z-9%)*1950%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q5": {
+            "formula": "IF(B5=Master!P1840,\"True\",\"False\")",
+            "cached": "True"
+          }
+        },
+        {
+          "B6": "IF(Z>=-20%,MIN(50%,MAX(0%,Z)+MAX(0%,(Z-9%)*1950%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q6": {
+            "formula": "IF(B6=Master!P1841,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B7": "IF(Z>=-10%,MIN(67%,MAX(0%,(Z-10%))+MAX(0%,(Z-18%)*1867%)),MAX(-100%,MAX((-30%*1.3),Z*1.3)+MIN(0%,(Z+30%)*0.3)))",
+          "Q7": {
+            "formula": "IF(B7=Master!P1842,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B8": "IF(Z>=-20%,MIN(40%,MAX(0%,(Z+5%)*800%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q8": {
+            "formula": "IF(B8=Master!P1843,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B9": "IF(Z>=-20%,MIN(20%,MAX(0%,(Z+3%)*400%)),MAX(-100%,MAX((-30%*1.3),Z*1.3)+MIN(0%,(Z+30%)*0.3)))",
+          "Q9": {
+            "formula": "IF(B9=Master!P1844,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B10": "IF(Z>=-20%,MIN(50%,MAX(0%,Z)+MAX(0%,(Z-9%)*1950%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q10": {
+            "formula": "IF(B10=Master!P1845,\"True\",\"False\")",
+            "cached": "True"
+          }
+        },
+        {
+          "B11": "IF(Z>=-20%,MIN(50%,MAX(0%,Z)+MAX(0%,(Z-9%)*1950%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q11": {
+            "formula": "IF(B11=Master!P1846,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B12": "IF(Z>=-20%,MIN(79%,MAX(0%,Z)+MAX(0%,(Z-18%)*1933.33%)),MAX(-100%,MAX((-30%*1.3),Z*1.3)+MIN(0%,(Z+30%)*0.3)))",
+          "Q12": {
+            "formula": "IF(B12=Master!P1847,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B13": "IF(Z>=-20%,MIN(50%,MAX(0%,Z)+MAX(0%,(Z-9%)*1950%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q13": {
+            "formula": "IF(B13=Master!P1848,\"True\",\"False\")",
+            "cached": "True"
+          }
+        },
+        {
+          "B14": "IF(Z>=-20%,MIN(50%,MAX(0%,Z)+MAX(0%,(Z-9%)*1950%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q14": {
+            "formula": "IF(B14=Master!P1849,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B15": "IF(Z>=-20%,MIN(59.5%,MAX(0%,Z)+MAX(0%,(Z-18%)*1283.33%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q15": {
+            "formula": "IF(B15=Master!P1850,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B16": "IF(Z>=-10%,MIN(67%,MAX(0%,(Z-10%))+MAX(0%,(Z-18%)*1867%)),MAX(-100%,MAX((-30%*1.3),Z*1.3)+MIN(0%,(Z+30%)*0.3)))",
+          "Q16": {
+            "formula": "IF(B16=Master!P1851,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B17": "IF(Z>=-20%,MIN(59.5%,MAX(0%,Z)+MAX(0%,(Z-18%)*1283.33%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q17": {
+            "formula": "IF(B17=Master!P1852,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B18": "IF(Z>=-20%,MIN(40%,MAX(0%,(Z+5%)*800%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q18": {
+            "formula": "IF(B18=Master!P1853,\"True\",\"False\")",
+            "cached": "True"
+          }
+        },
+        {
+          "B19": "IF(Z>=-20%,MIN(40%,MAX(0%,(Z+5%)*800%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q19": {
+            "formula": "IF(B19=Master!#REF!,\"True\",\"False\")",
+            "cached": "#REF!"
+          }
+        },
+        {
+          "B20": "IF(Z>=-20%,MIN(20%,MAX(0%,(Z+3%)*400%)),MAX(-100%,MAX((-30%*1.3),Z*1.3)+MIN(0%,(Z+30%)*0.3)))",
+          "Q20": {
+            "formula": "IF(B20=Master!P1854,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B21": "IF(Z>=-20%,MIN(59.5%,MAX(0%,Z)+MAX(0%,(Z-18%)*1283.33%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q21": {
+            "formula": "IF(B21=Master!P1855,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B22": "IF(Z>=-20%,MIN(50%,MAX(0%,Z)+MAX(0%,(Z-9%)*1950%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q22": {
+            "formula": "IF(B22=Master!P1856,\"True\",\"False\")",
+            "cached": "True"
+          }
+        },
+        {
+          "B23": "IF(Z>=-20%,MIN(50%,MAX(0%,Z)+MAX(0%,(Z-9%)*1950%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q23": {
+            "formula": "IF(B23=Master!P1857,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B24": "IF(Z>=-20%,MIN(40%,MAX(0%,(Z+5%)*800%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q24": {
+            "formula": "IF(B24=Master!P1858,\"True\",\"False\")",
+            "cached": "True"
+          }
+        },
+        {
+          "B25": "IF(Z>=-20%,MIN(40%,MAX(0%,(Z+5%)*800%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q25": {
+            "formula": "IF(B25=Master!P1859,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B26": "IF(Z>=-20%,MAX(0%,MIN(60%,(Z*100%+MAX(0%,(Z-8%)*1633%)))+MAX(-30%,MIN(0%,(35%-Z)*6))),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q26": {
+            "formula": "IF(B26=Master!P1860,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B27": "IF(Z>=-20%,MIN(79%,MAX(0%,Z)+MAX(0%,(Z-18%)*1933.33%)),MAX(-100%,MAX((-30%*1.3),Z*1.3)+MIN(0%,(Z+30%)*0.3)))",
+          "Q27": {
+            "formula": "IF(B27=Master!P1861,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B28": "IF(Z>=-20%,MIN(59.5%,MAX(0%,Z)+MAX(0%,(Z-18%)*1283.33%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q28": {
+            "formula": "IF(B28=Master!P1862,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B29": "IF(Z>=-20%,MIN(50%,MAX(0%,Z)+MAX(0%,(Z-9%)*1950%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q29": {
+            "formula": "IF(B29=Master!P1863,\"True\",\"False\")",
+            "cached": "True"
+          }
+        },
+        {
+          "B30": "IF(Z>=-20%,MIN(50%,MAX(0%,Z)+MAX(0%,(Z-9%)*1950%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q30": {
+            "formula": "IF(B30=Master!P1864,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B31": "IF(Z>=-20%,MIN(40%,MAX(0%,(Z+5%)*800%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q31": {
+            "formula": "IF(B31=Master!P1865,\"True\",\"False\")",
+            "cached": "True"
+          }
+        },
+        {
+          "B32": "IF(Z>=-20%,MIN(40%,MAX(0%,(Z+5%)*800%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q32": {
+            "formula": "IF(B32=Master!P1866,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B33": "IF(Z>=-20%,MAX(0%,MIN(60%,(Z*100%+MAX(0%,(Z-8%)*1633%)))+MAX(-30%,MIN(0%,(35%-Z)*6))),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q33": {
+            "formula": "IF(B33=Master!P1867,\"True\",\"False\")",
+            "cached": "True"
+          }
+        },
+        {
+          "B34": "IF(Z>=-20%,MAX(0%,MIN(60%,(Z*100%+MAX(0%,(Z-8%)*1633%)))+MAX(-30%,MIN(0%,(35%-Z)*6))),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q34": {
+            "formula": "IF(B34=Master!P1868,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B35": "IF(Z>=-20%,MIN(40%,MAX(0%,(Z+5%)*800%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q35": {
+            "formula": "IF(B35=Master!P1869,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B36": "IF(Z>=-20%,MAX(0%,MIN(60%,(Z*100%+MAX(0%,(Z-8%)*1633%)))+MAX(-30%,MIN(0%,(35%-Z)*6))),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q36": {
+            "formula": "IF(B36=Master!P1870,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B37": "IF(Z>=-20%,MIN(79%,MAX(0%,Z)+MAX(0%,(Z-18%)*1933.33%)),MAX(-100%,MAX((-30%*1.3),Z*1.3)+MIN(0%,(Z+30%)*0.3)))",
+          "Q37": {
+            "formula": "IF(B37=Master!P1871,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B38": "IF(Z>=-20%,MIN(59.5%,MAX(0%,Z)+MAX(0%,(Z-18%)*1283.33%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q38": {
+            "formula": "IF(B38=Master!P1872,\"True\",\"False\")",
+            "cached": "False"
+          }
+        },
+        {
+          "B39": "IF(Z>=-20%,MIN(50%,MAX(0%,Z)+MAX(0%,(Z-9%)*1950%)),MAX(-100%,MAX((-30%*1.25),Z*1.25)+MIN(0%,(Z+30%)*0.25)))",
+          "Q39": {
+            "formula": "IF(B39=Master!#REF!,\"True\",\"False\")",
+            "cached": "#REF!"
+          }
+        }
+      ],
+      "formulaFunctions": [
+        [
+          "IF",
+          38
+        ]
+      ],
+      "formulaSheetRefs": [
+        [
+          "Master",
+          38
+        ],
+        [
+          "REF",
+          2
+        ]
+      ],
+      "sampleFormulas": [
+        {
+          "cell": "Q2",
+          "formula": "IF(B2=Master!P1837,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q3",
+          "formula": "IF(B3=Master!P1838,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q4",
+          "formula": "IF(B4=Master!P1839,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q5",
+          "formula": "IF(B5=Master!P1840,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q6",
+          "formula": "IF(B6=Master!P1841,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q7",
+          "formula": "IF(B7=Master!P1842,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q8",
+          "formula": "IF(B8=Master!P1843,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q9",
+          "formula": "IF(B9=Master!P1844,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q10",
+          "formula": "IF(B10=Master!P1845,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q11",
+          "formula": "IF(B11=Master!P1846,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q12",
+          "formula": "IF(B12=Master!P1847,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q13",
+          "formula": "IF(B13=Master!P1848,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q14",
+          "formula": "IF(B14=Master!P1849,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q15",
+          "formula": "IF(B15=Master!P1850,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q16",
+          "formula": "IF(B16=Master!P1851,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q17",
+          "formula": "IF(B17=Master!P1852,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q18",
+          "formula": "IF(B18=Master!P1853,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q19",
+          "formula": "IF(B19=Master!#REF!,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q20",
+          "formula": "IF(B20=Master!P1854,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q21",
+          "formula": "IF(B21=Master!P1855,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q22",
+          "formula": "IF(B22=Master!P1856,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q23",
+          "formula": "IF(B23=Master!P1857,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q24",
+          "formula": "IF(B24=Master!P1858,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q25",
+          "formula": "IF(B25=Master!P1859,\"True\",\"False\")",
+          "cached": null
+        },
+        {
+          "cell": "Q26",
+          "formula": "IF(B26=Master!P1860,\"True\",\"False\")",
+          "cached": null
+        }
+      ],
+      "formulaCount": 38,
+      "rowSampleCount": 39
+    },
+    {
+      "name": "Sheet2",
+      "state": "visible",
+      "path": "xl/worksheets/sheet3.xml",
+      "dimension": "A1:BV39",
+      "sampleRows": [
+        {
+          "A1": " product explanation "
+        },
+        {
+          "A2": {
+            "formula": "VLOOKUP(Master!C1837,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~18% rise in Nifty.  \n2. For Final Nifty Levels from 119% to 121.00% of Initial Nifty the product offers a PR of 2033.33% (1933.33%+100%). 2. For Final Nifty Levels at or above 121% of Initial Nifty the product offers a flat coupon of 79%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.3 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.3 times"
+          }
+        },
+        {
+          "A3": {
+            "formula": "VLOOKUP(Master!C1838,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "#N/A"
+          }
+        },
+        {
+          "A4": {
+            "formula": "VLOOKUP(Master!C1839,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~9% rise in Nifty.  \n2. For Final Nifty Levels from 110% to 111.00% of Initial Nifty the product offers a PR of 2050% (1950%+100%). 2. For Final Nifty Levels at or above 111% of Initial Nifty the product offers a flat coupon of 50%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A5": {
+            "formula": "VLOOKUP(Master!C1840,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~9% rise in Nifty.  \n2. For Final Nifty Levels from 110% to 111.00% of Initial Nifty the product offers a PR of 2050% (1950%+100%). 2. For Final Nifty Levels at or above 111% of Initial Nifty the product offers a flat coupon of 50%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A6": {
+            "formula": "VLOOKUP(Master!C1841,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers 0%  for the first ~10% rise in Nifty.  \n2. For Final Nifty Levels from 111% to 118.00% of Initial Nifty the product offers a PR of 100%. 3. For Final Nifty Levels from 118% to 121% of Initial Nifty the product offers a PR of 1967% (100% + 1867%). 4. For Final Nifty Levels at or above 121% of Initial Nifty the product offers a flat coupon of 67%\n5. For Final Nifty Levels below Initial Nifty Level principal is protected till 10% fall in Nifty after which Principal erodes by 1.3 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.3 times"
+          }
+        },
+        {
+          "A7": {
+            "formula": "VLOOKUP(Master!C1842,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "#N/A"
+          }
+        },
+        {
+          "A8": {
+            "formula": "VLOOKUP(Master!C1843,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above 102% of Initial Nifty the product offers a flat coupon of 20%\n2. For Nifty levels below 102% and above 97% of Intial Nifty level, the product offers a PR of 400%. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.3 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.3 times"
+          }
+        },
+        {
+          "A9": {
+            "formula": "VLOOKUP(Master!C1844,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~9% rise in Nifty.  \n2. For Final Nifty Levels from 110% to 111.00% of Initial Nifty the product offers a PR of 2050% (1950%+100%). 2. For Final Nifty Levels at or above 111% of Initial Nifty the product offers a flat coupon of 50%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A10": {
+            "formula": "VLOOKUP(Master!C1845,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~9% rise in Nifty.  \n2. For Final Nifty Levels from 110% to 111.00% of Initial Nifty the product offers a PR of 2050% (1950%+100%). 2. For Final Nifty Levels at or above 111% of Initial Nifty the product offers a flat coupon of 50%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A11": {
+            "formula": "VLOOKUP(Master!C1846,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~18% rise in Nifty.  \n2. For Final Nifty Levels from 119% to 121.00% of Initial Nifty the product offers a PR of 2033.33% (1933.33%+100%). 2. For Final Nifty Levels at or above 121% of Initial Nifty the product offers a flat coupon of 79%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.3 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.3 times"
+          }
+        },
+        {
+          "A12": {
+            "formula": "VLOOKUP(Master!C1847,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~9% rise in Nifty.  \n2. For Final Nifty Levels from 110% to 111.00% of Initial Nifty the product offers a PR of 2050% (1950%+100%). 2. For Final Nifty Levels at or above 111% of Initial Nifty the product offers a flat coupon of 50%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A13": {
+            "formula": "VLOOKUP(Master!C1848,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~9% rise in Nifty.  \n2. For Final Nifty Levels from 110% to 111.00% of Initial Nifty the product offers a PR of 2050% (1950%+100%). 2. For Final Nifty Levels at or above 111% of Initial Nifty the product offers a flat coupon of 50%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A14": {
+            "formula": "VLOOKUP(Master!C1849,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~18% rise in Nifty.  \n2. For Final Nifty Levels from 119% to 121.00% of Initial Nifty the product offers a PR of 1383.33% (1283.33%+100%). 2. For Final Nifty Levels at or above 121% of Initial Nifty the product offers a flat coupon of 59.5%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A15": {
+            "formula": "VLOOKUP(Master!C1850,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers 0%  for the first ~10% rise in Nifty.  \n2. For Final Nifty Levels from 111% to 118.00% of Initial Nifty the product offers a PR of 100%. 3. For Final Nifty Levels from 118% to 121% of Initial Nifty the product offers a PR of 1967% (100% + 1867%). 4. For Final Nifty Levels at or above 121% of Initial Nifty the product offers a flat coupon of 67%\n5. For Final Nifty Levels below Initial Nifty Level principal is protected till 10% fall in Nifty after which Principal erodes by 1.3 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.3 times"
+          }
+        },
+        {
+          "A16": {
+            "formula": "VLOOKUP(Master!C1851,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "#N/A"
+          }
+        },
+        {
+          "A17": {
+            "formula": "VLOOKUP(Master!C1852,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "#N/A"
+          }
+        },
+        {
+          "A18": {
+            "formula": "VLOOKUP(Master!C1853,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above 100% of Initial Nifty the product offers a flat coupon of 40%\n2. For Nifty levels below 100% and above 95% of Intial Nifty level, the product offers a PR of 800%. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A19": {
+            "formula": "VLOOKUP(Master!#REF!,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "#REF!"
+          }
+        },
+        {
+          "A20": {
+            "formula": "VLOOKUP(Master!C1854,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~18% rise in Nifty.  \n2. For Final Nifty Levels from 119% to 121.00% of Initial Nifty the product offers a PR of 1383.33% (1283.33%+100%). 2. For Final Nifty Levels at or above 121% of Initial Nifty the product offers a flat coupon of 59.5%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A21": {
+            "formula": "VLOOKUP(Master!C1855,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~9% rise in Nifty.  \n2. For Final Nifty Levels from 110% to 111.00% of Initial Nifty the product offers a PR of 2050% (1950%+100%). 2. For Final Nifty Levels at or above 111% of Initial Nifty the product offers a flat coupon of 50%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A22": {
+            "formula": "VLOOKUP(Master!C1856,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~9% rise in Nifty.  \n2. For Final Nifty Levels from 110% to 111.00% of Initial Nifty the product offers a PR of 2050% (1950%+100%). 2. For Final Nifty Levels at or above 111% of Initial Nifty the product offers a flat coupon of 50%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A23": {
+            "formula": "VLOOKUP(Master!C1857,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above 100% of Initial Nifty the product offers a flat coupon of 40%\n2. For Nifty levels below 100% and above 95% of Intial Nifty level, the product offers a PR of 800%. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A24": {
+            "formula": "VLOOKUP(Master!C1858,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above 100% of Initial Nifty the product offers a flat coupon of 40%\n2. For Nifty levels below 100% and above 95% of Intial Nifty level, the product offers a PR of 800%. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A25": {
+            "formula": "VLOOKUP(Master!C1859,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~8% rise in Nifty.  \n2. For Final Nifty Levels from 109% to 111.00% of Initial Nifty the product offers a PR of 1733% (1633%+100%). 3. For Final Nifty Levels at or above 111% of Initial Nifty the product offers a flat coupon of 60%. 4. For Final Nifty Levels above 135% of Initial Nifty Level there is an upside decay of 600% till 140% of Initial Nifty Level. For Final Nifty Level at or above 140% of Initial Nifty Level the product offers a flat coupon of 30%.\n5. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A26": {
+            "formula": "VLOOKUP(Master!C1860,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~18% rise in Nifty.  \n2. For Final Nifty Levels from 119% to 121.00% of Initial Nifty the product offers a PR of 2033.33% (1933.33%+100%). 2. For Final Nifty Levels at or above 121% of Initial Nifty the product offers a flat coupon of 79%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.3 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.3 times"
+          }
+        },
+        {
+          "A27": {
+            "formula": "VLOOKUP(Master!C1861,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~18% rise in Nifty.  \n2. For Final Nifty Levels from 119% to 121.00% of Initial Nifty the product offers a PR of 1383.33% (1283.33%+100%). 2. For Final Nifty Levels at or above 121% of Initial Nifty the product offers a flat coupon of 59.5%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A28": {
+            "formula": "VLOOKUP(Master!C1862,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "#N/A"
+          }
+        },
+        {
+          "A29": {
+            "formula": "VLOOKUP(Master!C1863,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~9% rise in Nifty.  \n2. For Final Nifty Levels from 110% to 111.00% of Initial Nifty the product offers a PR of 2050% (1950%+100%). 2. For Final Nifty Levels at or above 111% of Initial Nifty the product offers a flat coupon of 50%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A30": {
+            "formula": "VLOOKUP(Master!C1864,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above 100% of Initial Nifty the product offers a flat coupon of 40%\n2. For Nifty levels below 100% and above 95% of Intial Nifty level, the product offers a PR of 800%. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A31": {
+            "formula": "VLOOKUP(Master!C1865,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above 100% of Initial Nifty the product offers a flat coupon of 40%\n2. For Nifty levels below 100% and above 95% of Intial Nifty level, the product offers a PR of 800%. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A32": {
+            "formula": "VLOOKUP(Master!C1866,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~8% rise in Nifty.  \n2. For Final Nifty Levels from 109% to 111.00% of Initial Nifty the product offers a PR of 1733% (1633%+100%). 3. For Final Nifty Levels at or above 111% of Initial Nifty the product offers a flat coupon of 60%. 4. For Final Nifty Levels above 135% of Initial Nifty Level there is an upside decay of 600% till 140% of Initial Nifty Level. For Final Nifty Level at or above 140% of Initial Nifty Level the product offers a flat coupon of 30%.\n5. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A33": {
+            "formula": "VLOOKUP(Master!C1867,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~8% rise in Nifty.  \n2. For Final Nifty Levels from 109% to 111.00% of Initial Nifty the product offers a PR of 1733% (1633%+100%). 3. For Final Nifty Levels at or above 111% of Initial Nifty the product offers a flat coupon of 60%. 4. For Final Nifty Levels above 135% of Initial Nifty Level there is an upside decay of 600% till 140% of Initial Nifty Level. For Final Nifty Level at or above 140% of Initial Nifty Level the product offers a flat coupon of 30%.\n5. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A34": {
+            "formula": "VLOOKUP(Master!C1868,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above 100% of Initial Nifty the product offers a flat coupon of 40%\n2. For Nifty levels below 100% and above 95% of Intial Nifty level, the product offers a PR of 800%. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A35": {
+            "formula": "VLOOKUP(Master!C1869,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~8% rise in Nifty.  \n2. For Final Nifty Levels from 109% to 111.00% of Initial Nifty the product offers a PR of 1733% (1633%+100%). 3. For Final Nifty Levels at or above 111% of Initial Nifty the product offers a flat coupon of 60%. 4. For Final Nifty Levels above 135% of Initial Nifty Level there is an upside decay of 600% till 140% of Initial Nifty Level. For Final Nifty Level at or above 140% of Initial Nifty Level the product offers a flat coupon of 30%.\n5. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A36": {
+            "formula": "VLOOKUP(Master!C1870,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~18% rise in Nifty.  \n2. For Final Nifty Levels from 119% to 121.00% of Initial Nifty the product offers a PR of 2033.33% (1933.33%+100%). 2. For Final Nifty Levels at or above 121% of Initial Nifty the product offers a flat coupon of 79%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.3 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.3 times"
+          }
+        },
+        {
+          "A37": {
+            "formula": "VLOOKUP(Master!C1871,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "#N/A"
+          }
+        },
+        {
+          "A38": {
+            "formula": "VLOOKUP(Master!C1872,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "1. For Final Nifty Levels at or above Initial Nifty the product offers a PR of 100%  for the first ~9% rise in Nifty.  \n2. For Final Nifty Levels from 110% to 111.00% of Initial Nifty the product offers a PR of 2050% (1950%+100%). 2. For Final Nifty Levels at or above 111% of Initial Nifty the product offers a flat coupon of 50%\n3. For Final Nifty Levels below Initial Nifty Level principal is protected till 20% fall in Nifty after which Principal erodes by 1.25 times (with catch up) Nifty Performance and after 30% fall in Nifty the decay will be decreased to 0.25 times"
+          }
+        },
+        {
+          "A39": {
+            "formula": "VLOOKUP(Master!#REF!,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+            "cached": "#REF!"
+          }
+        }
+      ],
+      "formulaFunctions": [
+        [
+          "VLOOKUP",
+          38
+        ],
+        [
+          "IF",
+          38
+        ]
+      ],
+      "formulaSheetRefs": [
+        [
+          "Master",
+          76
+        ],
+        [
+          "Sheet1",
+          38
+        ],
+        [
+          "REF",
+          4
+        ]
+      ],
+      "sampleFormulas": [
+        {
+          "cell": "A2",
+          "formula": "VLOOKUP(Master!C1837,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+          "cached": null
+        },
+        {
+          "cell": "BV2",
+          "formula": "IF(A2=Master!Q1837,\"TRUE\",\"FALSE\")",
+          "cached": null
+        },
+        {
+          "cell": "A3",
+          "formula": "VLOOKUP(Master!C1838,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+          "cached": null
+        },
+        {
+          "cell": "BV3",
+          "formula": "IF(A3=Master!Q1838,\"TRUE\",\"FALSE\")",
+          "cached": null
+        },
+        {
+          "cell": "A4",
+          "formula": "VLOOKUP(Master!C1839,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+          "cached": null
+        },
+        {
+          "cell": "BV4",
+          "formula": "IF(A4=Master!Q1839,\"TRUE\",\"FALSE\")",
+          "cached": null
+        },
+        {
+          "cell": "A5",
+          "formula": "VLOOKUP(Master!C1840,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+          "cached": null
+        },
+        {
+          "cell": "BV5",
+          "formula": "IF(A5=Master!Q1840,\"TRUE\",\"FALSE\")",
+          "cached": null
+        },
+        {
+          "cell": "A6",
+          "formula": "VLOOKUP(Master!C1841,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+          "cached": null
+        },
+        {
+          "cell": "BV6",
+          "formula": "IF(A6=Master!Q1841,\"TRUE\",\"FALSE\")",
+          "cached": null
+        },
+        {
+          "cell": "A7",
+          "formula": "VLOOKUP(Master!C1842,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+          "cached": null
+        },
+        {
+          "cell": "BV7",
+          "formula": "IF(A7=Master!Q1842,\"TRUE\",\"FALSE\")",
+          "cached": null
+        },
+        {
+          "cell": "A8",
+          "formula": "VLOOKUP(Master!C1843,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+          "cached": null
+        },
+        {
+          "cell": "BV8",
+          "formula": "IF(A8=Master!Q1843,\"TRUE\",\"FALSE\")",
+          "cached": null
+        },
+        {
+          "cell": "A9",
+          "formula": "VLOOKUP(Master!C1844,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+          "cached": null
+        },
+        {
+          "cell": "BV9",
+          "formula": "IF(A9=Master!Q1844,\"TRUE\",\"FALSE\")",
+          "cached": null
+        },
+        {
+          "cell": "A10",
+          "formula": "VLOOKUP(Master!C1845,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+          "cached": null
+        },
+        {
+          "cell": "BV10",
+          "formula": "IF(A10=Master!Q1845,\"TRUE\",\"FALSE\")",
+          "cached": null
+        },
+        {
+          "cell": "A11",
+          "formula": "VLOOKUP(Master!C1846,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+          "cached": null
+        },
+        {
+          "cell": "BV11",
+          "formula": "IF(A11=Master!Q1846,\"TRUE\",\"FALSE\")",
+          "cached": null
+        },
+        {
+          "cell": "A12",
+          "formula": "VLOOKUP(Master!C1847,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+          "cached": null
+        },
+        {
+          "cell": "BV12",
+          "formula": "IF(A12=Master!Q1847,\"TRUE\",\"FALSE\")",
+          "cached": null
+        },
+        {
+          "cell": "A13",
+          "formula": "VLOOKUP(Master!C1848,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+          "cached": null
+        },
+        {
+          "cell": "BV13",
+          "formula": "IF(A13=Master!Q1848,\"TRUE\",\"FALSE\")",
+          "cached": null
+        },
+        {
+          "cell": "A14",
+          "formula": "VLOOKUP(Master!C1849,[2]Sheet1!$D$2033:$AK$2348,34,0)",
+          "cached": null
+        }
+      ],
+      "formulaCount": 76,
+      "rowSampleCount": 39
+    },
+    {
+      "name": "Sheet7",
+      "state": "visible",
+      "path": "xl/worksheets/sheet4.xml",
+      "dimension": "B2:P190",
+      "sampleRows": [
+        {
+          "B2": "Date",
+          "C2": "Open",
+          "D2": "High",
+          "E2": "Low",
+          "F2": "Close",
+          "G2": "Shares Traded",
+          "H2": "Turnover (Rs. Cr)"
+        },
+        {
+          "B3": 41275,
+          "C3": 5937.65,
+          "D3": 5963.9,
+          "E3": 5935.2,
+          "F3": 5950.85,
+          "G3": 77902745,
+          "H3": 3298.74
+        },
+        {
+          "B4": 41276,
+          "C4": 5982.6,
+          "D4": 6006.05,
+          "E4": 5982,
+          "F4": 5993.25,
+          "G4": 116057389,
+          "H4": 4992.9
+        },
+        {
+          "B5": 41277,
+          "C5": 6015.8,
+          "D5": 6017,
+          "E5": 5986.55,
+          "F5": 6009.5,
+          "G5": 99989933,
+          "H5": 4883.13
+        },
+        {
+          "B6": 41278,
+          "C6": 6011.95,
+          "D6": 6020.75,
+          "E6": 5981.55,
+          "F6": 6016.15,
+          "G6": 113232990,
+          "H6": 5191.38
+        },
+        {
+          "B7": 41281,
+          "C7": 6042.15,
+          "D7": 6042.15,
+          "E7": 5977.15,
+          "F7": 5988.4,
+          "G7": 110248018,
+          "H7": 5093.62
+        },
+        {
+          "B8": 41282,
+          "C8": 5983.45,
+          "D8": 6007.05,
+          "E8": 5964.4,
+          "F8": 6001.7,
+          "G8": 109937502,
+          "H8": 5247.74
+        },
+        {
+          "B9": 41283,
+          "C9": 6006.2,
+          "D9": 6020.1,
+          "E9": 5958.45,
+          "F9": 5971.5,
+          "G9": 129635568,
+          "H9": 6462.35
+        },
+        {
+          "B10": 41284,
+          "C10": 5998.8,
+          "D10": 6005.15,
+          "E10": 5947.3,
+          "F10": 5968.65,
+          "G10": 129767384,
+          "H10": 6191.88
+        },
+        {
+          "B11": 41285,
+          "C11": 6012.4,
+          "D11": 6018.85,
+          "E11": 5940.6,
+          "F11": 5951.3,
+          "G11": 128022002,
+          "H11": 8228.71
+        },
+        {
+          "B12": 41288,
+          "C12": 5967.2,
+          "D12": 6036.9,
+          "E12": 5962.15,
+          "F12": 6024.05,
+          "G12": 134711348,
+          "H12": 7279.83
+        },
+        {
+          "B13": 41289,
+          "C13": 6037.85,
+          "D13": 6068.5,
+          "E13": 6018.6,
+          "F13": 6056.6,
+          "G13": 138364003,
+          "H13": 6978.26
+        },
+        {
+          "B14": 41290,
+          "C14": 6049,
+          "D14": 6055.95,
+          "E14": 5992.05,
+          "F14": 6001.85,
+          "G14": 128985952,
+          "H14": 6172.67
+        },
+        {
+          "B15": 41291,
+          "C15": 6001.25,
+          "D15": 6053.2,
+          "E15": 5988.1,
+          "F15": 6039.2,
+          "G15": 178954867,
+          "H15": 7569.17
+        },
+        {
+          "B16": 41292,
+          "C16": 6059.85,
+          "D16": 6083.4,
+          "E16": 6048.3,
+          "F16": 6064.4,
+          "G16": 186460701,
+          "H16": 8321.15
+        },
+        {
+          "B17": 41295,
+          "C17": 6085.75,
+          "D17": 6094.35,
+          "E17": 6065.1,
+          "F17": 6082.3,
+          "G17": 130866385,
+          "H17": 6065.99
+        },
+        {
+          "B18": 41296,
+          "C18": 6080.15,
+          "D18": 6101.3,
+          "E18": 6040.5,
+          "F18": 6048.5,
+          "G18": 129041713,
+          "H18": 5744.09
+        },
+        {
+          "B19": 41297,
+          "C19": 6052.85,
+          "D19": 6069.8,
+          "E19": 6021.15,
+          "F19": 6054.3,
+          "G19": 136989190,
+          "H19": 5932.29
+        },
+        {
+          "B20": 41298,
+          "C20": 6046.2,
+          "D20": 6065.3,
+          "E20": 6007.85,
+          "F20": 6019.35,
+          "G20": 185210189,
+          "H20": 7884.14
+        },
+        {
+          "B21": 41299,
+          "C21": 6024.5,
+          "D21": 6080.55,
+          "E21": 6014.45,
+          "F21": 6074.65,
+          "G21": 147587200,
+          "H21": 6384.65
+        },
+        {
+          "B22": 41302,
+          "C22": 6082.1,
+          "D22": 6088.4,
+          "E22": 6061.4,
+          "F22": 6074.8,
+          "G22": 113113004,
+          "H22": 5592.39
+        },
+        {
+          "B23": 41303,
+          "C23": 6064.7,
+          "D23": 6111.8,
+          "E23": 6042.45,
+          "F23": 6049.9,
+          "G23": 157553752,
+          "H23": 8261.34
+        },
+        {
+          "B24": 41304,
+          "C24": 6065,
+          "D24": 6071.95,
+          "E24": 6044.15,
+          "F24": 6055.75,
+          "G24": 124222858,
+          "H24": 6220.8
+        },
+        {
+          "B25": 41305,
+          "C25": 6045.65,
+          "D25": 6058.05,
+          "E25": 6025.15,
+          "F25": 6034.75,
+          "G25": 168516750,
+          "H25": 8753.14
+        },
+        {
+          "B26": 41306,
+          "C26": 6040.95,
+          "D26": 6052.95,
+          "E26": 5983.2,
+          "F26": 5998.9,
+          "G26": 159271140,
+          "H26": 6189.27
+        },
+        {
+          "B27": 41309,
+          "C27": 6025.2,
+          "D27": 6038.5,
+          "E27": 5981.25,
+          "F27": 5987.25,
+          "G27": 141741868,
+          "H27": 6166.05
+        },
+        {
+          "B28": 41310,
+          "C28": 5948.2,
+          "D28": 5970.35,
+          "E28": 5946.9,
+          "F28": 5956.9,
+          "G28": 136227506,
+          "H28": 5332.28
+        },
+        {
+          "B29": 41311,
+          "C29": 5988.05,
+          "D29": 5990.9,
+          "E29": 5953.15,
+          "F29": 5959.2,
+          "G29": 157815926,
+          "H29": 5865.83
+        },
+        {
+          "B30": 41312,
+          "C30": 5936.45,
+          "D30": 5978.5,
+          "E30": 5927.6,
+          "F30": 5938.8,
+          "G30": 157647191,
+          "H30": 5555.4
+        },
+        {
+          "B31": 41313,
+          "C31": 5929.1,
+          "D31": 5953.7,
+          "E31": 5883.65,
+          "F31": 5903.5,
+          "G31": 192607376,
+          "H31": 6761.75
+        },
+        {
+          "B32": 41316,
+          "C32": 5920.05,
+          "D32": 5924.15,
+          "E32": 5879.1,
+          "F32": 5897.85,
+          "G32": 121958667,
+          "H32": 5506.43
+        },
+        {
+          "B33": 41317,
+          "C33": 5894.35,
+          "D33": 5927.65,
+          "E33": 5886.45,
+          "F33": 5922.5,
+          "G33": 142844560,
+          "H33": 4844.11
+        },
+        {
+          "B34": 41318,
+          "C34": 5943.15,
+          "D34": 5969.5,
+          "E34": 5922.95,
+          "F34": 5932.95,
+          "G34": 142636632,
+          "H34": 5714.83
+        },
+        {
+          "B35": 41319,
+          "C35": 5933.2,
+          "D35": 5940.2,
+          "E35": 5884.55,
+          "F35": 5896.95,
+          "G35": 143830565,
+          "H35": 7125.55
+        },
+        {
+          "B36": 41320,
+          "C36": 5869.95,
+          "D36": 5899.95,
+          "E36": 5853.9,
+          "F36": 5887.4,
+          "G36": 125091945,
+          "H36": 5187.91
+        },
+        {
+          "B37": 41323,
+          "C37": 5888.65,
+          "D37": 5911,
+          "E37": 5878.45,
+          "F37": 5898.2,
+          "G37": 114284193,
+          "H37": 4187.19
+        },
+        {
+          "B38": 41324,
+          "C38": 5900.2,
+          "D38": 5947.55,
+          "E38": 5883.15,
+          "F38": 5939.7,
+          "G38": 100984778,
+          "H38": 3743.8
+        },
+        {
+          "B39": 41325,
+          "C39": 5966.3,
+          "D39": 5971,
+          "E39": 5937.55,
+          "F39": 5943.05,
+          "G39": 135354164,
+          "H39": 5330.7
+        },
+        {
+          "B40": 41326,
+          "C40": 5909.65,
+          "D40": 5921.15,
+          "E40": 5844.4,
+          "F40": 5852.25,
+          "G40": 159401234,
+          "H40": 6407.29
+        },
+        {
+          "B41": 41327,
+          "C41": 5837.95,
+          "D41": 5873.8,
+          "E41": 5835.8,
+          "F41": 5850.3,
+          "G41": 157046865,
+          "H41": 5487.58
+        }
+      ],
+      "formulaFunctions": [],
+      "formulaSheetRefs": [],
+      "sampleFormulas": [],
+      "formulaCount": 0,
+      "rowSampleCount": 40
+    },
+    {
+      "name": "Home",
+      "state": "visible",
+      "path": "xl/worksheets/sheet5.xml",
+      "dimension": "A1:U58",
+      "sampleRows": [],
+      "formulaFunctions": [],
+      "formulaSheetRefs": [],
+      "sampleFormulas": [],
+      "formulaCount": 0,
+      "rowSampleCount": 0
+    },
+    {
+      "name": "Non-PP SP Details - Input",
+      "state": "visible",
+      "path": "xl/worksheets/sheet6.xml",
+      "dimension": "G3:N3696",
+      "sampleRows": [
+        {
+          "H8": "Enter any ONE of the below fields"
+        },
+        {
+          "H10": "Enter The ISIN"
+        },
+        {
+          "H12": "Enter the Product Code"
+        },
+        {
+          "H14": "Select the Non-PP Structured Product",
+          "M14": "Sensex Accelerator - 244"
+        },
+        {
+          "M15": "Nifty Magnifier - 299"
+        },
+        {
+          "M16": "Protected call - 439"
+        },
+        {
+          "H3679": {
+            "formula": "IFERROR(IF(M10<>\"\",VLOOKUP(M10,CHOOSE({1,2},Master!$G$3:$G$1048576,Prod),2,0),IF(M12<>\"\",VLOOKUP(M12,CHOOSE({1,2},Master!$E$3:$E$1048576,Prod),2,0),M14)),\"Invalid Data\")",
+            "cached": "Sensex Accelerator - 244"
+          }
+        }
+      ],
+      "formulaFunctions": [
+        [
+          "IF",
+          2
+        ],
+        [
+          "VLOOKUP",
+          2
+        ],
+        [
+          "CHOOSE",
+          2
+        ],
+        [
+          "IFERROR",
+          1
+        ]
+      ],
+      "formulaSheetRefs": [
+        [
+          "Master",
+          2
+        ]
+      ],
+      "sampleFormulas": [
+        {
+          "cell": "H3679",
+          "formula": "IFERROR(IF(M10<>\"\",VLOOKUP(M10,CHOOSE({1,2},Master!$G$3:$G$1048576,Prod),2,0),IF(M12<>\"\",VLOOKUP(M12,CHOOSE({1,2},Master!$E$3:$E$1048576,Prod),2,0),M14)),\"Invalid Data\")",
+          "cached": null
+        }
+      ],
+      "formulaCount": 1,
+      "rowSampleCount": 7
+    },
+    {
+      "name": "Product Search",
+      "state": "visible",
+      "path": "xl/worksheets/sheet7.xml",
+      "dimension": "A2:D8052",
+      "sampleRows": [
+        {
+          "A2": "Product Search for Debentures Details Inputs"
+        },
+        {
+          "A4": "Trade Date",
+          "B4": "Name on Signup Form",
+          "C4": "ISIN",
+          "D4": "Series"
+        },
+        {
+          "A5": 41354,
+          "B5": "Nifty Accelerator - 8",
+          "C5": "INE093J07221",
+          "D5": "ARG/FY2013/MAR/03"
+        },
+        {
+          "A6": 42534,
+          "B6": "5 year Nifty Accelerator - 1",
+          "C6": "INE093J08047",
+          "D6": "ARG17SUBNCD02 - Series III"
+        },
+        {
+          "A7": 42515,
+          "B7": "5 Year Protected Call - 1",
+          "C7": "INE093J08013",
+          "D7": "ARG17SUBNCD01"
+        },
+        {
+          "A8": 42573,
+          "B8": "5 Year Protected Call - 10",
+          "C8": "INE093J08112",
+          "D8": "ARG17SUBNCD08 - Series II"
+        },
+        {
+          "A9": 42607,
+          "B9": "5 Year Protected Call - 11",
+          "C9": "INE093J08120",
+          "D9": "ARG17SUBNCD08 - Series III"
+        },
+        {
+          "A10": 42698,
+          "B10": "5 Year Protected Call - 12",
+          "C10": "INE093J08138",
+          "D10": "ARG17SUBNCD09"
+        },
+        {
+          "A11": 42534,
+          "B11": "5 Year Protected Call - 2",
+          "C11": "INE093J08021",
+          "D11": "ARG17SUBNCD02 - Series I"
+        },
+        {
+          "A12": 42527,
+          "B12": "5 Year Protected Call - 3",
+          "C12": "INE093J08039",
+          "D12": "ARG17SUBNCD02 - Series II"
+        },
+        {
+          "A13": 42558,
+          "B13": "5 Year Protected Call - 4",
+          "C13": "INE093J08054",
+          "D13": "ARG17SUBNCD03 "
+        },
+        {
+          "A14": 42573,
+          "B14": "5 Year Protected Call - 5",
+          "C14": "INE093J08062",
+          "D14": "ARG17SUBNCD04"
+        },
+        {
+          "A15": 42594,
+          "B15": "5 Year Protected Call - 6",
+          "C15": "INE093J08070",
+          "D15": "ARG17SUBNCD05"
+        },
+        {
+          "A16": 42620,
+          "B16": "5 Year Protected Call - 7",
+          "C16": "INE093J08088",
+          "D16": "ARG17SUBNCD06"
+        },
+        {
+          "A17": 42628,
+          "B17": "5 Year Protected Call - 8",
+          "C17": "INE093J08096",
+          "D17": "ARG17SUBNCD07"
+        },
+        {
+          "A18": 42661,
+          "B18": "5 Year Protected Call - 9",
+          "C18": "INE093J08104",
+          "D18": "ARG17SUBNCD08 - Series I"
+        },
+        {
+          "A19": 41585,
+          "B19": "80 - 20",
+          "C19": "INE093J07700",
+          "D19": "ARG/FY2013/OCT/02"
+        },
+        {
+          "A20": 41612,
+          "B20": "Assured Alpha - 1",
+          "C20": "INE093J07742",
+          "D20": "ARG/FY2013/NOV/02"
+        },
+        {
+          "A21": 41702,
+          "B21": "Assured Coupon - 10",
+          "C21": "INE804I07TV3",
+          "D21": "F7C401"
+        },
+        {
+          "A22": 41876,
+          "B22": "Assured Coupon - 11",
+          "C22": "INE013A07C15",
+          "D22": "B/257"
+        },
+        {
+          "A23": 41925,
+          "B23": "Assured Coupon - 12",
+          "C23": "INE093J07CF0",
+          "D23": "AR15MLD06A - Series I"
+        },
+        {
+          "A24": 42215,
+          "B24": "Assured Coupon - 14",
+          "C24": "INE918K07BH4",
+          "D24": "G8L501C"
+        },
+        {
+          "A25": 42648,
+          "B25": "Auto Call - 12",
+          "C25": "INE013A072G3",
+          "D25": "B/383 Type - IV"
+        },
+        {
+          "A26": 42076,
+          "B26": "AutoCall - 6",
+          "C26": "INE013A07M21",
+          "D26": "RCL B/296"
+        },
+        {
+          "A27": 42153,
+          "B27": "AutoCall - 7",
+          "C27": "0",
+          "D27": "B/303"
+        },
+        {
+          "A28": 42432,
+          "B28": "Cap Pro Accelerator - 1",
+          "C28": "INE804I07M67",
+          "D28": "F8C601A"
+        },
+        {
+          "A29": 42440,
+          "B29": "Cap Pro Accelerator - 2",
+          "C29": "INE804I07N41",
+          "D29": "F8C602A"
+        },
+        {
+          "A30": 42429,
+          "B30": "Cap Pro Accelerator - 3",
+          "C30": "INE804I07M42",
+          "D30": "B8B601D"
+        },
+        {
+          "A31": 42460,
+          "B31": "Cap Pro Accelerator - 4",
+          "C31": "INE804I07Q48",
+          "D31": "F8D601A"
+        },
+        {
+          "A32": 42487,
+          "B32": "Cap Pro Accelerator - 5",
+          "C32": "INE804I07S61",
+          "D32": "D9G601D"
+        },
+        {
+          "A33": 42495,
+          "B33": "Cap Pro Accelerator - 6",
+          "C33": "INE804I07U34",
+          "D33": "D9E601D"
+        },
+        {
+          "A34": 41892,
+          "B34": "Contingent Coupon - 5",
+          "C34": "INE013A07D48",
+          "D34": "B/262 - Type III"
+        },
+        {
+          "A35": 41530,
+          "B35": "Gold Debenture - 3",
+          "C35": "INE013A07XA4",
+          "D35": "B/175 - Type 1"
+        },
+        {
+          "A36": 41547,
+          "B36": "Gold Debenture - 4",
+          "C36": "INE013A07XF3",
+          "D36": "B/180 - Type 2"
+        },
+        {
+          "A37": 41617,
+          "B37": "Gold Debenture - 5",
+          "C37": "INE013A07YG9",
+          "D37": "B/191 - Type I"
+        },
+        {
+          "A38": 41957,
+          "B38": "Golden Cushion - 22",
+          "C38": "INE918K07482",
+          "D38": "J6K402"
+        },
+        {
+          "A39": 41985,
+          "B39": "Golden Cushion - 23",
+          "C39": "INE918K07607",
+          "D39": "K6L402"
+        },
+        {
+          "A40": 42522,
+          "B40": "Golden Cushion - 24",
+          "C40": "INE918K07EX5",
+          "D40": "E8F604A"
+        },
+        {
+          "A41": 42530,
+          "B41": "Golden Cushion - 25",
+          "C41": "INE804I07X72",
+          "D41": "F8F603A"
+        },
+        {
+          "A42": 42550,
+          "B42": "Golden Cushion - 26",
+          "C42": "INE918K07FA0",
+          "D42": "F9F601C"
+        }
+      ],
+      "formulaFunctions": [],
+      "formulaSheetRefs": [],
+      "sampleFormulas": [],
+      "formulaCount": 0,
+      "rowSampleCount": 40
+    },
+    {
+      "name": "Non-PP SP Details",
+      "state": "visible",
+      "path": "xl/worksheets/sheet8.xml",
+      "dimension": "A4:AO237",
+      "sampleRows": [
+        {
+          "C4": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$Q$9874,1,0)",
+            "cached": "Sensex Accelerator - 244"
+          }
+        },
+        {
+          "C6": "Product Specifications",
+          "F6": "Product Payoff",
+          "K6": "Payoff Chart"
+        },
+        {
+          "C8": "Issuer",
+          "D8": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,4,0)",
+            "cached": "ARGFL"
+          },
+          "F8": "Final Fixing",
+          "G8": "Underlying's Performance",
+          "H8": "Product Returns",
+          "I8": "XIRR",
+          "X8": "Formulae",
+          "Y8": {
+            "formula": "G29",
+            "cached": "IF(Z>=-15%,MIN(102.5%,MAX(0%,(Z-25%))+MAX(0%,(Z-36%)*9050%)),IF(Z>=-90%,MAX(-100%,MAX((-30%*1.6),Z*1.6)+MIN(0%,(Z+30%)*0.6)),Z))"
+          }
+        },
+        {
+          "C9": "ISIN",
+          "D9": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,5,0)",
+            "cached": "INE093JC7KQ6"
+          }
+        },
+        {
+          "C10": "Product Code",
+          "D10": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,3,0)",
+            "cached": "ARG27SPSX35 Series I"
+          },
+          "F10": {
+            "formula": "$D$14*(1+G10)",
+            "cached": 153000
+          },
+          "G10": 1,
+          "H10": {
+            "formula": "ProductReturn",
+            "cached": 1.025
+          },
+          "I10": {
+            "formula": "((1+H10)^(365/($D$22)))-1",
+            "cached": 0.1423550433512708
+          },
+          "X10": "=",
+          "Y10": {
+            "formula": "SUBSTITUTE($Y$8,\"Z\",G10)",
+            "cached": "IF(1>=-15%,MIN(102.5%,MAX(0%,(1-25%))+MAX(0%,(1-36%)*9050%)),IF(1>=-90%,MAX(-100%,MAX((-30%*1.6),1*1.6)+MIN(0%,(1+30%)*0.6)),1))"
+          },
+          "Z10": {
+            "formula": "CONCATENATE(X10,Y10)",
+            "cached": "=IF(1>=-15%,MIN(102.5%,MAX(0%,(1-25%))+MAX(0%,(1-36%)*9050%)),IF(1>=-90%,MAX(-100%,MAX((-30%*1.6),1*1.6)+MIN(0%,(1+30%)*0.6)),1))"
+          }
+        },
+        {
+          "C11": "Trade Date",
+          "D11": {
+            "formula": "INDEX(Master!B3:B1048576,MATCH('Non-PP SP Details'!$C$4,Master!$C$3:$C$1048576,0))",
+            "cached": 46168
+          },
+          "F11": 130050,
+          "G11": 0.7,
+          "H11": {
+            "formula": "ProductReturn",
+            "cached": 1.025
+          },
+          "I11": {
+            "formula": "((1+H11)^(365/($D$22)))-1",
+            "cached": 0.1423550433512708
+          },
+          "X11": "=",
+          "Y11": {
+            "formula": "SUBSTITUTE($Y$8,\"Z\",G11)",
+            "cached": "IF(0.7>=-15%,MIN(102.5%,MAX(0%,(0.7-25%))+MAX(0%,(0.7-36%)*9050%)),IF(0.7>=-90%,MAX(-100%,MAX((-30%*1.6),0.7*1.6)+MIN(0%,(0.7+30%)*0.6)),0.7))"
+          },
+          "Z11": {
+            "formula": "CONCATENATE(X11,Y11)",
+            "cached": "=IF(0.7>=-15%,MIN(102.5%,MAX(0%,(0.7-25%))+MAX(0%,(0.7-36%)*9050%)),IF(0.7>=-90%,MAX(-100%,MAX((-30%*1.6),0.7*1.6)+MIN(0%,(0.7+30%)*0.6)),0.7))"
+          }
+        },
+        {
+          "C12": "Allotment Date",
+          "D12": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,16,0)",
+            "cached": 46169
+          },
+          "F12": 114750,
+          "G12": 0.5,
+          "H12": {
+            "formula": "ProductReturn",
+            "cached": 1.025
+          },
+          "I12": {
+            "formula": "((1+H12)^(365/($D$22)))-1",
+            "cached": 0.1423550433512708
+          },
+          "X12": "=",
+          "Y12": "IF(0.5>=-15%,MIN(102.5%,MAX(0%,(0.5-25%))+MAX(0%,(0.5-36%)*9050%)),IF(0.5>=-90%,MAX(-100%,MAX((-30%*1.6),0.5*1.6)+MIN(0%,(0.5+30%)*0.6)),0.5))",
+          "Z12": "=IF(0.5>=-15%,MIN(102.5%,MAX(0%,(0.5-25%))+MAX(0%,(0.5-36%)*9050%)),IF(0.5>=-90%,MAX(-100%,MAX((-30%*1.6),0.5*1.6)+MIN(0%,(0.5+30%)*0.6)),0.5))"
+        },
+        {
+          "C13": "Underlying",
+          "D13": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,2,0)",
+            "cached": "Sensex"
+          },
+          "F13": 107865,
+          "G13": 0.41,
+          "H13": {
+            "formula": "ProductReturn",
+            "cached": 1.025
+          },
+          "I13": 0.1423550433512708,
+          "X13": "=",
+          "Y13": {
+            "formula": "SUBSTITUTE($Y$8,\"Z\",G13)",
+            "cached": "IF(0.41>=-15%,MIN(102.5%,MAX(0%,(0.41-25%))+MAX(0%,(0.41-36%)*9050%)),IF(0.41>=-90%,MAX(-100%,MAX((-30%*1.6),0.41*1.6)+MIN(0%,(0.41+30%)*0.6)),0.41))"
+          },
+          "Z13": {
+            "formula": "CONCATENATE(X13,Y13)",
+            "cached": "=IF(0.41>=-15%,MIN(102.5%,MAX(0%,(0.41-25%))+MAX(0%,(0.41-36%)*9050%)),IF(0.41>=-90%,MAX(-100%,MAX((-30%*1.6),0.41*1.6)+MIN(0%,(0.41+30%)*0.6)),0.41))"
+          }
+        },
+        {
+          "C14": "Initial Fixing",
+          "D14": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,6,0)",
+            "cached": 76500
+          },
+          "F14": 107100,
+          "G14": 0.4,
+          "H14": {
+            "formula": "ProductReturn",
+            "cached": 1.025
+          },
+          "I14": 0.1423550433512708,
+          "X14": "=",
+          "Y14": "IF(0.4>=-15%,MIN(102.5%,MAX(0%,(0.4-25%))+MAX(0%,(0.4-36%)*9050%)),IF(0.4>=-90%,MAX(-100%,MAX((-30%*1.6),0.4*1.6)+MIN(0%,(0.4+30%)*0.6)),0.4))",
+          "Z14": "=IF(0.4>=-15%,MIN(102.5%,MAX(0%,(0.4-25%))+MAX(0%,(0.4-36%)*9050%)),IF(0.4>=-90%,MAX(-100%,MAX((-30%*1.6),0.4*1.6)+MIN(0%,(0.4+30%)*0.6)),0.4))"
+        },
+        {
+          "C15": "Target Level",
+          "D15": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,7,0)",
+            "cached": 104805.00000000001
+          },
+          "F15": 104805.00000000001,
+          "G15": 0.37,
+          "H15": {
+            "formula": "ProductReturn",
+            "cached": 1.025
+          },
+          "I15": 0.1423550433512708,
+          "X15": "=",
+          "Y15": "IF(0.37>=-15%,MIN(102.5%,MAX(0%,(0.37-25%))+MAX(0%,(0.37-36%)*9050%)),IF(0.37>=-90%,MAX(-100%,MAX((-30%*1.6),0.37*1.6)+MIN(0%,(0.37+30%)*0.6)),0.37))",
+          "Z15": "=IF(0.37>=-15%,MIN(102.5%,MAX(0%,(0.37-25%))+MAX(0%,(0.37-36%)*9050%)),IF(0.37>=-90%,MAX(-100%,MAX((-30%*1.6),0.37*1.6)+MIN(0%,(0.37+30%)*0.6)),0.37))"
+        },
+        {
+          "C16": "Final Obs Date",
+          "D16": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,8,0)",
+            "cached": "26-Jul-29,25-Oct-29,31-Jan-30,25-Apr-30,25-Jul-30,31-Oct-30,30-Jan-31"
+          },
+          "F16": 102510,
+          "G16": 0.34,
+          "H16": {
+            "formula": "ProductReturn",
+            "cached": 0.09000000000000002
+          },
+          "I16": 0.016388584558121977,
+          "X16": "=",
+          "Y16": "IF(0.34>=-15%,MIN(102.5%,MAX(0%,(0.34-25%))+MAX(0%,(0.34-36%)*9050%)),IF(0.34>=-90%,MAX(-100%,MAX((-30%*1.6),0.34*1.6)+MIN(0%,(0.34+30%)*0.6)),0.34))",
+          "Z16": "=IF(0.34>=-15%,MIN(102.5%,MAX(0%,(0.34-25%))+MAX(0%,(0.34-36%)*9050%)),IF(0.34>=-90%,MAX(-100%,MAX((-30%*1.6),0.34*1.6)+MIN(0%,(0.34+30%)*0.6)),0.34))"
+        },
+        {
+          "F17": 101745,
+          "G17": 0.33,
+          "H17": {
+            "formula": "ProductReturn",
+            "cached": 0.08000000000000002
+          },
+          "I17": 0.014623085277396308,
+          "X17": "=",
+          "Y17": {
+            "formula": "SUBSTITUTE($Y$8,\"Z\",G17)",
+            "cached": "IF(0.33>=-15%,MIN(102.5%,MAX(0%,(0.33-25%))+MAX(0%,(0.33-36%)*9050%)),IF(0.33>=-90%,MAX(-100%,MAX((-30%*1.6),0.33*1.6)+MIN(0%,(0.33+30%)*0.6)),0.33))"
+          },
+          "Z17": "=IF(0.33>=-15%,MIN(102.5%,MAX(0%,(0.33-25%))+MAX(0%,(0.33-36%)*9050%)),IF(0.33>=-90%,MAX(-100%,MAX((-30%*1.6),0.33*1.6)+MIN(0%,(0.33+30%)*0.6)),0.33))"
+        },
+        {
+          "C18": "Put Option Exercise Date",
+          "D18": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,20,0)",
+            "cached": 47878
+          },
+          "F18": 91800,
+          "G18": 0.2,
+          "H18": {
+            "formula": "ProductReturn",
+            "cached": 0
+          },
+          "I18": 0,
+          "X18": "=",
+          "Y18": {
+            "formula": "SUBSTITUTE($Y$8,\"Z\",G18)",
+            "cached": "IF(0.2>=-15%,MIN(102.5%,MAX(0%,(0.2-25%))+MAX(0%,(0.2-36%)*9050%)),IF(0.2>=-90%,MAX(-100%,MAX((-30%*1.6),0.2*1.6)+MIN(0%,(0.2+30%)*0.6)),0.2))"
+          },
+          "Z18": "=IF(0.2>=-15%,MIN(102.5%,MAX(0%,(0.2-25%))+MAX(0%,(0.2-36%)*9050%)),IF(0.2>=-90%,MAX(-100%,MAX((-30%*1.6),0.2*1.6)+MIN(0%,(0.2+30%)*0.6)),0.2))"
+        },
+        {
+          "C19": "Redemption Date",
+          "D19": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,10,0)",
+            "cached": 49819
+          },
+          "F19": {
+            "formula": "$D$14*(1+G19)",
+            "cached": 84150
+          },
+          "G19": 0.1,
+          "H19": {
+            "formula": "ProductReturn",
+            "cached": 0
+          },
+          "I19": 0,
+          "X19": "=",
+          "Y19": {
+            "formula": "SUBSTITUTE($Y$8,\"Z\",G19)",
+            "cached": "IF(0.1>=-15%,MIN(102.5%,MAX(0%,(0.1-25%))+MAX(0%,(0.1-36%)*9050%)),IF(0.1>=-90%,MAX(-100%,MAX((-30%*1.6),0.1*1.6)+MIN(0%,(0.1+30%)*0.6)),0.1))"
+          },
+          "Z19": "=IF(0.1>=-15%,MIN(102.5%,MAX(0%,(0.1-25%))+MAX(0%,(0.1-36%)*9050%)),IF(0.1>=-90%,MAX(-100%,MAX((-30%*1.6),0.1*1.6)+MIN(0%,(0.1+30%)*0.6)),0.1))"
+        },
+        {
+          "C20": "PP/Non PP",
+          "D20": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,12,0)",
+            "cached": "Non-Principal Protected"
+          },
+          "F20": {
+            "formula": "D14",
+            "cached": 76500
+          },
+          "G20": 0,
+          "H20": {
+            "formula": "ProductReturn",
+            "cached": 0
+          },
+          "I20": 0,
+          "X20": "=",
+          "Y20": {
+            "formula": "SUBSTITUTE($Y$8,\"Z\",G20)",
+            "cached": "IF(0>=-15%,MIN(102.5%,MAX(0%,(0-25%))+MAX(0%,(0-36%)*9050%)),IF(0>=-90%,MAX(-100%,MAX((-30%*1.6),0*1.6)+MIN(0%,(0+30%)*0.6)),0))"
+          },
+          "Z20": "=IF(0>=-15%,MIN(102.5%,MAX(0%,(0-25%))+MAX(0%,(0-36%)*9050%)),IF(0>=-90%,MAX(-100%,MAX((-30%*1.6),0*1.6)+MIN(0%,(0+30%)*0.6)),0))"
+        },
+        {
+          "C21": "Listed/Unlisted",
+          "D21": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,13,0)",
+            "cached": "Unlisted"
+          },
+          "F21": {
+            "formula": "$D$14*(1+G21)",
+            "cached": 68850
+          },
+          "G21": -0.1,
+          "H21": {
+            "formula": "ProductReturn",
+            "cached": 0
+          },
+          "I21": 0,
+          "X21": "=",
+          "Y21": {
+            "formula": "SUBSTITUTE($Y$8,\"Z\",G21)",
+            "cached": "IF(-0.1>=-15%,MIN(102.5%,MAX(0%,(-0.1-25%))+MAX(0%,(-0.1-36%)*9050%)),IF(-0.1>=-90%,MAX(-100%,MAX((-30%*1.6),-0.1*1.6)+MIN(0%,(-0.1+30%)*0.6)),-0.1))"
+          },
+          "Z21": "=IF(-0.1>=-15%,MIN(102.5%,MAX(0%,(-0.1-25%))+MAX(0%,(-0.1-36%)*9050%)),IF(-0.1>=-90%,MAX(-100%,MAX((-30%*1.6),-0.1*1.6)+MIN(0%,(-0.1+30%)*0.6)),-0.1))"
+        },
+        {
+          "C22": "Payoff Tenor(Days)",
+          "D22": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,18,0)",
+            "cached": 1935
+          },
+          "F22": 65025,
+          "G22": -0.15,
+          "H22": {
+            "formula": "ProductReturn",
+            "cached": 0
+          },
+          "I22": 0,
+          "X22": "=",
+          "Y22": {
+            "formula": "SUBSTITUTE($Y$8,\"Z\",G22)",
+            "cached": "IF(-0.15>=-15%,MIN(102.5%,MAX(0%,(-0.15-25%))+MAX(0%,(-0.15-36%)*9050%)),IF(-0.15>=-90%,MAX(-100%,MAX((-30%*1.6),-0.15*1.6)+MIN(0%,(-0.15+30%)*0.6)),-0.15))"
+          },
+          "Z22": "=IF(-0.15>=-15%,MIN(102.5%,MAX(0%,(-0.15-25%))+MAX(0%,(-0.15-36%)*9050%)),IF(-0.15>=-90%,MAX(-100%,MAX((-30%*1.6),-0.15*1.6)+MIN(0%,(-0.15+30%)*0.6)),-0.15))"
+        },
+        {
+          "C23": "Tenor (Days)",
+          "D23": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,17,0)",
+            "cached": 3650
+          },
+          "F23": 61200,
+          "G23": -0.2,
+          "H23": {
+            "formula": "ProductReturn",
+            "cached": -0.32000000000000006
+          },
+          "I23": -0.07016460497676646,
+          "X23": "=",
+          "Y23": "IF(-0.2>=-15%,MIN(102.5%,MAX(0%,(-0.2-25%))+MAX(0%,(-0.2-36%)*9050%)),IF(-0.2>=-90%,MAX(-100%,MAX((-30%*1.6),-0.2*1.6)+MIN(0%,(-0.2+30%)*0.6)),-0.2))",
+          "Z23": "=IF(-0.2>=-15%,MIN(102.5%,MAX(0%,(-0.2-25%))+MAX(0%,(-0.2-36%)*9050%)),IF(-0.2>=-90%,MAX(-100%,MAX((-30%*1.6),-0.2*1.6)+MIN(0%,(-0.2+30%)*0.6)),-0.2))"
+        },
+        {
+          "F24": 57375,
+          "G24": -0.25,
+          "H24": {
+            "formula": "ProductReturn",
+            "cached": -0.4
+          },
+          "I24": -0.09186050942990309,
+          "X24": "=",
+          "Y24": "IF(-0.25>=-15%,MIN(102.5%,MAX(0%,(-0.25-25%))+MAX(0%,(-0.25-36%)*9050%)),IF(-0.25>=-90%,MAX(-100%,MAX((-30%*1.6),-0.25*1.6)+MIN(0%,(-0.25+30%)*0.6)),-0.25))",
+          "Z24": "=IF(-0.25>=-15%,MIN(102.5%,MAX(0%,(-0.25-25%))+MAX(0%,(-0.25-36%)*9050%)),IF(-0.25>=-90%,MAX(-100%,MAX((-30%*1.6),-0.25*1.6)+MIN(0%,(-0.25+30%)*0.6)),-0.25))"
+        },
+        {
+          "C25": "Product Explanation",
+          "F25": 53550,
+          "G25": -0.3,
+          "H25": {
+            "formula": "ProductReturn",
+            "cached": -0.48
+          },
+          "I25": -0.11604619155154738,
+          "X25": "=",
+          "Y25": "IF(-0.3>=-15%,MIN(102.5%,MAX(0%,(-0.3-25%))+MAX(0%,(-0.3-36%)*9050%)),IF(-0.3>=-90%,MAX(-100%,MAX((-30%*1.6),-0.3*1.6)+MIN(0%,(-0.3+30%)*0.6)),-0.3))",
+          "Z25": "=IF(-0.3>=-15%,MIN(102.5%,MAX(0%,(-0.3-25%))+MAX(0%,(-0.3-36%)*9050%)),IF(-0.3>=-90%,MAX(-100%,MAX((-30%*1.6),-0.3*1.6)+MIN(0%,(-0.3+30%)*0.6)),-0.3))"
+        },
+        {
+          "C26": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,15,0)",
+            "cached": "1.  For Final Sensex Levels 125% of Initial Sensex the product offers a PR of 100%.   \n2. For Final Sensex Levels from 136% to 137.00% of Initial Sensex the product offers a PR of 9150% (9050%+100%). 2. For Final Sensex Levels at or above 137% of Initial Sensex the product offers a flat coupon of 102.5%\n3. For Final Sensex Levels below Initial Sensex Level principal is protected till 15% fall in Sensex after which Principal erodes by 1.6 times (with catch up) Sensex Performance and after 30% fall in Sensex the decay will be decreased to 0.6 times till -90% fall\n4. Beyond -90%, product returns will equal Sensex Performance"
+          },
+          "F26": 49725,
+          "G26": -0.35,
+          "H26": {
+            "formula": "ProductReturn",
+            "cached": -0.51
+          },
+          "I26": -0.12589916626387132,
+          "X26": "=",
+          "Y26": "IF(-0.35>=-15%,MIN(102.5%,MAX(0%,(-0.35-25%))+MAX(0%,(-0.35-36%)*9050%)),IF(-0.35>=-90%,MAX(-100%,MAX((-30%*1.6),-0.35*1.6)+MIN(0%,(-0.35+30%)*0.6)),-0.35))",
+          "Z26": "=IF(-0.35>=-15%,MIN(102.5%,MAX(0%,(-0.35-25%))+MAX(0%,(-0.35-36%)*9050%)),IF(-0.35>=-90%,MAX(-100%,MAX((-30%*1.6),-0.35*1.6)+MIN(0%,(-0.35+30%)*0.6)),-0.35))"
+        },
+        {
+          "F27": 45900,
+          "G27": -0.4,
+          "H27": {
+            "formula": "ProductReturn",
+            "cached": -0.54
+          },
+          "I27": -0.13625440762248398,
+          "X27": "=",
+          "Y27": "IF(-0.4>=-15%,MIN(102.5%,MAX(0%,(-0.4-25%))+MAX(0%,(-0.4-36%)*9050%)),IF(-0.4>=-90%,MAX(-100%,MAX((-30%*1.6),-0.4*1.6)+MIN(0%,(-0.4+30%)*0.6)),-0.4))",
+          "Z27": {
+            "formula": "CONCATENATE(X27,Y27)",
+            "cached": "=IF(-0.4>=-15%,MIN(102.5%,MAX(0%,(-0.4-25%))+MAX(0%,(-0.4-36%)*9050%)),IF(-0.4>=-90%,MAX(-100%,MAX((-30%*1.6),-0.4*1.6)+MIN(0%,(-0.4+30%)*0.6)),-0.4))"
+          }
+        },
+        {
+          "F29": "Payoff Formula",
+          "G29": {
+            "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,14,0)",
+            "cached": "IF(Z>=-15%,MIN(102.5%,MAX(0%,(Z-25%))+MAX(0%,(Z-36%)*9050%)),IF(Z>=-90%,MAX(-100%,MAX((-30%*1.6),Z*1.6)+MIN(0%,(Z+30%)*0.6)),Z))"
+          }
+        },
+        {
+          "C36": "The information provided is this communication is reproduction of factual details. No part of information provided herein should be construed as investment advice by ARWL and/or its employee.Investor/Client must make their own investment decisions based on their own specific investment objectives and financial position. This communication does not constitute an offer or solicitation for the purchase or sale of any financial instrument/security."
+        }
+      ],
+      "formulaFunctions": [
+        [
+          "VLOOKUP",
+          17
+        ],
+        [
+          "SUBSTITUTE",
+          11
+        ],
+        [
+          "CONCATENATE",
+          6
+        ],
+        [
+          "MAX",
+          4
+        ],
+        [
+          "IF",
+          2
+        ],
+        [
+          "MIN",
+          2
+        ],
+        [
+          "INDEX",
+          1
+        ],
+        [
+          "MATCH",
+          1
+        ]
+      ],
+      "formulaSheetRefs": [
+        [
+          "Master",
+          19
+        ],
+        [
+          "Non-PP SP Details - Input",
+          17
+        ],
+        [
+          "Non-PP SP Details",
+          1
+        ]
+      ],
+      "sampleFormulas": [
+        {
+          "cell": "C4",
+          "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$Q$9874,1,0)",
+          "cached": null
+        },
+        {
+          "cell": "D8",
+          "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,4,0)",
+          "cached": null
+        },
+        {
+          "cell": "Y8",
+          "formula": "G29",
+          "cached": null
+        },
+        {
+          "cell": "D9",
+          "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,5,0)",
+          "cached": null
+        },
+        {
+          "cell": "D10",
+          "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,3,0)",
+          "cached": null
+        },
+        {
+          "cell": "F10",
+          "formula": "$D$14*(1+G10)",
+          "cached": null
+        },
+        {
+          "cell": "H10",
+          "formula": "ProductReturn",
+          "cached": null
+        },
+        {
+          "cell": "I10",
+          "formula": "((1+H10)^(365/($D$22)))-1",
+          "cached": null
+        },
+        {
+          "cell": "Y10",
+          "formula": "SUBSTITUTE($Y$8,\"Z\",G10)",
+          "cached": null
+        },
+        {
+          "cell": "Z10",
+          "formula": "CONCATENATE(X10,Y10)",
+          "cached": null
+        },
+        {
+          "cell": "AI10",
+          "formula": "$AI$17*(1+AJ10)",
+          "cached": null
+        },
+        {
+          "cell": "AJ10",
+          "formula": "AJ11-5%",
+          "cached": null
+        },
+        {
+          "cell": "AK10",
+          "formula": "Forgraph",
+          "cached": null
+        },
+        {
+          "cell": "AL10",
+          "formula": "((1+AK10)^(365/($D$22)))-1",
+          "cached": null
+        },
+        {
+          "cell": "AN10",
+          "formula": "SUBSTITUTE($Y$8,\"Z\",AJ10)",
+          "cached": null
+        },
+        {
+          "cell": "AO10",
+          "formula": "CONCATENATE(AM10,AN10)",
+          "cached": null
+        },
+        {
+          "cell": "D11",
+          "formula": "INDEX(Master!B3:B1048576,MATCH('Non-PP SP Details'!$C$4,Master!$C$3:$C$1048576,0))",
+          "cached": null
+        },
+        {
+          "cell": "H11",
+          "formula": "ProductReturn",
+          "cached": null
+        },
+        {
+          "cell": "I11",
+          "formula": "((1+H11)^(365/($D$22)))-1",
+          "cached": null
+        },
+        {
+          "cell": "Y11",
+          "formula": "SUBSTITUTE($Y$8,\"Z\",G11)",
+          "cached": null
+        },
+        {
+          "cell": "Z11",
+          "formula": "CONCATENATE(X11,Y11)",
+          "cached": null
+        },
+        {
+          "cell": "AK11",
+          "formula": "Forgraph",
+          "cached": null
+        },
+        {
+          "cell": "AN11",
+          "formula": "SUBSTITUTE($Y$8,\"Z\",AJ11)",
+          "cached": null
+        },
+        {
+          "cell": "AO11",
+          "formula": "CONCATENATE(AM11,AN11)",
+          "cached": null
+        },
+        {
+          "cell": "D12",
+          "formula": "VLOOKUP('Non-PP SP Details - Input'!$H$3679,Master!$C$3:$AA$1048576,16,0)",
+          "cached": null
+        }
+      ],
+      "formulaCount": 90,
+      "rowSampleCount": 24
+    },
+    {
+      "name": "Combined Portfolio - Input",
+      "state": "visible",
+      "path": "xl/worksheets/sheet9.xml",
+      "dimension": "B2:L57",
+      "sampleRows": [
+        {
+          "I6": "Alpha pa (%)",
+          "J6": "Investment (Rs.)"
+        },
+        {
+          "G7": "Equity Mutual Fund Portfolio",
+          "I7": 0.035,
+          "J7": 65
+        },
+        {
+          "I9": "Return pa (%)",
+          "J9": "Investment (Rs.)"
+        },
+        {
+          "G10": "Debt Mutual Fund Portfolio",
+          "I10": 0.08,
+          "J10": 0
+        },
+        {
+          "G12": "Select Market Linked Debentures",
+          "I12": "Expiry",
+          "J12": "Investment (Rs.)"
+        },
+        {
+          "B13": "Please Do not leave the First row blank while selecting structures \u2192",
+          "G13": 1,
+          "H13": "Nifty Accelerator - 1382",
+          "I13": {
+            "formula": "IFERROR(VLOOKUP(H13,Master!$C$4:$Q$1048576,10,0),0)",
+            "cached": 47433
+          },
+          "J13": 15
+        },
+        {
+          "G14": 2,
+          "H14": "Nifty Accelerator - 1381",
+          "I14": {
+            "formula": "IFERROR(VLOOKUP(H14,Master!$C$4:$Q$1048576,10,0),0)",
+            "cached": 47433
+          },
+          "J14": 20
+        },
+        {
+          "G15": 3,
+          "I15": {
+            "formula": "IFERROR(VLOOKUP(H15,Master!$C$4:$Q$1048576,10,0),0)",
+            "cached": 0
+          }
+        },
+        {
+          "G16": 4,
+          "I16": {
+            "formula": "IFERROR(VLOOKUP(H16,Master!$C$4:$Q$1048576,10,0),0)",
+            "cached": 0
+          }
+        },
+        {
+          "G17": 5,
+          "I17": {
+            "formula": "IFERROR(VLOOKUP(H17,Master!$C$4:$Q$1048576,10,0),0)",
+            "cached": 0
+          }
+        },
+        {
+          "G18": 6,
+          "I18": {
+            "formula": "IFERROR(VLOOKUP(H18,Master!$C$4:$Q$1048576,10,0),0)",
+            "cached": 0
+          }
+        },
+        {
+          "G19": 7,
+          "I19": {
+            "formula": "IFERROR(VLOOKUP(H19,Master!$C$4:$Q$1048576,10,0),0)",
+            "cached": 0
+          }
+        },
+        {
+          "G20": 8,
+          "I20": {
+            "formula": "IFERROR(VLOOKUP(H20,Master!$C$4:$Q$1048576,10,0),0)",
+            "cached": 0
+          }
+        },
+        {
+          "G21": 9,
+          "I21": {
+            "formula": "IFERROR(VLOOKUP(H21,Master!$C$4:$Q$1048576,10,0),0)",
+            "cached": 0
+          }
+        },
+        {
+          "G22": 10,
+          "I22": {
+            "formula": "IFERROR(VLOOKUP(H22,Master!$C$4:$Q$1048576,10,0),0)",
+            "cached": 0
+          }
+        },
+        {
+          "G23": "Total Investment Amount",
+          "J23": {
+            "formula": "SUM(J13:J22)+J7+J10",
+            "cached": 100
+          }
+        },
+        {
+          "G24": "Note: Please Select Structures having similar expiries"
+        }
+      ],
+      "formulaFunctions": [
+        [
+          "IFERROR",
+          10
+        ],
+        [
+          "VLOOKUP",
+          10
+        ],
+        [
+          "SUM",
+          1
+        ]
+      ],
+      "formulaSheetRefs": [
+        [
+          "Master",
+          10
+        ]
+      ],
+      "sampleFormulas": [
+        {
+          "cell": "I13",
+          "formula": "IFERROR(VLOOKUP(H13,Master!$C$4:$Q$1048576,10,0),0)",
+          "cached": null
+        },
+        {
+          "cell": "I14",
+          "formula": "IFERROR(VLOOKUP(H14,Master!$C$4:$Q$1048576,10,0),0)",
+          "cached": null
+        },
+        {
+          "cell": "I15",
+          "formula": "IFERROR(VLOOKUP(H15,Master!$C$4:$Q$1048576,10,0),0)",
+          "cached": null
+        },
+        {
+          "cell": "I16",
+          "formula": "IFERROR(VLOOKUP(H16,Master!$C$4:$Q$1048576,10,0),0)",
+          "cached": null
+        },
+        {
+          "cell": "I17",
+          "formula": "IFERROR(VLOOKUP(H17,Master!$C$4:$Q$1048576,10,0),0)",
+          "cached": null
+        },
+        {
+          "cell": "I18",
+          "formula": "IFERROR(VLOOKUP(H18,Master!$C$4:$Q$1048576,10,0),0)",
+          "cached": null
+        },
+        {
+          "cell": "I19",
+          "formula": "IFERROR(VLOOKUP(H19,Master!$C$4:$Q$1048576,10,0),0)",
+          "cached": null
+        },
+        {
+          "cell": "I20",
+          "formula": "IFERROR(VLOOKUP(H20,Master!$C$4:$Q$1048576,10,0),0)",
+          "cached": null
+        },
+        {
+          "cell": "I21",
+          "formula": "IFERROR(VLOOKUP(H21,Master!$C$4:$Q$1048576,10,0),0)",
+          "cached": null
+        },
+        {
+          "cell": "I22",
+          "formula": "IFERROR(VLOOKUP(H22,Master!$C$4:$Q$1048576,10,0),0)",
+          "cached": null
+        },
+        {
+          "cell": "J23",
+          "formula": "SUM(J13:J22)+J7+J10",
+          "cached": null
+        }
+      ],
+      "formulaCount": 11,
+      "rowSampleCount": 17
+    },
+    {
+      "name": "Equity Portfolio Returns",
+      "state": "visible",
+      "path": "xl/worksheets/sheet10.xml",
+      "dimension": "B1:BB75",
+      "sampleRows": [
+        {
+          "Q4": 0
+        },
+        {
+          "B5": "Enter Nifty",
+          "C5": 25000,
+          "D5": "Returns at Various Market Levels on Maturity ( Rs.)"
+        },
+        {
+          "B6": "Product Name",
+          "C6": "Investment Amount",
+          "D6": "Trade Date",
+          "E6": "Initial Nifty",
+          "F6": "Up By",
+          "G6": "Up By",
+          "H6": "Up By",
+          "I6": "Up By",
+          "J6": "Flat Mkt",
+          "K6": "Down By",
+          "L6": "Down By",
+          "M6": "Down By"
+        },
+        {
+          "F7": 0.5,
+          "G7": 0.4,
+          "H7": 0.2,
+          "I7": 0.1,
+          "J7": 0,
+          "K7": -0.05,
+          "L7": -0.1,
+          "M7": -0.2
+        },
+        {
+          "F8": {
+            "formula": "$C$5*(1+F7)",
+            "cached": 37500
+          },
+          "G8": {
+            "formula": "$C$5*(1+G7)",
+            "cached": 35000
+          },
+          "H8": 30000,
+          "I8": 27500.000000000004,
+          "J8": 25000,
+          "K8": 23750,
+          "L8": 22500,
+          "M8": 20000,
+          "Z8": "Formulae"
+        },
+        {
+          "B9": "Equity Mutual Fund Portfolio",
+          "C9": {
+            "formula": "'Combined Portfolio - Input'!J7",
+            "cached": 65
+          },
+          "D9": 0,
+          "E9": 0,
+          "F9": {
+            "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!F7+'Combined Portfolio - Input'!$I$7*5))",
+            "cached": 108.875
+          },
+          "G9": {
+            "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!G7+'Combined Portfolio - Input'!$I$7*5))",
+            "cached": 102.375
+          },
+          "H9": {
+            "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!H7+'Combined Portfolio - Input'!$I$7*5))",
+            "cached": 89.375
+          },
+          "I9": {
+            "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!I7+'Combined Portfolio - Input'!$I$7*5))",
+            "cached": 82.87500000000001
+          },
+          "J9": {
+            "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!J7+'Combined Portfolio - Input'!$I$7*5))",
+            "cached": 76.375
+          },
+          "K9": {
+            "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!K7+'Combined Portfolio - Input'!$I$7*5))",
+            "cached": 73.125
+          },
+          "L9": {
+            "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!L7+'Combined Portfolio - Input'!$I$7*5))",
+            "cached": 69.875
+          },
+          "M9": {
+            "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!M7+'Combined Portfolio - Input'!$I$7*5))",
+            "cached": 63.37500000000001
+          }
+        },
+        {
+          "B10": "Debt Mutual Fund Portfolio",
+          "C10": {
+            "formula": "'Combined Portfolio - Input'!J10",
+            "cached": 0
+          },
+          "D10": 0,
+          "E10": 0,
+          "F10": {
+            "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+            "cached": 0
+          },
+          "G10": {
+            "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+            "cached": 0
+          },
+          "H10": {
+            "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+            "cached": 0
+          },
+          "I10": {
+            "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+            "cached": 0
+          },
+          "J10": {
+            "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+            "cached": 0
+          },
+          "K10": {
+            "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+            "cached": 0
+          },
+          "L10": {
+            "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+            "cached": 0
+          },
+          "M10": {
+            "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+            "cached": 0
+          }
+        },
+        {
+          "B11": {
+            "formula": "IF('Combined Portfolio - Input'!H13=\"\",\"\",'Combined Portfolio - Input'!H13)",
+            "cached": "Nifty Accelerator - 1382"
+          },
+          "C11": {
+            "formula": "'Combined Portfolio - Input'!J13",
+            "cached": 15
+          },
+          "D11": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H13,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 45531
+          },
+          "E11": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H13,Master!$C$4:$Q$1048576,6,0),0)",
+            "cached": 25200
+          },
+          "F11": {
+            "formula": "'Combined Portfolio - Input'!J13*(1+IFERROR(EquityReturns1,0%))",
+            "cached": 32.25
+          },
+          "G11": {
+            "formula": "'Combined Portfolio - Input'!J13*(IFERROR(EquityReturns2,0%)+1)",
+            "cached": 27.08333333333339
+          },
+          "H11": {
+            "formula": "'Combined Portfolio - Input'!J13*(1+IFERROR(EquityReturns3,0%))",
+            "cached": 15.607142857142849
+          },
+          "I11": {
+            "formula": "'Combined Portfolio - Input'!J13*(1+IFERROR(EquityReturns4,0%))",
+            "cached": 15
+          },
+          "J11": {
+            "formula": "'Combined Portfolio - Input'!J13*(1+IFERROR(EquityReturns5,0%))",
+            "cached": 15
+          },
+          "K11": {
+            "formula": "'Combined Portfolio - Input'!J13*(1+IFERROR(EquityReturns6,0%))",
+            "cached": 15
+          },
+          "L11": {
+            "formula": "'Combined Portfolio - Input'!J13*(1+IFERROR(EquityReturns7,0%))",
+            "cached": 15
+          },
+          "M11": {
+            "formula": "'Combined Portfolio - Input'!J13*(1+IFERROR(EquityReturns8,0%))",
+            "cached": 10.666666666666675
+          },
+          "P11": {
+            "formula": "IFERROR(F$8/$E11-1,0)",
+            "cached": 0.48809523809523814
+          },
+          "Q11": {
+            "formula": "IFERROR(G$8/$E11-1,0)",
+            "cached": 0.38888888888888884
+          },
+          "R11": {
+            "formula": "IFERROR(H$8/$E11-1,0)",
+            "cached": 0.19047619047619047
+          },
+          "S11": {
+            "formula": "IFERROR(I$8/$E11-1,0)",
+            "cached": 0.09126984126984139
+          },
+          "T11": {
+            "formula": "IFERROR(J$8/$E11-1,0)",
+            "cached": -0.007936507936507908
+          },
+          "U11": {
+            "formula": "IFERROR(K$8/$E11-1,0)",
+            "cached": -0.05753968253968256
+          },
+          "V11": {
+            "formula": "IFERROR(L$8/$E11-1,0)",
+            "cached": -0.1071428571428571
+          },
+          "W11": {
+            "formula": "IFERROR(M$8/$E11-1,0)",
+            "cached": -0.2063492063492064
+          },
+          "Z11": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H13,Master!$C$4:$Q$1048576,14,0),\"-\")",
+            "cached": "IF(Z>=-15%,MIN(115%,MAX(0%,(Z-15%))+MAX(0%,(Z-37%)*3000%)),IF(Z>=-90%,MAX(-100%,MAX((-30%*1.4),Z*1.4)+MIN(0%,(Z+30%)*0.4)),Z))"
+          },
+          "AA11": {
+            "formula": "SUBSTITUTE($Z$11,\"Z\",P11)",
+            "cached": "IF(0.488095238095238>=-15%,MIN(115%,MAX(0%,(0.488095238095238-15%))+MAX(0%,(0.488095238095238-37%)*3000%)),IF(0.488095238095238>=-90%,MAX(-100%,MAX((-30%*1.4),0.488095238095238*1.4)+MIN(0%,(0.488095238095238+30%)*0.4)),0.488095238095238))"
+          },
+          "AB11": {
+            "formula": "SUBSTITUTE($Z$11,\"Z\",Q11)",
+            "cached": "IF(0.388888888888889>=-15%,MIN(115%,MAX(0%,(0.388888888888889-15%))+MAX(0%,(0.388888888888889-37%)*3000%)),IF(0.388888888888889>=-90%,MAX(-100%,MAX((-30%*1.4),0.388888888888889*1.4)+MIN(0%,(0.388888888888889+30%)*0.4)),0.388888888888889))"
+          },
+          "AC11": {
+            "formula": "SUBSTITUTE($Z$11,\"Z\",R11)",
+            "cached": "IF(0.19047619047619>=-15%,MIN(115%,MAX(0%,(0.19047619047619-15%))+MAX(0%,(0.19047619047619-37%)*3000%)),IF(0.19047619047619>=-90%,MAX(-100%,MAX((-30%*1.4),0.19047619047619*1.4)+MIN(0%,(0.19047619047619+30%)*0.4)),0.19047619047619))"
+          },
+          "AD11": "IF(0.0912698412698414>=-15%,MIN(115%,MAX(0%,(0.0912698412698414-15%))+MAX(0%,(0.0912698412698414-37%)*3000%)),IF(0.0912698412698414>=-90%,MAX(-100%,MAX((-30%*1.4),0.0912698412698414*1.4)+MIN(0%,(0.0912698412698414+30%)*0.4)),0.0912698412698414))"
+        },
+        {
+          "B12": {
+            "formula": "IF('Combined Portfolio - Input'!H14=\"\",\"\",'Combined Portfolio - Input'!H14)",
+            "cached": "Nifty Accelerator - 1381"
+          },
+          "C12": {
+            "formula": "'Combined Portfolio - Input'!J14",
+            "cached": 20
+          },
+          "D12": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H14,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 45531
+          },
+          "E12": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H14,Master!$C$4:$Q$1048576,6,0),0)",
+            "cached": 25200
+          },
+          "F12": {
+            "formula": "'Combined Portfolio - Input'!J14*(1+IFERROR(EquityReturns1,0%))",
+            "cached": 41.400000000000006
+          },
+          "G12": {
+            "formula": "'Combined Portfolio - Input'!J14*(IFERROR(EquityReturns2,0%)+1)",
+            "cached": 41.400000000000006
+          },
+          "H12": {
+            "formula": "'Combined Portfolio - Input'!J14*(1+IFERROR(EquityReturns3,0%))",
+            "cached": 20
+          },
+          "I12": {
+            "formula": "'Combined Portfolio - Input'!J14*(1+IFERROR(EquityReturns4,0%))",
+            "cached": 20
+          },
+          "J12": {
+            "formula": "'Combined Portfolio - Input'!J14*(1+IFERROR(EquityReturns5,0%))",
+            "cached": 20
+          },
+          "K12": {
+            "formula": "'Combined Portfolio - Input'!J14*(1+IFERROR(EquityReturns6,0%))",
+            "cached": 20
+          },
+          "L12": {
+            "formula": "'Combined Portfolio - Input'!J14*(1+IFERROR(EquityReturns7,0%))",
+            "cached": 20
+          },
+          "M12": {
+            "formula": "'Combined Portfolio - Input'!J14*(1+IFERROR(EquityReturns8,0%))",
+            "cached": 14.222222222222234
+          },
+          "P12": 0.48809523809523814,
+          "Q12": 0.38888888888888884,
+          "R12": 0.19047619047619047,
+          "S12": 0.09126984126984139,
+          "T12": -0.007936507936507908,
+          "U12": -0.05753968253968256,
+          "V12": -0.1071428571428571,
+          "W12": -0.2063492063492064,
+          "Z12": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H14,Master!$C$4:$Q$1048576,14,0),\"-\")",
+            "cached": "IF(Z>=-15%,MIN(107%,MAX(0%,(Z-20%))+MAX(0%,(Z-32%)*9400%)),IF(Z>=-90%,MAX(-100%,MAX((-30%*1.4),Z*1.4)+MIN(0%,(Z+30%)*0.4)),Z))"
+          },
+          "AA12": {
+            "formula": "SUBSTITUTE($Z$12,\"Z\",P12)",
+            "cached": "IF(0.488095238095238>=-15%,MIN(107%,MAX(0%,(0.488095238095238-20%))+MAX(0%,(0.488095238095238-32%)*9400%)),IF(0.488095238095238>=-90%,MAX(-100%,MAX((-30%*1.4),0.488095238095238*1.4)+MIN(0%,(0.488095238095238+30%)*0.4)),0.488095238095238))"
+          },
+          "AB12": "IF(0.388888888888889>=-15%,MIN(107%,MAX(0%,(0.388888888888889-20%))+MAX(0%,(0.388888888888889-32%)*9400%)),IF(0.388888888888889>=-90%,MAX(-100%,MAX((-30%*1.4),0.388888888888889*1.4)+MIN(0%,(0.388888888888889+30%)*0.4)),0.388888888888889))",
+          "AC12": "IF(0.19047619047619>=-15%,MIN(107%,MAX(0%,(0.19047619047619-20%))+MAX(0%,(0.19047619047619-32%)*9400%)),IF(0.19047619047619>=-90%,MAX(-100%,MAX((-30%*1.4),0.19047619047619*1.4)+MIN(0%,(0.19047619047619+30%)*0.4)),0.19047619047619))",
+          "AD12": "IF(0.0912698412698414>=-15%,MIN(107%,MAX(0%,(0.0912698412698414-20%))+MAX(0%,(0.0912698412698414-32%)*9400%)),IF(0.0912698412698414>=-90%,MAX(-100%,MAX((-30%*1.4),0.0912698412698414*1.4)+MIN(0%,(0.0912698412698414+30%)*0.4)),0.0912698412698414))"
+        },
+        {
+          "B13": {
+            "formula": "IF('Combined Portfolio - Input'!H15=\"\",\"\",'Combined Portfolio - Input'!H15)",
+            "cached": null
+          },
+          "C13": {
+            "formula": "'Combined Portfolio - Input'!J15",
+            "cached": 0
+          },
+          "D13": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H15,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "E13": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H15,Master!$C$4:$Q$1048576,6,0),0)",
+            "cached": 0
+          },
+          "F13": {
+            "formula": "'Combined Portfolio - Input'!J15*(1+IFERROR(EquityReturns1,0%))",
+            "cached": 0
+          },
+          "G13": {
+            "formula": "'Combined Portfolio - Input'!J15*(IFERROR(EquityReturns2,0%)+1)",
+            "cached": 0
+          },
+          "H13": {
+            "formula": "'Combined Portfolio - Input'!J15*(1+IFERROR(EquityReturns3,0%))",
+            "cached": 0
+          },
+          "I13": {
+            "formula": "'Combined Portfolio - Input'!J15*(1+IFERROR(EquityReturns4,0%))",
+            "cached": 0
+          },
+          "J13": {
+            "formula": "'Combined Portfolio - Input'!J15*(1+IFERROR(EquityReturns5,0%))",
+            "cached": 0
+          },
+          "K13": {
+            "formula": "'Combined Portfolio - Input'!J15*(1+IFERROR(EquityReturns6,0%))",
+            "cached": 0
+          },
+          "L13": {
+            "formula": "'Combined Portfolio - Input'!J15*(1+IFERROR(EquityReturns7,0%))",
+            "cached": 0
+          },
+          "M13": {
+            "formula": "'Combined Portfolio - Input'!J15*(1+IFERROR(EquityReturns8,0%))",
+            "cached": 0
+          },
+          "P13": 0,
+          "Q13": 0,
+          "R13": 0,
+          "S13": 0,
+          "T13": 0,
+          "U13": 0,
+          "V13": 0,
+          "W13": 0,
+          "Z13": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H15,Master!$C$4:$Q$1048576,22,0),\"-\")",
+            "cached": "-"
+          },
+          "AA13": {
+            "formula": "SUBSTITUTE($Z$13,\"Z\",P13)",
+            "cached": "-"
+          },
+          "AB13": "-",
+          "AC13": "-",
+          "AD13": "-"
+        },
+        {
+          "B14": {
+            "formula": "IF('Combined Portfolio - Input'!H16=\"\",\"\",'Combined Portfolio - Input'!H16)",
+            "cached": null
+          },
+          "C14": {
+            "formula": "'Combined Portfolio - Input'!J16",
+            "cached": 0
+          },
+          "D14": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H16,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "E14": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H16,Master!$C$4:$Q$1048576,6,0),0)",
+            "cached": 0
+          },
+          "F14": {
+            "formula": "'Combined Portfolio - Input'!J16*(1+IFERROR(EquityReturns1,0%))",
+            "cached": 0
+          },
+          "G14": {
+            "formula": "'Combined Portfolio - Input'!J16*(IFERROR(EquityReturns2,0%)+1)",
+            "cached": 0
+          },
+          "H14": {
+            "formula": "'Combined Portfolio - Input'!J16*(1+IFERROR(EquityReturns3,0%))",
+            "cached": 0
+          },
+          "I14": {
+            "formula": "'Combined Portfolio - Input'!J16*(1+IFERROR(EquityReturns4,0%))",
+            "cached": 0
+          },
+          "J14": {
+            "formula": "'Combined Portfolio - Input'!J16*(1+IFERROR(EquityReturns5,0%))",
+            "cached": 0
+          },
+          "K14": {
+            "formula": "'Combined Portfolio - Input'!J16*(1+IFERROR(EquityReturns6,0%))",
+            "cached": 0
+          },
+          "L14": {
+            "formula": "'Combined Portfolio - Input'!J16*(1+IFERROR(EquityReturns7,0%))",
+            "cached": 0
+          },
+          "M14": {
+            "formula": "'Combined Portfolio - Input'!J16*(1+IFERROR(EquityReturns8,0%))",
+            "cached": 0
+          },
+          "P14": 0,
+          "Q14": 0,
+          "R14": 0,
+          "S14": 0,
+          "T14": 0,
+          "U14": 0,
+          "V14": 0,
+          "W14": 0,
+          "Z14": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H16,Master!$C$4:$Q$1048576,22,0),\"-\")",
+            "cached": "-"
+          },
+          "AA14": {
+            "formula": "SUBSTITUTE($Z$14,\"Z\",P14)",
+            "cached": "-"
+          },
+          "AB14": "-",
+          "AC14": "-",
+          "AD14": "-"
+        },
+        {
+          "B15": {
+            "formula": "IF('Combined Portfolio - Input'!H17=\"\",\"\",'Combined Portfolio - Input'!H17)",
+            "cached": null
+          },
+          "C15": {
+            "formula": "'Combined Portfolio - Input'!J17",
+            "cached": 0
+          },
+          "D15": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H17,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "E15": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H17,Master!$C$4:$Q$1048576,6,0),0)",
+            "cached": 0
+          },
+          "F15": {
+            "formula": "'Combined Portfolio - Input'!J17*(1+IFERROR(EquityReturns1,0%))",
+            "cached": 0
+          },
+          "G15": {
+            "formula": "'Combined Portfolio - Input'!J17*(IFERROR(EquityReturns2,0%)+1)",
+            "cached": 0
+          },
+          "H15": {
+            "formula": "'Combined Portfolio - Input'!J17*(1+IFERROR(EquityReturns3,0%))",
+            "cached": 0
+          },
+          "I15": {
+            "formula": "'Combined Portfolio - Input'!J17*(1+IFERROR(EquityReturns4,0%))",
+            "cached": 0
+          },
+          "J15": {
+            "formula": "'Combined Portfolio - Input'!J17*(1+IFERROR(EquityReturns5,0%))",
+            "cached": 0
+          },
+          "K15": {
+            "formula": "'Combined Portfolio - Input'!J17*(1+IFERROR(EquityReturns6,0%))",
+            "cached": 0
+          },
+          "L15": {
+            "formula": "'Combined Portfolio - Input'!J17*(1+IFERROR(EquityReturns7,0%))",
+            "cached": 0
+          },
+          "M15": {
+            "formula": "'Combined Portfolio - Input'!J17*(1+IFERROR(EquityReturns8,0%))",
+            "cached": 0
+          },
+          "P15": 0,
+          "Q15": 0,
+          "R15": 0,
+          "S15": 0,
+          "T15": 0,
+          "U15": 0,
+          "V15": 0,
+          "W15": 0,
+          "Z15": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H17,Master!$C$4:$Q$1048576,21,0),\"-\")",
+            "cached": "-"
+          },
+          "AA15": {
+            "formula": "SUBSTITUTE($Z$15,\"Z\",P15)",
+            "cached": "-"
+          },
+          "AB15": "-",
+          "AC15": "-",
+          "AD15": "-"
+        },
+        {
+          "B16": {
+            "formula": "IF('Combined Portfolio - Input'!H18=\"\",\"\",'Combined Portfolio - Input'!H18)",
+            "cached": null
+          },
+          "C16": {
+            "formula": "'Combined Portfolio - Input'!J18",
+            "cached": 0
+          },
+          "D16": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H18,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "E16": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H18,Master!$C$4:$Q$1048576,6,0),0)",
+            "cached": 0
+          },
+          "F16": {
+            "formula": "'Combined Portfolio - Input'!J18*(1+IFERROR(EquityReturns1,0%))",
+            "cached": 0
+          },
+          "G16": {
+            "formula": "'Combined Portfolio - Input'!J18*(IFERROR(EquityReturns2,0%)+1)",
+            "cached": 0
+          },
+          "H16": {
+            "formula": "'Combined Portfolio - Input'!J18*(1+IFERROR(EquityReturns3,0%))",
+            "cached": 0
+          },
+          "I16": {
+            "formula": "'Combined Portfolio - Input'!J18*(1+IFERROR(EquityReturns4,0%))",
+            "cached": 0
+          },
+          "J16": {
+            "formula": "'Combined Portfolio - Input'!J18*(1+IFERROR(EquityReturns5,0%))",
+            "cached": 0
+          },
+          "K16": {
+            "formula": "'Combined Portfolio - Input'!J18*(1+IFERROR(EquityReturns6,0%))",
+            "cached": 0
+          },
+          "L16": {
+            "formula": "'Combined Portfolio - Input'!J18*(1+IFERROR(EquityReturns7,0%))",
+            "cached": 0
+          },
+          "M16": {
+            "formula": "'Combined Portfolio - Input'!J18*(1+IFERROR(EquityReturns8,0%))",
+            "cached": 0
+          },
+          "P16": 0,
+          "Q16": 0,
+          "R16": 0,
+          "S16": 0,
+          "T16": 0,
+          "U16": 0,
+          "V16": 0,
+          "W16": 0,
+          "Z16": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H18,Master!$C$4:$Q$1048576,21,0),\"-\")",
+            "cached": "-"
+          },
+          "AA16": {
+            "formula": "SUBSTITUTE($Z$16,\"Z\",P16)",
+            "cached": "-"
+          },
+          "AB16": "-",
+          "AC16": "-",
+          "AD16": "-"
+        },
+        {
+          "B17": {
+            "formula": "IF('Combined Portfolio - Input'!H19=\"\",\"\",'Combined Portfolio - Input'!H19)",
+            "cached": null
+          },
+          "C17": {
+            "formula": "'Combined Portfolio - Input'!J19",
+            "cached": 0
+          },
+          "D17": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H19,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "E17": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H19,Master!$C$4:$Q$1048576,6,0),0)",
+            "cached": 0
+          },
+          "F17": {
+            "formula": "'Combined Portfolio - Input'!J19*(1+IFERROR(EquityReturns1,0%))",
+            "cached": 0
+          },
+          "G17": {
+            "formula": "'Combined Portfolio - Input'!J19*(IFERROR(EquityReturns2,0%)+1)",
+            "cached": 0
+          },
+          "H17": {
+            "formula": "'Combined Portfolio - Input'!J19*(1+IFERROR(EquityReturns3,0%))",
+            "cached": 0
+          },
+          "I17": {
+            "formula": "'Combined Portfolio - Input'!J19*(1+IFERROR(EquityReturns4,0%))",
+            "cached": 0
+          },
+          "J17": {
+            "formula": "'Combined Portfolio - Input'!J19*(1+IFERROR(EquityReturns5,0%))",
+            "cached": 0
+          },
+          "K17": {
+            "formula": "'Combined Portfolio - Input'!J19*(1+IFERROR(EquityReturns6,0%))",
+            "cached": 0
+          },
+          "L17": {
+            "formula": "'Combined Portfolio - Input'!J19*(1+IFERROR(EquityReturns7,0%))",
+            "cached": 0
+          },
+          "M17": {
+            "formula": "'Combined Portfolio - Input'!J19*(1+IFERROR(EquityReturns8,0%))",
+            "cached": 0
+          },
+          "P17": 0,
+          "Q17": 0,
+          "R17": 0,
+          "S17": 0,
+          "T17": 0,
+          "U17": 0,
+          "V17": 0,
+          "W17": 0,
+          "Z17": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H19,Master!$C$4:$Q$1048576,21,0),\"-\")",
+            "cached": "-"
+          },
+          "AA17": {
+            "formula": "SUBSTITUTE($Z$17,\"Z\",P17)",
+            "cached": "-"
+          },
+          "AB17": "-",
+          "AC17": "-",
+          "AD17": "-"
+        },
+        {
+          "B18": {
+            "formula": "IF('Combined Portfolio - Input'!H20=\"\",\"\",'Combined Portfolio - Input'!H20)",
+            "cached": null
+          },
+          "C18": {
+            "formula": "'Combined Portfolio - Input'!J20",
+            "cached": 0
+          },
+          "D18": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H20,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "E18": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H20,Master!$C$4:$Q$1048576,6,0),0)",
+            "cached": 0
+          },
+          "F18": {
+            "formula": "'Combined Portfolio - Input'!J20*(1+IFERROR(EquityReturns1,0%))",
+            "cached": 0
+          },
+          "G18": {
+            "formula": "'Combined Portfolio - Input'!J20*(IFERROR(EquityReturns2,0%)+1)",
+            "cached": 0
+          },
+          "H18": {
+            "formula": "'Combined Portfolio - Input'!J20*(1+IFERROR(EquityReturns3,0%))",
+            "cached": 0
+          },
+          "I18": {
+            "formula": "'Combined Portfolio - Input'!J20*(1+IFERROR(EquityReturns4,0%))",
+            "cached": 0
+          },
+          "J18": {
+            "formula": "'Combined Portfolio - Input'!J20*(1+IFERROR(EquityReturns5,0%))",
+            "cached": 0
+          },
+          "K18": {
+            "formula": "'Combined Portfolio - Input'!J20*(1+IFERROR(EquityReturns6,0%))",
+            "cached": 0
+          },
+          "L18": {
+            "formula": "'Combined Portfolio - Input'!J20*(1+IFERROR(EquityReturns7,0%))",
+            "cached": 0
+          },
+          "M18": {
+            "formula": "'Combined Portfolio - Input'!J20*(1+IFERROR(EquityReturns8,0%))",
+            "cached": 0
+          },
+          "P18": 0,
+          "Q18": 0,
+          "R18": 0,
+          "S18": 0,
+          "T18": 0,
+          "U18": 0,
+          "V18": 0,
+          "W18": 0,
+          "Z18": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H20,Master!$C$4:$Q$1048576,21,0),\"-\")",
+            "cached": "-"
+          },
+          "AA18": {
+            "formula": "SUBSTITUTE($Z$18,\"Z\",P18)",
+            "cached": "-"
+          },
+          "AB18": "-",
+          "AC18": "-",
+          "AD18": "-"
+        },
+        {
+          "B19": {
+            "formula": "IF('Combined Portfolio - Input'!H21=\"\",\"\",'Combined Portfolio - Input'!H21)",
+            "cached": null
+          },
+          "C19": {
+            "formula": "'Combined Portfolio - Input'!J21",
+            "cached": 0
+          },
+          "D19": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H21,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "E19": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H21,Master!$C$4:$Q$1048576,6,0),0)",
+            "cached": 0
+          },
+          "F19": {
+            "formula": "'Combined Portfolio - Input'!J21*(1+IFERROR(EquityReturns1,0%))",
+            "cached": 0
+          },
+          "G19": {
+            "formula": "'Combined Portfolio - Input'!J21*(IFERROR(EquityReturns2,0%)+1)",
+            "cached": 0
+          },
+          "H19": {
+            "formula": "'Combined Portfolio - Input'!J21*(1+IFERROR(EquityReturns3,0%))",
+            "cached": 0
+          },
+          "I19": {
+            "formula": "'Combined Portfolio - Input'!J21*(1+IFERROR(EquityReturns4,0%))",
+            "cached": 0
+          },
+          "J19": {
+            "formula": "'Combined Portfolio - Input'!J21*(1+IFERROR(EquityReturns5,0%))",
+            "cached": 0
+          },
+          "K19": {
+            "formula": "'Combined Portfolio - Input'!J21*(1+IFERROR(EquityReturns6,0%))",
+            "cached": 0
+          },
+          "L19": {
+            "formula": "'Combined Portfolio - Input'!J21*(1+IFERROR(EquityReturns7,0%))",
+            "cached": 0
+          },
+          "M19": {
+            "formula": "'Combined Portfolio - Input'!J21*(1+IFERROR(EquityReturns8,0%))",
+            "cached": 0
+          },
+          "P19": 0,
+          "Q19": 0,
+          "R19": 0,
+          "S19": 0,
+          "T19": 0,
+          "U19": 0,
+          "V19": 0,
+          "W19": 0,
+          "Z19": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H21,Master!$C$4:$Q$1048576,21,0),\"-\")",
+            "cached": "-"
+          },
+          "AA19": {
+            "formula": "SUBSTITUTE($Z$19,\"Z\",P19)",
+            "cached": "-"
+          },
+          "AB19": "-",
+          "AC19": "-",
+          "AD19": "-"
+        },
+        {
+          "B20": {
+            "formula": "IF('Combined Portfolio - Input'!H22=\"\",\"\",'Combined Portfolio - Input'!H22)",
+            "cached": null
+          },
+          "C20": {
+            "formula": "'Combined Portfolio - Input'!J22",
+            "cached": 0
+          },
+          "D20": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H22,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "E20": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H22,Master!$C$4:$Q$1048576,6,0),0)",
+            "cached": 0
+          },
+          "F20": {
+            "formula": "'Combined Portfolio - Input'!J22*(1+IFERROR(EquityReturns1,0%))",
+            "cached": 0
+          },
+          "G20": {
+            "formula": "'Combined Portfolio - Input'!J22*(IFERROR(EquityReturns2,0%)+1)",
+            "cached": 0
+          },
+          "H20": {
+            "formula": "'Combined Portfolio - Input'!J22*(1+IFERROR(EquityReturns3,0%))",
+            "cached": 0
+          },
+          "I20": {
+            "formula": "'Combined Portfolio - Input'!J22*(1+IFERROR(EquityReturns4,0%))",
+            "cached": 0
+          },
+          "J20": {
+            "formula": "'Combined Portfolio - Input'!J22*(1+IFERROR(EquityReturns5,0%))",
+            "cached": 0
+          },
+          "K20": {
+            "formula": "'Combined Portfolio - Input'!J22*(1+IFERROR(EquityReturns6,0%))",
+            "cached": 0
+          },
+          "L20": {
+            "formula": "'Combined Portfolio - Input'!J22*(1+IFERROR(EquityReturns7,0%))",
+            "cached": 0
+          },
+          "M20": {
+            "formula": "'Combined Portfolio - Input'!J22*(1+IFERROR(EquityReturns8,0%))",
+            "cached": 0
+          },
+          "P20": 0,
+          "Q20": 0,
+          "R20": 0,
+          "S20": 0,
+          "T20": 0,
+          "U20": 0,
+          "V20": 0,
+          "W20": 0,
+          "Z20": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H22,Master!$C$4:$Q$1048576,21,0),\"-\")",
+            "cached": "-"
+          },
+          "AA20": {
+            "formula": "SUBSTITUTE($Z$20,\"Z\",P20)",
+            "cached": "-"
+          },
+          "AB20": "-",
+          "AC20": "-",
+          "AD20": "-"
+        },
+        {
+          "B21": "Total Investment",
+          "C21": {
+            "formula": "SUM(C9:C20)",
+            "cached": 100
+          },
+          "D21": "Absolute Returns (Rs.)",
+          "F21": {
+            "formula": "SUM(F9:F20)",
+            "cached": 182.525
+          },
+          "G21": {
+            "formula": "SUM(G9:G20)",
+            "cached": 170.8583333333334
+          },
+          "H21": 124.98214285714285,
+          "I21": 117.87500000000001,
+          "J21": 111.375,
+          "K21": 108.125,
+          "L21": 104.875,
+          "M21": 88.26388888888891
+        },
+        {
+          "D22": "Portfolio Returns (%)",
+          "F22": {
+            "formula": "IFERROR(F21/'Combined Portfolio - Input'!$J$23-1,0)",
+            "cached": 0.82525
+          },
+          "G22": {
+            "formula": "IFERROR(G21/'Combined Portfolio - Input'!$J$23-1,0)",
+            "cached": 0.708583333333334
+          },
+          "H22": {
+            "formula": "IFERROR(H21/'Combined Portfolio - Input'!$J$23-1,0)",
+            "cached": 0.24982142857142842
+          },
+          "I22": {
+            "formula": "IFERROR(I21/'Combined Portfolio - Input'!$J$23-1,0)",
+            "cached": 0.1787500000000002
+          },
+          "J22": {
+            "formula": "IFERROR(J21/'Combined Portfolio - Input'!$J$23-1,0)",
+            "cached": 0.11375000000000002
+          },
+          "K22": {
+            "formula": "IFERROR(K21/'Combined Portfolio - Input'!$J$23-1,0)",
+            "cached": 0.08125000000000004
+          },
+          "L22": {
+            "formula": "IFERROR(L21/'Combined Portfolio - Input'!$J$23-1,0)",
+            "cached": 0.04875000000000007
+          },
+          "M22": {
+            "formula": "IFERROR(M21/'Combined Portfolio - Input'!$J$23-1,0)",
+            "cached": -0.1173611111111108
+          }
+        },
+        {
+          "D23": "XIRR (%)",
+          "F23": {
+            "formula": "IFERROR(F72,0)",
+            "cached": 0.12799983620643615
+          },
+          "G23": 0.11310195326805114,
+          "H23": 0.04395599663257599,
+          "I23": 0.03236492574214936,
+          "J23": 0.021207192540168764,
+          "K23": 0.015381070971488952,
+          "L23": 0.009375032782554627,
+          "M23": -0.023807553946971892
+        },
+        {
+          "B25": "Name of Investor"
+        },
+        {
+          "B26": "Total Amount Invested"
+        },
+        {
+          "B27": "Total No. of Debentures"
+        },
+        {
+          "F45": "Cash Flows at Various Market Levels (in Rs.)"
+        },
+        {
+          "F46": "Up By",
+          "G46": "Up By",
+          "H46": "Up By",
+          "I46": "Flat Mkt",
+          "J46": "Up by",
+          "K46": "Down By",
+          "L46": "Down By",
+          "M46": "Up by"
+        },
+        {
+          "F47": 0.5,
+          "G47": 0.4,
+          "H47": 0.2,
+          "I47": 0.1,
+          "J47": 0,
+          "K47": -0.05,
+          "L47": -0.1,
+          "M47": -0.2
+        },
+        {
+          "D48": "Investment",
+          "E48": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H13,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 45531
+          },
+          "F48": {
+            "formula": "'Combined Portfolio - Input'!$J13*-1",
+            "cached": -15
+          },
+          "G48": {
+            "formula": "'Combined Portfolio - Input'!$J13*-1",
+            "cached": -15
+          },
+          "H48": {
+            "formula": "'Combined Portfolio - Input'!$J13*-1",
+            "cached": -15
+          },
+          "I48": {
+            "formula": "'Combined Portfolio - Input'!$J13*-1",
+            "cached": -15
+          },
+          "J48": {
+            "formula": "'Combined Portfolio - Input'!$J13*-1",
+            "cached": -15
+          },
+          "K48": {
+            "formula": "'Combined Portfolio - Input'!$J13*-1",
+            "cached": -15
+          },
+          "L48": {
+            "formula": "'Combined Portfolio - Input'!$J13*-1",
+            "cached": -15
+          },
+          "M48": {
+            "formula": "'Combined Portfolio - Input'!$J13*-1",
+            "cached": -15
+          }
+        },
+        {
+          "E49": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H14,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 45531
+          },
+          "F49": {
+            "formula": "'Combined Portfolio - Input'!$J14*-1",
+            "cached": -20
+          },
+          "G49": {
+            "formula": "'Combined Portfolio - Input'!$J14*-1",
+            "cached": -20
+          },
+          "H49": {
+            "formula": "'Combined Portfolio - Input'!$J14*-1",
+            "cached": -20
+          },
+          "I49": {
+            "formula": "'Combined Portfolio - Input'!$J14*-1",
+            "cached": -20
+          },
+          "J49": {
+            "formula": "'Combined Portfolio - Input'!$J14*-1",
+            "cached": -20
+          },
+          "K49": {
+            "formula": "'Combined Portfolio - Input'!$J14*-1",
+            "cached": -20
+          },
+          "L49": {
+            "formula": "'Combined Portfolio - Input'!$J14*-1",
+            "cached": -20
+          },
+          "M49": {
+            "formula": "'Combined Portfolio - Input'!$J14*-1",
+            "cached": -20
+          }
+        },
+        {
+          "E50": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H15,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "F50": {
+            "formula": "'Combined Portfolio - Input'!$J15*-1",
+            "cached": 0
+          },
+          "G50": {
+            "formula": "'Combined Portfolio - Input'!$J15*-1",
+            "cached": 0
+          },
+          "H50": {
+            "formula": "'Combined Portfolio - Input'!$J15*-1",
+            "cached": 0
+          },
+          "I50": {
+            "formula": "'Combined Portfolio - Input'!$J15*-1",
+            "cached": 0
+          },
+          "J50": {
+            "formula": "'Combined Portfolio - Input'!$J15*-1",
+            "cached": 0
+          },
+          "K50": {
+            "formula": "'Combined Portfolio - Input'!$J15*-1",
+            "cached": 0
+          },
+          "L50": {
+            "formula": "'Combined Portfolio - Input'!$J15*-1",
+            "cached": 0
+          },
+          "M50": {
+            "formula": "'Combined Portfolio - Input'!$J15*-1",
+            "cached": 0
+          }
+        },
+        {
+          "E51": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H16,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "F51": {
+            "formula": "'Combined Portfolio - Input'!$J16*-1",
+            "cached": 0
+          },
+          "G51": {
+            "formula": "'Combined Portfolio - Input'!$J16*-1",
+            "cached": 0
+          },
+          "H51": {
+            "formula": "'Combined Portfolio - Input'!$J16*-1",
+            "cached": 0
+          },
+          "I51": {
+            "formula": "'Combined Portfolio - Input'!$J16*-1",
+            "cached": 0
+          },
+          "J51": {
+            "formula": "'Combined Portfolio - Input'!$J16*-1",
+            "cached": 0
+          },
+          "K51": {
+            "formula": "'Combined Portfolio - Input'!$J16*-1",
+            "cached": 0
+          },
+          "L51": {
+            "formula": "'Combined Portfolio - Input'!$J16*-1",
+            "cached": 0
+          },
+          "M51": {
+            "formula": "'Combined Portfolio - Input'!$J16*-1",
+            "cached": 0
+          }
+        },
+        {
+          "E52": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H17,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "F52": {
+            "formula": "'Combined Portfolio - Input'!$J17*-1",
+            "cached": 0
+          },
+          "G52": {
+            "formula": "'Combined Portfolio - Input'!$J17*-1",
+            "cached": 0
+          },
+          "H52": {
+            "formula": "'Combined Portfolio - Input'!$J17*-1",
+            "cached": 0
+          },
+          "I52": {
+            "formula": "'Combined Portfolio - Input'!$J17*-1",
+            "cached": 0
+          },
+          "J52": {
+            "formula": "'Combined Portfolio - Input'!$J17*-1",
+            "cached": 0
+          },
+          "K52": {
+            "formula": "'Combined Portfolio - Input'!$J17*-1",
+            "cached": 0
+          },
+          "L52": {
+            "formula": "'Combined Portfolio - Input'!$J17*-1",
+            "cached": 0
+          },
+          "M52": {
+            "formula": "'Combined Portfolio - Input'!$J17*-1",
+            "cached": 0
+          }
+        },
+        {
+          "E53": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H18,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "F53": {
+            "formula": "'Combined Portfolio - Input'!$J18*-1",
+            "cached": 0
+          },
+          "G53": {
+            "formula": "'Combined Portfolio - Input'!$J18*-1",
+            "cached": 0
+          },
+          "H53": {
+            "formula": "'Combined Portfolio - Input'!$J18*-1",
+            "cached": 0
+          },
+          "I53": {
+            "formula": "'Combined Portfolio - Input'!$J18*-1",
+            "cached": 0
+          },
+          "J53": {
+            "formula": "'Combined Portfolio - Input'!$J18*-1",
+            "cached": 0
+          },
+          "K53": {
+            "formula": "'Combined Portfolio - Input'!$J18*-1",
+            "cached": 0
+          },
+          "L53": {
+            "formula": "'Combined Portfolio - Input'!$J18*-1",
+            "cached": 0
+          },
+          "M53": {
+            "formula": "'Combined Portfolio - Input'!$J18*-1",
+            "cached": 0
+          }
+        },
+        {
+          "E54": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H19,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "F54": {
+            "formula": "'Combined Portfolio - Input'!$J19*-1",
+            "cached": 0
+          },
+          "G54": {
+            "formula": "'Combined Portfolio - Input'!$J19*-1",
+            "cached": 0
+          },
+          "H54": {
+            "formula": "'Combined Portfolio - Input'!$J19*-1",
+            "cached": 0
+          },
+          "I54": {
+            "formula": "'Combined Portfolio - Input'!$J19*-1",
+            "cached": 0
+          },
+          "J54": {
+            "formula": "'Combined Portfolio - Input'!$J19*-1",
+            "cached": 0
+          },
+          "K54": {
+            "formula": "'Combined Portfolio - Input'!$J19*-1",
+            "cached": 0
+          },
+          "L54": {
+            "formula": "'Combined Portfolio - Input'!$J19*-1",
+            "cached": 0
+          },
+          "M54": {
+            "formula": "'Combined Portfolio - Input'!$J19*-1",
+            "cached": 0
+          }
+        },
+        {
+          "E55": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H20,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "F55": {
+            "formula": "'Combined Portfolio - Input'!$J20*-1",
+            "cached": 0
+          },
+          "G55": {
+            "formula": "'Combined Portfolio - Input'!$J20*-1",
+            "cached": 0
+          },
+          "H55": {
+            "formula": "'Combined Portfolio - Input'!$J20*-1",
+            "cached": 0
+          },
+          "I55": {
+            "formula": "'Combined Portfolio - Input'!$J20*-1",
+            "cached": 0
+          },
+          "J55": {
+            "formula": "'Combined Portfolio - Input'!$J20*-1",
+            "cached": 0
+          },
+          "K55": {
+            "formula": "'Combined Portfolio - Input'!$J20*-1",
+            "cached": 0
+          },
+          "L55": {
+            "formula": "'Combined Portfolio - Input'!$J20*-1",
+            "cached": 0
+          },
+          "M55": {
+            "formula": "'Combined Portfolio - Input'!$J20*-1",
+            "cached": 0
+          }
+        },
+        {
+          "E56": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H21,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "F56": {
+            "formula": "'Combined Portfolio - Input'!$J21*-1",
+            "cached": 0
+          },
+          "G56": {
+            "formula": "'Combined Portfolio - Input'!$J21*-1",
+            "cached": 0
+          },
+          "H56": {
+            "formula": "'Combined Portfolio - Input'!$J21*-1",
+            "cached": 0
+          },
+          "I56": {
+            "formula": "'Combined Portfolio - Input'!$J21*-1",
+            "cached": 0
+          },
+          "J56": {
+            "formula": "'Combined Portfolio - Input'!$J21*-1",
+            "cached": 0
+          },
+          "K56": {
+            "formula": "'Combined Portfolio - Input'!$J21*-1",
+            "cached": 0
+          },
+          "L56": {
+            "formula": "'Combined Portfolio - Input'!$J21*-1",
+            "cached": 0
+          },
+          "M56": {
+            "formula": "'Combined Portfolio - Input'!$J21*-1",
+            "cached": 0
+          }
+        },
+        {
+          "E57": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H22,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+            "cached": 0
+          },
+          "F57": {
+            "formula": "'Combined Portfolio - Input'!$J22*-1",
+            "cached": 0
+          },
+          "G57": {
+            "formula": "'Combined Portfolio - Input'!$J22*-1",
+            "cached": 0
+          },
+          "H57": {
+            "formula": "'Combined Portfolio - Input'!$J22*-1",
+            "cached": 0
+          },
+          "I57": {
+            "formula": "'Combined Portfolio - Input'!$J22*-1",
+            "cached": 0
+          },
+          "J57": {
+            "formula": "'Combined Portfolio - Input'!$J22*-1",
+            "cached": 0
+          },
+          "K57": {
+            "formula": "'Combined Portfolio - Input'!$J22*-1",
+            "cached": 0
+          },
+          "L57": {
+            "formula": "'Combined Portfolio - Input'!$J22*-1",
+            "cached": 0
+          },
+          "M57": {
+            "formula": "'Combined Portfolio - Input'!$J22*-1",
+            "cached": 0
+          }
+        },
+        {
+          "E58": {
+            "formula": "TODAY()",
+            "cached": 46198
+          },
+          "F58": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$7",
+            "cached": -65
+          },
+          "G58": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$7",
+            "cached": -65
+          },
+          "H58": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$7",
+            "cached": -65
+          },
+          "I58": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$7",
+            "cached": -65
+          },
+          "J58": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$7",
+            "cached": -65
+          },
+          "K58": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$7",
+            "cached": -65
+          },
+          "L58": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$7",
+            "cached": -65
+          },
+          "M58": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$7",
+            "cached": -65
+          }
+        },
+        {
+          "E59": {
+            "formula": "TODAY()",
+            "cached": 46198
+          },
+          "F59": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$10",
+            "cached": 0
+          },
+          "G59": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$10",
+            "cached": 0
+          },
+          "H59": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$10",
+            "cached": 0
+          },
+          "I59": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$10",
+            "cached": 0
+          },
+          "J59": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$10",
+            "cached": 0
+          },
+          "K59": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$10",
+            "cached": 0
+          },
+          "L59": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$10",
+            "cached": 0
+          },
+          "M59": {
+            "formula": "-1*'Combined Portfolio - Input'!$J$10",
+            "cached": 0
+          }
+        },
+        {
+          "D60": "Maturity",
+          "E60": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H13,Master!$C$4:$Q$1048576,10,0),0)",
+            "cached": 47433
+          },
+          "F60": {
+            "formula": "F11",
+            "cached": 32.25
+          },
+          "G60": 27.08333333333339,
+          "H60": 15.607142857142849,
+          "I60": 15,
+          "J60": 15,
+          "K60": 15,
+          "L60": 15,
+          "M60": 10.666666666666675
+        },
+        {
+          "E61": {
+            "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H14,Master!$C$4:$Q$1048576,10,0),0)",
+            "cached": 47433
+          },
+          "F61": 41.400000000000006,
+          "G61": 41.400000000000006,
+          "H61": 20,
+          "I61": 20,
+          "J61": 20,
+          "K61": 20,
+          "L61": 20,
+          "M61": 14.222222222222234
+        }
+      ],
+      "formulaFunctions": [
+        [
+          "IFERROR",
+          147
+        ],
+        [
+          "VLOOKUP",
+          50
+        ],
+        [
+          "CHOOSE",
+          20
+        ],
+        [
+          "SUBSTITUTE",
+          12
+        ],
+        [
+          "IF",
+          10
+        ],
+        [
+          "SUM",
+          3
+        ],
+        [
+          "TODAY",
+          2
+        ],
+        [
+          "XIRR",
+          1
+        ]
+      ],
+      "formulaSheetRefs": [
+        [
+          "Combined Portfolio - Input",
+          298
+        ],
+        [
+          "Master",
+          50
+        ],
+        [
+          "Equity Portfolio Returns",
+          8
+        ]
+      ],
+      "sampleFormulas": [
+        {
+          "cell": "F8",
+          "formula": "$C$5*(1+F7)",
+          "cached": null
+        },
+        {
+          "cell": "G8",
+          "formula": "$C$5*(1+G7)",
+          "cached": null
+        },
+        {
+          "cell": "C9",
+          "formula": "'Combined Portfolio - Input'!J7",
+          "cached": null
+        },
+        {
+          "cell": "F9",
+          "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!F7+'Combined Portfolio - Input'!$I$7*5))",
+          "cached": null
+        },
+        {
+          "cell": "G9",
+          "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!G7+'Combined Portfolio - Input'!$I$7*5))",
+          "cached": null
+        },
+        {
+          "cell": "H9",
+          "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!H7+'Combined Portfolio - Input'!$I$7*5))",
+          "cached": null
+        },
+        {
+          "cell": "I9",
+          "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!I7+'Combined Portfolio - Input'!$I$7*5))",
+          "cached": null
+        },
+        {
+          "cell": "J9",
+          "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!J7+'Combined Portfolio - Input'!$I$7*5))",
+          "cached": null
+        },
+        {
+          "cell": "K9",
+          "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!K7+'Combined Portfolio - Input'!$I$7*5))",
+          "cached": null
+        },
+        {
+          "cell": "L9",
+          "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!L7+'Combined Portfolio - Input'!$I$7*5))",
+          "cached": null
+        },
+        {
+          "cell": "M9",
+          "formula": "('Combined Portfolio - Input'!$J$7*(1+'Equity Portfolio Returns'!M7+'Combined Portfolio - Input'!$I$7*5))",
+          "cached": null
+        },
+        {
+          "cell": "C10",
+          "formula": "'Combined Portfolio - Input'!J10",
+          "cached": null
+        },
+        {
+          "cell": "F10",
+          "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+          "cached": null
+        },
+        {
+          "cell": "G10",
+          "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+          "cached": null
+        },
+        {
+          "cell": "H10",
+          "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+          "cached": null
+        },
+        {
+          "cell": "I10",
+          "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+          "cached": null
+        },
+        {
+          "cell": "J10",
+          "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+          "cached": null
+        },
+        {
+          "cell": "K10",
+          "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+          "cached": null
+        },
+        {
+          "cell": "L10",
+          "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+          "cached": null
+        },
+        {
+          "cell": "M10",
+          "formula": "'Combined Portfolio - Input'!$J$10*((1+'Combined Portfolio - Input'!$I$10)^5)",
+          "cached": null
+        },
+        {
+          "cell": "B11",
+          "formula": "IF('Combined Portfolio - Input'!H13=\"\",\"\",'Combined Portfolio - Input'!H13)",
+          "cached": null
+        },
+        {
+          "cell": "C11",
+          "formula": "'Combined Portfolio - Input'!J13",
+          "cached": null
+        },
+        {
+          "cell": "D11",
+          "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H13,CHOOSE({1,2},Prod,Master!$B$4:$B$1048576),2,0),0)",
+          "cached": null
+        },
+        {
+          "cell": "E11",
+          "formula": "IFERROR(VLOOKUP('Combined Portfolio - Input'!H13,Master!$C$4:$Q$1048576,6,0),0)",
+          "cached": null
+        },
+        {
+          "cell": "F11",
+          "formula": "'Combined Portfolio - Input'!J13*(1+IFERROR(EquityReturns1,0%))",
+          "cached": null
+        }
+      ],
+      "formulaCount": 305,
+      "rowSampleCount": 40
+    }
+  ]
+}
