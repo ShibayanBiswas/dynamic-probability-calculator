@@ -3,6 +3,7 @@ import {
   filterProductsByLifecycle,
   getDaysToNextObservation,
   getProductLifecycleStatus,
+  isLiveObservationBookProduct,
   isValidMasterProduct,
   LIFECYCLE_FILTERS,
   type LifecycleFilter,
@@ -82,6 +83,8 @@ export function buildLifecycleIndex(
     if (!isValidMasterProduct(product, asOf)) continue;
     // Probability desk forgets expired products entirely.
     if (status === "expired") continue;
+    // And forgets products whose last observation fixing has already settled.
+    if (!isLiveObservationBookProduct(product, asOf)) continue;
 
     validProducts.push(product);
     buckets[status].push(product);

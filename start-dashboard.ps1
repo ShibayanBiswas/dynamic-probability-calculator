@@ -1,7 +1,7 @@
 # Dynamic Probability Calculator — local development (Windows)
 # Usage:
-#   .\start-dashboard.ps1          Start Mongo (optional), Python API, Next.js on localhost:3001
-#   .\start-dashboard.ps1 -Stop    Stop services on ports 3000 and 8000
+#   .\start-dashboard.ps1          Start optional Mongo + Next.js on :3001
+#   .\start-dashboard.ps1 -Stop    Free port 3001
 
 param(
   [switch]$Stop
@@ -38,15 +38,6 @@ function Find-Node {
   return $null
 }
 
-function Find-Python {
-  foreach ($cmd in @("python", "py", "python3")) {
-    if (Get-Command $cmd -ErrorAction SilentlyContinue) {
-      return $cmd
-    }
-  }
-  return $null
-}
-
 function Get-PidsOnPort([int]$Port) {
   $connections = Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue
   if (-not $connections) { return @() }
@@ -58,8 +49,8 @@ function Free-Port([int]$Port) {
   if (-not $pids -or $pids.Count -eq 0) { return $true }
 
   Write-Host "Freeing port $Port (pids: $($pids -join ', '))..."
-  foreach ($pid in $pids) {
-    try { Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue } catch {}
+  foreach ($procId in $pids) {
+    try { Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue } catch {}
   }
   Start-Sleep -Seconds 1
 
@@ -121,43 +112,8 @@ function Start-Mongo {
   docker compose -f $composeFile up -d | Out-Null
 }
 
-function Start-PythonApi {
-  $pythonCmd = Find-Python
-  if (-not $pythonCmd) {
-    Write-Host "Python not found — pivot tables will use Node fallback only."
-    return
-  }
-
-  $pyDir = Join-Path $projectRoot "backend\python"
-  $reqFile = Join-Path $pyDir "requirements.txt"
-  if (-not (Test-Path $reqFile)) { return }
-
-  $venv = Join-Path $pyDir ".venv"
-  if (-not (Test-Path $venv)) {
-    Write-Host "Creating Python virtualenv..."
-    & $pythonCmd -m venv $venv
-    & (Join-Path $venv "Scripts\pip.exe") install -r $reqFile
-  }
-
-  $existing = Get-PidsOnPort 8000
-  if ($existing -and $existing.Count -gt 0) {
-    Write-Host "Python API already listening on :8000"
-    return
-  }
-
-  $pythonExe = Join-Path $venv "Scripts\python.exe"
-  if (-not (Test-Path $pythonExe)) { $pythonExe = $pythonCmd }
-
-  Write-Host "Starting Python analytics API on http://127.0.0.1:8000 ..."
-  Start-Process -FilePath $pythonExe `
-    -ArgumentList "-m", "uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8000" `
-    -WorkingDirectory $pyDir `
-    -WindowStyle Minimized
-}
-
 if ($Stop) {
-  Free-port 3001 | Out-Null
-  Free-Port 8000 | Out-Null
+  Free-Port 3001 | Out-Null
   Write-Host "Stopped Dynamic Probability Calculator local services."
   exit 0
 }
@@ -179,25 +135,21 @@ if (-not (Test-Path ".\node_modules")) {
 
 Load-EnvLocal
 
-if (-not (Free-port 3001)) {
+if (-not (Free-Port 3001)) {
   Write-Host "Cannot start Next.js — port 3001 is occupied."
   exit 1
 }
-Free-Port 8000 | Out-Null
 
 Start-Mongo
-Start-PythonApi
-
-$env:PYTHON_API_URL = if ($env:PYTHON_API_URL) { $env:PYTHON_API_URL } else { "http://127.0.0.1:8000" }
 
 Write-Host ""
 Write-Host "Dynamic Probability Calculator — local only"
-Write-Host "  App:    http://localhost:3001"
-Write-Host "  API:    http://localhost:3001/api/*"
-Write-Host "  Python: $env:PYTHON_API_URL"
-if ($env:MONGODB_URI) { Write-Host "  Mongo:  $env:MONGODB_URI" }
+Write-Host "  App:  http://localhost:3001"
+Write-Host "  API:  http://localhost:3001/api/*"
+if ($env:MONGODB_URI) { Write-Host "  Mongo: $env:MONGODB_URI" }
+Write-Host "  Pivot: Node engine (no Python required)"
 Write-Host ""
-Write-Host "Press Ctrl+C to stop Next.js (Python window may stay open — rerun with -Stop to free ports)."
+Write-Host "Press Ctrl+C to stop Next.js."
 Write-Host ""
 
 & $npmPath run dev

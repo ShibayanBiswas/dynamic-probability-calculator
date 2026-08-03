@@ -27,7 +27,11 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
       >
         <Image
           alt="Anand Rathi — Private Wealth. uncomplicated."
-          className={compact ? "h-8 w-auto" : "h-11 w-auto"}
+          className={
+            compact
+              ? "h-7 w-auto sm:h-8"
+              : "h-8 w-auto max-w-[42vw] object-contain object-left sm:h-11 sm:max-w-none"
+          }
           height={290}
           priority
           src={src}

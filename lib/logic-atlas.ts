@@ -62,9 +62,9 @@ export const logicModules: LogicModule[] = [
       },
       {
         id: "formula",
-        label: "Payoff Definition Extractor",
+        label: "Structure Formula Extractor",
         kind: "engine",
-        description: "Payoff logic and product explanations are captured for each product name.",
+        description: "Structure formulas and product explanations are captured for each product name for reference plots.",
       },
       {
         id: "obs",
@@ -82,7 +82,7 @@ export const logicModules: LogicModule[] = [
         id: "feed",
         label: "Desk Data Bus",
         kind: "output",
-        description: "Search, valuation, payoff, and portfolio analytics are powered from this feed.",
+        description: "Search, probability, and portfolio analytics are powered from this feed.",
       },
     ],
     flows: [
@@ -95,11 +95,11 @@ export const logicModules: LogicModule[] = [
       { from: "ext", to: "feed", label: "history" },
     ],
     insights: [
-      "Every valuation and payoff path is resolved back to this registry.",
+      "Every probability path is resolved back to this registry.",
       "Valid desk rows are kept only when lifecycle status is known and notionals are finite before any surface is rendered.",
       "Hidden calibration layers such as observation lookbacks and extinguished rollovers remain linked but are not shown to end users.",
       "Live Notional is driven by the sum of trade amounts on the merged master book. Lifecycle tab AUM is driven by deduped desk rows.",
-      "Ongoing, expired, and expiring status is classified from the phase schedule end on the live desk clock. Blank and Phase 2 use Maturity. Phase 1 uses POED. Ten Years uses Rollover.",
+      "Ongoing and expiring status is classified from the phase schedule end on the live desk clock. Blank and Phase 2 use Maturity. Phase 1 uses POED. Ten Years uses Rollover. Expired products are excluded from this desk.",
     ],
     outputs: ["Product search index", "Formula catalog", "Category summaries", "Validation alerts"],
   },
@@ -109,7 +109,7 @@ export const logicModules: LogicModule[] = [
     subtitle: "Home pulse, lifecycle tabs, and module routing",
     accent: "cyan",
     purpose:
-      "The live Primary desk book is orchestrated through headline KPIs, lifecycle-filtered product lists, the maturity ladder, the lifecycle intelligence table, and shortcuts into valuation, payoff, and analytics.",
+      "The live Primary desk book is orchestrated through headline KPIs, lifecycle-filtered product lists, the maturity ladder, the lifecycle intelligence table, and shortcuts into Probability, Initial Probability, Current Probability, and analytics.",
     stageCount: 8,
     metrics: [
       { label: "Surfaces", value: "8" },
@@ -134,7 +134,7 @@ export const logicModules: LogicModule[] = [
         label: "Lifecycle Filter",
         kind: "process",
         description:
-          "Ongoing, observation-due, expiring, and expired buckets are shared across Home, Valuation, Payoff, Details, and Analytics. Expiration is measured to phase schedule end. Observation due is measured to upcoming observation averages.",
+          "Ongoing, observation-due, and expiring buckets are shared across Home, Probability, Initial Probability, Current Probability, and Analytics. Expiration is measured to phase schedule end. Observation due is measured to upcoming observation averages. Expired products and products whose last observation has already settled are excluded from this probability desk.",
       },
       {
         id: "list",
@@ -165,7 +165,7 @@ export const logicModules: LogicModule[] = [
         id: "routes",
         label: "Module Router",
         kind: "output",
-        description: "Navigation is provided to Valuation, Payoff, Product Details, Analytics Lab, and Logic Atlas.",
+        description: "Navigation is provided to Probability, Initial Probability, Current Probability, Analytics Lab, and Logic Atlas.",
       },
     ],
     flows: [
@@ -182,7 +182,7 @@ export const logicModules: LogicModule[] = [
       "Live Notional is the sum of trade amounts on the merged master book. Lifecycle tab AUM sums deduped desk-canonical rows.",
       "Ongoing is the full live book where phase end is still ahead, including products expiring within three months or one month. Expiring tabs are narrower subsets. Expired uses phase end in the past. Blank and Phase 2 use Maturity. Phase 1 uses POED. Ten Years uses Rollover.",
       "Observation-due tabs for three months, two months, and one month include live products with any observation average date inside ninety, sixty, or thirty calendar days. The one-month set is nested inside the two-month set, which is nested inside the three-month set.",
-      "Product lists and product search on every module use the same lifecycle picker pool as a scrollable list of every product in the active tab. Selection persists across Details, Valuation, and Payoff. A tab default is applied only when the current pick is outside the active pool.",
+      "Product lists and product search on every module use the same lifecycle picker pool as a scrollable list of every product in the active tab. Selection persists across Probability, Initial Probability, and Current Probability. A tab default is applied only when the current pick is outside the active pool.",
       "ScienceLab charts are shown on Analytics Lab only. Home keeps lifecycle intelligence and the maturity ladder.",
       "Lifecycle Intelligence shows the full book while rows that belong to the active tab are highlighted.",
       "Upload Master on Home re-parses the registry and refreshes every downstream surface.",
@@ -259,7 +259,7 @@ export const logicModules: LogicModule[] = [
 
         description:
 
-          "Average 1–7 dates become day offsets from phase start (Initial) or valuation date (Current).",
+          "Average 1–7 dates become day offsets from phase start for Initial Probability, or from the valuation date for Current Probability.",
 
       },
 
@@ -267,13 +267,13 @@ export const logicModules: LogicModule[] = [
 
         id: "barrier",
 
-        label: "Success Threshold",
+        label: "Target / Required Underlying",
 
         kind: "process",
 
         description:
 
-          "Initial mode tests target versus entry. Current mode tests percent required versus today’s underlying level.",
+          "Initial mode tests Target Underlying (target versus entry). Current mode tests Required Underlying versus today’s mark.",
 
       },
 
@@ -433,7 +433,7 @@ export const logicModules: LogicModule[] = [
 
         description:
 
-          "((Total Obs × Target) − sum of passed levels) ÷ Remaining Obs. Blank when Target or a passed level is missing.",
+          "Total Obs × Target, minus the sum of passed levels, then divided by Remaining Obs. Blank when Target or a passed level is missing.",
 
       },
 
@@ -490,7 +490,7 @@ export const logicModules: LogicModule[] = [
         label: "Lifecycle Tab",
         kind: "input",
         description:
-          "Ongoing, observation-due, expiring, and expired tabs drive every chart and product search pool.",
+          "Ongoing, observation-due, and expiring tabs drive every chart and product search pool. Products whose last observation has already settled are excluded from every live pill on this probability desk.",
       },
       {
         id: "pool",
@@ -503,7 +503,7 @@ export const logicModules: LogicModule[] = [
         label: "KPI Band",
         kind: "output",
         description:
-          "Live Notional from merged master trade amounts, ongoing count, and observation-due and expiry tiles are shown. A dash is shown while the book loads.",
+          "Live Notional from merged master trade amounts, ongoing count, and observation-due and expiry tiles are shown. A dash is shown while the book loads. Ongoing means phase still live and last observation not yet settled.",
       },
       {
         id: "universe",
@@ -610,6 +610,7 @@ export const logicModules: LogicModule[] = [
     insights: [
       "Included paths require the index history to cover every simulated observation.",
       "The last included path has its last observation on the current trading day.",
+      "Daily path starts use Nifty history from 2001-01-01 (Gift AIF / NSP nifty sheet parity), forward-filled with Sensex.",
     ],
     outputs: ["Initial probability", "Path table", "Observation schedule"],
   },
@@ -623,7 +624,7 @@ export const logicModules: LogicModule[] = [
     stageCount: 5,
     metrics: [
       { label: "Frequency", value: "Daily" },
-      { label: "Base", value: "Valuation date" },
+      { label: "Base", value: "Checking date / valuation date" },
       { label: "Frontier", value: "Latest trading day" },
     ],
     nodes: [

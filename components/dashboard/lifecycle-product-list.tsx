@@ -237,7 +237,7 @@ export function LifecycleProductList({
       <VirtualizedTableSection
         colSpan={tableColCount}
         rowCount={filtered.length}
-        scrollClassName={`mt-4 overflow-auto rounded-2xl border border-stone-200 dark:border-stone-700 ${compact ? "max-h-[min(48vh,480px)]" : "max-h-[min(72vh,720px)]"}`}
+        scrollClassName={`mt-4 overflow-auto rounded-2xl border border-stone-200 [-webkit-overflow-scrolling:touch] dark:border-stone-700 ${compact ? "max-h-[min(48vh,480px)]" : "max-h-[min(72vh,720px)]"}`}
         emptyState={
           <tr>
             <td className="py-12 text-center text-stone-500" colSpan={tableColCount}>
@@ -331,7 +331,7 @@ export function LifecycleProductList({
                     className={cn(
                       align === "right" && "text-right tabular-nums",
                       isIndex && "font-mono text-xs text-stone-500",
-                      isName && "max-w-[240px] truncate font-medium text-ink",
+                      isName && "max-w-[9.5rem] truncate font-medium text-ink sm:max-w-[240px]",
                       isIsin && "font-mono text-xs text-stone-600",
                       isStatus && "min-w-[9.5rem]",
                       isDays && "font-mono text-xs",

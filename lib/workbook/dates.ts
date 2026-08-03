@@ -130,10 +130,17 @@ export function toExcelSerial(date: Date) {
   return Math.round((utc - base) / 86400000);
 }
 
-export function formatDisplayDate(date: Date) {
-  const d = String(date.getDate()).padStart(2, "0");
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  return `${d}-${m}-${date.getFullYear()}`;
+/**
+ * Desk DD-MM-YYYY. Accepts Date, ISO/API strings, Excel serials — never assume a live Date
+ * after JSON round-trips (schedule dates from /api/probability/run arrive as strings).
+ */
+export function formatDisplayDate(date: ExcelishDateInput) {
+  const parsed =
+    date instanceof Date && isValid(date) ? date : parseExcelishDate(date);
+  if (!parsed) return "—";
+  const d = String(parsed.getDate()).padStart(2, "0");
+  const m = String(parsed.getMonth() + 1).padStart(2, "0");
+  return `${d}-${m}-${parsed.getFullYear()}`;
 }
 
 /** True when a desk-format date string is the same calendar day as now. */

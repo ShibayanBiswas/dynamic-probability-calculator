@@ -3,15 +3,20 @@
 import { useMemo } from "react";
 
 import { DynamicTable, type DynamicTableColumn } from "@/components/ui/dynamic-table";
-import { formatDisplayDate } from "@/lib/workbook/dates";
+import { formatDisplayDate, parseExcelishDate, type ExcelishDateInput } from "@/lib/workbook/dates";
 import { formatNumber, formatPercent } from "@/lib/utils";
 
 export type ObservationLevelRow = {
-  date: Date;
+  date: Date | string;
   level: number | null;
   performance: number | null;
   isFuture?: boolean;
 };
+
+function observationRowKey(date: ExcelishDateInput): string {
+  const parsed = date instanceof Date ? date : parseExcelishDate(date);
+  return parsed ? String(parsed.getTime()) : String(date ?? "");
+}
 
 const OBSERVATION_COLUMNS: DynamicTableColumn<ObservationLevelRow>[] = [
   {
@@ -58,7 +63,7 @@ export function ObservationDatesTable({
     <DynamicTable
       columns={columns}
       emptyMessage="No observation dates on record."
-      getRowKey={(row) => String(row.date.getTime())}
+      getRowKey={(row) => observationRowKey(row.date)}
       rows={levels}
       scrollClassName={scrollClassName}
       virtualizeAt={80}

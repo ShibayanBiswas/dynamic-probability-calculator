@@ -293,7 +293,48 @@ textarea {
     width: 100%;
   }
 
-  /* ≤4 KPIs: one full-width row; horizontal scroll only when labels need more space */
+  /* Five Probability KPIs — equal columns across the full viewport width */
+  .kpi-band-five {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  /* 6+ headline tiles — single-row horizontal scroll (Live Notional strip) */
+  .kpi-band-scroll {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    gap: 0.75rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 0.45rem;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 178, 76, 0.45) transparent;
+  }
+
+  .kpi-band-scroll::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .kpi-band-scroll::-webkit-scrollbar-thumb {
+    background: rgba(212, 178, 76, 0.45);
+    border-radius: 999px;
+  }
+
+  .kpi-band-scroll .kpi-card-scroll {
+    flex: 0 0 auto;
+    width: min(14.5rem, 72vw);
+    min-width: 12.5rem;
+    scroll-snap-align: start;
+  }
+
+  .kpi-band-scroll-dense .kpi-card-scroll {
+    width: min(12.75rem, 68vw);
+    min-width: 11.25rem;
+  }
+
+  /* ≤4 KPIs: one full-width row; denser bands share the row via grid 1fr columns */
   .kpi-band-fill {
     display: grid;
     width: 100%;
@@ -303,6 +344,10 @@ textarea {
     scrollbar-width: thin;
     scrollbar-color: rgba(212, 178, 76, 0.45) transparent;
     grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  }
+
+  .kpi-band-fill:has(> :nth-child(5):last-child) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .kpi-band-fill:has(> :nth-child(4):last-child) {
@@ -341,6 +386,7 @@ textarea {
     min-height: 2.85rem;
     white-space: normal;
     line-height: 1.35;
+    overflow-wrap: anywhere;
   }
 
   .horizontal-rail-fill {
@@ -1055,6 +1101,7 @@ textarea {
   /* Product spec / lifecycle rails — scroll horizontally; cards size to label text. */
   .horizontal-rail-spec {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scrollbar-color: rgba(212, 178, 76, 0.45) transparent;
   }
@@ -1072,6 +1119,30 @@ textarea {
 
   .spec-rail-item.rail-card {
     width: auto;
+  }
+
+  /* Spec / Results cards fill the full horizontal band (wrap when many). */
+  .spec-rail-fill-grid {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .spec-rail-card-stretch {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 100%;
+  }
+
+  @media (max-width: 767px) {
+    .spec-rail-fill-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .kpi-band-five {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   .kpi-band-dense {
@@ -1156,12 +1227,12 @@ textarea {
   }
 
   .data-table thead th {
-    @apply sticky top-0 z-10 border-b border-gold/20 px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-stone-600 backdrop-blur-md dark:text-stone-400;
+    @apply sticky top-0 z-10 border-b border-gold/20 px-2 py-2.5 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-stone-600 backdrop-blur-md dark:text-stone-400 sm:px-4 sm:py-3;
     background: color-mix(in srgb, var(--ar-panel) 92%, transparent);
   }
 
   .data-table tbody td {
-    @apply border-b border-stone-100 px-4 py-3 text-sm text-ink transition-colors dark:border-stone-800;
+    @apply border-b border-stone-100 px-2 py-2.5 text-sm text-ink transition-colors dark:border-stone-800 sm:px-4 sm:py-3;
   }
 
   .data-table tbody tr:hover td {
@@ -1192,6 +1263,43 @@ textarea {
     background: linear-gradient(180deg, var(--ar-table-head-from) 0%, var(--ar-table-head-to) 100%);
     color: var(--ar-maroon);
     box-shadow: 0 1px 0 rgba(212, 178, 76, 0.35);
+  }
+
+  /* Observation schedule — full table body visible (not gold header strip alone) */
+  .schedule-table-wrap {
+    @apply rounded-2xl border border-gold/25;
+    background: var(--ar-surface);
+  }
+
+  .schedule-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .schedule-table thead th {
+    @apply whitespace-nowrap px-4 py-2.5 text-left text-[11px] font-bold uppercase tracking-[0.14em];
+    color: var(--ar-maroon);
+    border-bottom: 1px solid color-mix(in srgb, var(--ar-maroon) 18%, transparent);
+    background: color-mix(in srgb, var(--ar-surface) 92%, #f5e6c8);
+  }
+
+  .schedule-table tbody th {
+    @apply whitespace-nowrap px-4 py-2.5 text-left text-sm font-semibold;
+    color: var(--ar-ink);
+    border-bottom: 1px solid color-mix(in srgb, var(--ar-border) 80%, transparent);
+    background: var(--ar-table-row);
+  }
+
+  .schedule-table tbody td {
+    @apply whitespace-nowrap px-4 py-2.5 text-sm;
+    color: var(--ar-ink);
+    border-bottom: 1px solid color-mix(in srgb, var(--ar-border) 80%, transparent);
+    background: var(--ar-table-row);
+  }
+
+  .schedule-table tbody tr:last-child th,
+  .schedule-table tbody tr:last-child td {
+    border-bottom: 0;
   }
 
   .data-table-premium thead th.text-right {
@@ -1736,7 +1844,7 @@ textarea {
   }
 
   .brand-title {
-    @apply text-xl font-bold text-ink md:text-2xl;
+    @apply text-base font-bold text-ink sm:text-xl md:text-2xl;
     font-family: var(--font-serif), Georgia, "Times New Roman", serif;
     letter-spacing: -0.02em;
   }
@@ -2726,3 +2834,82 @@ html.dark .kpi-card-live::after {
     box-shadow: inset 0 0 0 1px rgba(251, 191, 36, 0.45);
   }
 }
+
+/* —— Small-device / phone polish —— */
+@media (max-width: 639px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  .brand-title {
+    font-size: 0.95rem;
+    line-height: 1.2;
+    max-width: 42vw;
+  }
+
+  .header-actions .btn-primary,
+  .header-actions .btn-accent,
+  .header-actions button {
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
+  }
+
+  .nav-pill-shell {
+    scrollbar-width: none;
+  }
+
+  .nav-pill-shell::-webkit-scrollbar {
+    display: none;
+  }
+
+  .lifecycle-pill-rail {
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+  }
+
+  .lifecycle-pill-rail > * {
+    scroll-snap-align: start;
+  }
+
+  .path-backtest-scroll,
+  .data-table-premium-wrap {
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pan-y;
+  }
+
+  .path-backtest-grid {
+    font-size: 10px;
+  }
+
+  .path-backtest-grid span {
+    overflow-wrap: anywhere;
+  }
+
+  .data-table thead th {
+    letter-spacing: 0.12em;
+  }
+
+  .desk-panel-live,
+  .glass {
+    border-radius: 0.85rem;
+  }
+
+  .kpi-card-value {
+    font-size: clamp(1rem, 2.8vw + 0.55rem, 1.5rem);
+  }
+
+  .spec-rail-item,
+  .horizontal-rail-spec-inner > * {
+    min-width: min(11rem, 78vw) !important;
+  }
+
+  .logic-module-rail {
+    --logic-module-card-width: min(46rem, 88vw);
+  }
+
+  .market-strip {
+    font-size: 11px;
+  }
+}
+

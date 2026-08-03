@@ -18,25 +18,32 @@ function SpecRailCardBody({
   uniformWidth,
   uniformHeight,
   index = 0,
+  stretch = false,
 }: {
   card: SpecRailCard;
   uniformWidth?: number;
   uniformHeight?: number;
   index?: number;
+  /** Stretch card to fill its grid/flex cell (full horizontal band). */
+  stretch?: boolean;
 }) {
   const reduce = useReducedMotion();
   return (
     <motion.div
-      className="spec-rail-card spec-rail-card-uniform"
+      className={cn("spec-rail-card spec-rail-card-uniform", stretch && "spec-rail-card-stretch")}
       data-spec-card
       style={
-        uniformWidth || uniformHeight
-          ? {
-              width: uniformWidth,
-              minWidth: uniformWidth,
-              minHeight: uniformHeight,
-            }
-          : undefined
+        stretch
+          ? uniformHeight
+            ? { minHeight: uniformHeight, width: "100%" }
+            : { width: "100%" }
+          : uniformWidth || uniformHeight
+            ? {
+                width: uniformWidth,
+                minWidth: uniformWidth,
+                minHeight: uniformHeight,
+              }
+            : undefined
       }
       initial={reduce ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -79,7 +86,9 @@ export function useUniformSpecCardSize(cards: SpecRailCard[]) {
     });
 
     if (maxW > 0) {
-      const width = Math.max(240, Math.ceil(maxW) + 20);
+      const viewportCap =
+        typeof window !== "undefined" ? Math.max(160, Math.floor(window.innerWidth * 0.78)) : 240;
+      const width = Math.min(Math.max(200, Math.ceil(maxW) + 20), Math.max(viewportCap, 200));
       const height = maxH > 0 ? Math.ceil(maxH) + 8 : undefined;
       requestAnimationFrame(() => {
         setSize({ width, height });
@@ -92,7 +101,7 @@ export function useUniformSpecCardSize(cards: SpecRailCard[]) {
       <div
         ref={measureRef}
         aria-hidden
-        className="pointer-events-none fixed -left-[10000px] top-0 flex gap-2 opacity-0"
+        className="pointer-events-none invisible fixed -left-[10000px] top-0 flex gap-2 select-none"
       >
         {cards.map((card) => (
           <SpecRailCardBody key={`measure-${card.label}`} card={card} />
@@ -108,13 +117,38 @@ export function UniformSpecRail({
   className,
   uniformWidth,
   uniformHeight,
+  /** Stretch cards across the full horizontal viewport (Probability Specs / Results). */
+  fillRow = true,
 }: {
   cards: SpecRailCard[];
   className?: string;
   uniformWidth?: number;
   uniformHeight?: number;
+  fillRow?: boolean;
 }) {
   if (cards.length === 0) return null;
+
+  if (fillRow) {
+    const cols = Math.min(cards.length, 6);
+    return (
+      <div
+        className={cn("spec-rail-fill-grid w-full gap-2 md:gap-3", className)}
+        style={{
+          gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+        }}
+      >
+        {cards.map((card, index) => (
+          <SpecRailCardBody
+            key={card.label}
+            card={card}
+            index={index}
+            stretch
+            uniformHeight={uniformHeight}
+          />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <HorizontalRail className={className} variant="spec">

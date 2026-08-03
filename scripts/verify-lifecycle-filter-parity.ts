@@ -2,13 +2,16 @@
  * Ensures lifecycle tab filtering is consistent everywhere:
  * - Expiration tabs → phase schedule end (Blank/P2 Maturity · Phase 1 POED · 10Y Rollover C/P)
  * - Observation tabs (obs-due-1m / 2m / 3m) → upcoming Average 1 / Avg. 2–7 within horizon
- * - Picker pool === filter pool on every tab (Valuation, Payoff, Details, Home, Analytics)
+ * - Picker pool === filter pool on every UI tab
+ * - Probability desk: expired filter is always empty
+ * - Probability desk: products whose last observation has settled are excluded from ongoing / obs-due / expiring
  *
  * Usage: npx tsx scripts/verify-lifecycle-filter-parity.ts
  */
 import { differenceInCalendarDays, startOfDay } from "date-fns";
 
 import { buildLifecycleIndex } from "../lib/lifecycle-index";
+import { hasPassedFinalObservation } from "../lib/probability/as-of";
 import { getProductObservationDates } from "../lib/product-dates";
 import {
   EXPIRATION_LIFECYCLE_FILTERS,
@@ -23,6 +26,7 @@ import {
   OBS_DUE_2M_DAYS,
   OBS_DUE_3M_DAYS,
   productHasObservationDueWithin,
+  UI_LIFECYCLE_FILTERS,
 } from "../lib/product-lifecycle";
 import type { ProductRecord } from "../lib/types";
 import { loadCanonicalProducts, warnIfWorkbookDriftsFromSeed } from "./lib/load-canonical-dataset";
@@ -63,6 +67,7 @@ for (const filter of LIFECYCLE_FILTERS) {
   const pickerIds = rowIdSet(picker);
 
   const pickerParity = setsEqual(filterIds, pickerIds);
+  // Expired is intentionally empty on this desk — headline count is also 0.
   const headlineParity = filtered.length === headlineCount;
 
   console.log(
@@ -71,6 +76,14 @@ for (const filter of LIFECYCLE_FILTERS) {
 
   if (!pickerParity || !headlineParity) {
     failed = true;
+  }
+
+  if (filter === "expired") {
+    if (filtered.length !== 0 || picker.length !== 0) {
+      console.error("  expired filter must be empty on the probability desk");
+      failed = true;
+    }
+    continue;
   }
 
   if (isExpirationLifecycleFilter(filter)) {
@@ -105,9 +118,20 @@ for (const filter of LIFECYCLE_FILTERS) {
   }
 }
 
+const uiFiltersOk = UI_LIFECYCLE_FILTERS.every((f) => f !== "expired");
+if (!uiFiltersOk) {
+  console.error("UI_LIFECYCLE_FILTERS must not include expired");
+  failed = true;
+} else {
+  console.log(`\nUI pills: ${UI_LIFECYCLE_FILTERS.join(", ")} · expired excluded`);
+}
+
 const ongoingOnly = filterProductsByLifecycle(products, "ongoing", asOf);
 const expiredInOngoing = ongoingOnly.filter(
   (product) => getProductLifecycleStatus(product, asOf) === "expired",
+);
+const pastFinalInOngoing = ongoingOnly.filter((product) =>
+  hasPassedFinalObservation(product, asOf),
 );
 const expiringInOngoing = ongoingOnly.filter((product) => {
   const status = getProductLifecycleStatus(product, asOf);
@@ -118,6 +142,14 @@ if (expiredInOngoing.length > 0) {
   console.error(`Ongoing tab includes ${expiredInOngoing.length} expired products`);
   failed = true;
 }
+if (pastFinalInOngoing.length > 0) {
+  console.error(
+    `Ongoing tab includes ${pastFinalInOngoing.length} past-final-observation products (must be excluded)`,
+  );
+  failed = true;
+} else {
+  console.log("Ongoing excludes past-final-observation products");
+}
 if (expiringInOngoing.length !== expiring3m.length) {
   console.error(
     `Ongoing should include all expiring-3m (${expiring3m.length}); found ${expiringInOngoing.length}`,
@@ -125,7 +157,7 @@ if (expiringInOngoing.length !== expiring3m.length) {
   failed = true;
 } else {
   console.log(
-    `\nOngoing live book: ${ongoingOnly.length} rows (includes ${expiringInOngoing.length} expiring within 3M; no expired)`,
+    `\nOngoing live book: ${ongoingOnly.length} rows (includes ${expiringInOngoing.length} expiring within 3M; no expired; no past-final obs)`,
   );
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode } from "react";
+import { type CSSProperties, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   BarChart3,
@@ -42,19 +42,22 @@ export function AppPage({
       </div>
       <header className="brand-header sticky top-0 z-50 font-ui">
         <div className="brand-header-glow" />
-        <div className="relative mx-auto flex max-w-full items-center justify-between gap-4 px-4 py-3 lg:px-6">
-          <div className="flex min-w-0 items-center gap-4">
+        <div className="relative mx-auto flex max-w-full flex-wrap items-center justify-between gap-2 px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3 lg:px-6">
+          <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
             <BrandLogo />
-            <div className="min-w-0 border-l border-[color:var(--ar-border)] pl-4">
-              <h1 className="brand-title">Dynamic Probability Calculator</h1>
+            <div className="min-w-0 border-l border-[color:var(--ar-border)] pl-2 sm:pl-4">
+              <h1 className="brand-title truncate">Dynamic Probability Calculator</h1>
             </div>
           </div>
-          {actions}
+          {actions ? <div className="header-actions flex shrink-0 flex-wrap items-center justify-end gap-1.5 sm:gap-2">{actions}</div> : null}
         </div>
         <SiteNav />
       </header>
       <main
-        className={cn("relative z-10 mx-auto w-full max-w-full flex-1 px-4 lg:px-6", dense ? "py-3" : "py-5")}
+        className={cn(
+          "relative z-10 mx-auto w-full max-w-full min-w-0 flex-1 px-3 sm:px-4 lg:px-6",
+          dense ? "py-2.5 sm:py-3" : "py-4 sm:py-5",
+        )}
       >
         <PageEnter>{children}</PageEnter>
       </main>
@@ -76,7 +79,7 @@ export function Panel({
   return (
     <motion.div
       className={cn(
-        "glass desk-panel-live w-full rounded-xl border p-4",
+        "glass desk-panel-live w-full min-w-0 rounded-xl border p-3 sm:p-4",
         "border-[color:var(--ar-border)]",
         glow === "cyan" && "glass-glow-cyan",
         glow === "purple" && "glass-glow-purple",
@@ -95,17 +98,17 @@ export function Panel({
 
 export function SectionTitle({ children, icon: Icon }: { children: ReactNode; icon?: LucideIcon }) {
   return (
-    <h2 className="font-ui flex items-center gap-2 text-lg font-bold tracking-tight text-ink">
+    <h2 className="font-ui flex items-center gap-2 text-base font-bold tracking-tight text-ink sm:text-lg">
       {Icon ? (
         <motion.span
-          className="inline-flex"
+          className="inline-flex shrink-0"
           animate={{ rotate: [0, -6, 6, 0] }}
           transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", repeatDelay: 2 }}
         >
           <Icon className="h-5 w-5 text-gold" />
         </motion.span>
       ) : null}
-      {children}
+      <span className="min-w-0 break-words">{children}</span>
     </h2>
   );
 }
@@ -140,14 +143,14 @@ export function SubPageTabs({
   onSelect: (id: string) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-stone-200 bg-stone-100 p-1.5 dark:border-[color:var(--ar-border)] dark:bg-[color:var(--ar-panel)]">
+    <div className="subpage-tabs flex flex-nowrap items-center gap-1.5 overflow-x-auto rounded-2xl border border-stone-200 bg-stone-100 p-1.5 [-webkit-overflow-scrolling:touch] dark:border-[color:var(--ar-border)] dark:bg-[color:var(--ar-panel)] sm:gap-2 sm:flex-wrap sm:overflow-visible">
       {tabs.map((tab) => {
         const isActive = tab.id === active;
         return (
           <button
             key={tab.id}
             className={cn(
-              "relative flex-1 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-bold transition-all",
+              "relative min-w-0 flex-1 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-bold transition-all sm:px-4 sm:py-2.5 sm:text-sm",
               isActive
                 ? "text-maroon dark:text-[#a89860]"
                 : "text-stone-600 hover:bg-white hover:text-ink dark:text-stone-500 dark:hover:bg-[rgba(212,178,76,0.04)] dark:hover:text-stone-300",
@@ -181,8 +184,8 @@ export function FieldRow({
   wide?: boolean;
 }) {
   return (
-    <div className={cn("grid gap-2", wide ? "md:grid-cols-[260px_1fr]" : "md:grid-cols-[200px_1fr]")}>
-      <div className="flex items-start gap-2 pt-2.5">
+    <div className={cn("grid gap-1.5 sm:gap-2", wide ? "md:grid-cols-[260px_1fr]" : "md:grid-cols-[200px_1fr]")}>
+      <div className="flex items-start gap-2 md:pt-2.5">
         <label className="label-chip">{label}</label>
       </div>
       <div className="min-w-0">{children}</div>
@@ -306,9 +309,8 @@ const kpiIcons: Record<string, LucideIcon> = {
   Probability: Calculator,
   "Paths Included": Package,
   Successes: Package,
-  "Success Threshold": Calculator,
-  "Target Percent": Calculator,
-  "Percent Required": Calculator,
+  "Target Underlying": Calculator,
+  "Required Underlying": Calculator,
   "Days Left to Last Observation": LineChart,
   "Latest Index Date": LineChart,
   Ongoing: LineChart,
@@ -354,20 +356,19 @@ export function KpiBand({
       ? { cyan: "#c9a040", purple: "#b8956a", green: "#4ade80", amber: "#d4b24c", rose: "#a8821f" }
       : { cyan: "#a8821f", purple: "#7a1e2c", green: "#15803d", amber: "#b45309", rose: "#be123c" };
   const count = items.length;
-  const denseColumns = count >= 8 ? 4 : count >= 5 ? Math.min(count, 5) : undefined;
+  /** ≤5 tiles fill the full row (Probability KPIs). 6+ scroll (Home Live Notional strip). */
+  const scrollRow = count >= 6;
 
   return (
     <div
       className={cn(
-        "kpi-band-grid kpi-band-fill w-full gap-3 md:gap-4",
-        count >= 5 && "kpi-band-dense",
-        count >= 8 && "kpi-band-wide",
+        "w-full gap-3 md:gap-4",
+        scrollRow ? "kpi-band-scroll" : "kpi-band-grid kpi-band-fill",
+        scrollRow && count >= 7 && "kpi-band-scroll-dense",
+        !scrollRow && count === 5 && "kpi-band-five",
       )}
-      style={
-        denseColumns
-          ? ({ gridTemplateColumns: `repeat(${denseColumns}, minmax(0, 1fr))` } as React.CSSProperties)
-          : undefined
-      }
+      role="list"
+      aria-label="Headline metrics"
     >
       {items.map((item, index) => {
         const accent = accents[index % accents.length] ?? "cyan";
@@ -375,36 +376,27 @@ export function KpiBand({
         return (
           <motion.div
             key={item.label}
+            role="listitem"
             animate={{ opacity: 1, y: 0 }}
-            className={cn("kpi-card kpi-card-fill kpi-card-live min-w-0", count >= 5 && "kpi-card-dense")}
-            initial={{ opacity: 0, y: 16, scale: 0.96 }}
-            style={{ "--kpi-accent": colors[accent] } as React.CSSProperties}
-            transition={{ delay: index * 0.07, duration: 0.45, ease: deskEase }}
-            whileHover={{ scale: 1.035, y: -3 }}
+            className={cn(
+              "kpi-card kpi-card-fill kpi-card-live min-w-0",
+              scrollRow && "kpi-card-scroll kpi-card-dense",
+            )}
+            initial={false}
+            style={{ "--kpi-accent": colors[accent] } as CSSProperties}
+            transition={{ delay: Math.min(index * 0.04, 0.2), duration: 0.35, ease: deskEase }}
+            whileHover={{ scale: 1.02, y: -2 }}
           >
             <div className="flex items-start justify-between gap-2">
               <p className="kpi-card-label flex-1">{item.label}</p>
-              <motion.div
+              <div
                 className="shrink-0 rounded-xl p-1.5 md:p-2"
                 style={{ backgroundColor: `${colors[accent]}20`, color: colors[accent] }}
-                animate={{ rotate: [0, -8, 8, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
               >
                 <Icon className="h-3.5 w-3.5 md:h-4 md:w-4" />
-              </motion.div>
+              </div>
             </div>
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={item.value}
-                className="kpi-card-value mt-2 md:mt-3"
-                initial={{ opacity: 0.4, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.3 }}
-              >
-                {item.value}
-              </motion.p>
-            </AnimatePresence>
+            <p className="kpi-card-value mt-2 md:mt-3">{item.value}</p>
           </motion.div>
         );
       })}

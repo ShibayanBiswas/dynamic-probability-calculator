@@ -104,6 +104,7 @@ function main() {
     PORTFOLIO_DAYS_COLUMN_LABEL,
     "Tenor Left",
     "Years",
+    "Underlying",
     ...PORTFOLIO_OBS_LEVEL_COLUMN_LABELS,
     ...PORTFOLIO_OBS_COUNT_COLUMN_LABELS,
     PORTFOLIO_EFFECTIVE_TARGET_COLUMN_LABEL,
@@ -131,10 +132,10 @@ function main() {
       `Export column ${i + 1} out of sync with UI`,
     );
   }
-  assert(PORTFOLIO_LIFECYCLE_TABLE_COLUMN_COUNT === 34, "Live portfolio table should have 34 columns");
-  assert(PORTFOLIO_LIFECYCLE_COLUMN_DEFS.length === 20, "Live column spec should have 20 slots");
-  assert(EXPIRED_PORTFOLIO_LIFECYCLE_TABLE_COLUMN_COUNT === 34, "Expired portfolio table should have 34 columns");
-  assert(portfolioLifecycleColumnDefs("expired").length === 20, "Expired column spec should have 20 slots");
+  assert(PORTFOLIO_LIFECYCLE_TABLE_COLUMN_COUNT === 35, "Live portfolio table should have 35 columns");
+  assert(PORTFOLIO_LIFECYCLE_COLUMN_DEFS.length === 21, "Live column spec should have 21 slots");
+  assert(EXPIRED_PORTFOLIO_LIFECYCLE_TABLE_COLUMN_COUNT === 35, "Expired portfolio table should have 35 columns");
+  assert(portfolioLifecycleColumnDefs("expired").length === 21, "Expired column spec should have 21 slots");
 
   for (const filter of LIFECYCLE_FILTERS) {
     const headers = portfolioLifecycleTableHeaders(lifecyclePortfolioColumnLabels(filter), filter);
@@ -196,8 +197,13 @@ function main() {
   const phase1Sample = products.find((p) => p.rolloverPhase === "Phase I");
   assert(phase1Sample != null, "Need a Phase I product for rollover phase label");
   assert(
-    /\(ROLLOVER PHASE 1\)$/i.test(phase1Sample.name),
-    `Phase I product name should include (ROLLOVER PHASE 1), got: ${phase1Sample.name}`,
+    /(?:·|-) Rollover Phase 1$/i.test(phase1Sample.name) ||
+      /Rollover Phase 1$/i.test(phase1Sample.name),
+    `Phase I product name should include Rollover Phase 1 without parentheses, got: ${phase1Sample.name}`,
+  );
+  assert(
+    !/\(ROLLOVER PHASE/i.test(phase1Sample.name),
+    `Phase I product name must not use parentheses, got: ${phase1Sample.name}`,
   );
   assert(
     formatProductRolloverPhaseLabel(phase1Sample) === "Phase 1",

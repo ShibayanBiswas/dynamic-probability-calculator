@@ -1,116 +1,113 @@
-# Debug Playbook
+# 08 — Debug playbook
 
-> **Doc refresh:** 2026-07-16 — index level jitter / stale refresh; maturity ladder single series.
-
-Step-by-step fixes for common desk issues. Cross-reference [03-testing-debug.md](03-testing-debug.md) for commands.
+Work top-down. Prefer `npm run verify:probability` before UI hunting.
 
 ---
 
-## 1. Lifecycle KPIs wrong (AUM / Full Coupon / Absolute Return / Listed)
+### 1. App will not start
 
-1. Run `npm run verify:kpis ongoing` — compare to UI  
-2. Confirm tab matches (Ongoing vs Expired)  
-3. Check master **Trade Amount**, **Coupon (%)**, **Listing**  
-4. **Avg Absolute Return** is **—** on Expired tab by design  
-5. Confirm `usePortfolioClock` — KPI timestamp should update every minute  
-
-→ Details: [04-lifecycle-analytics-kpis.md](04-lifecycle-analytics-kpis.md)
+1. Node **20+** on PATH (`node -v`).  
+2. `npm install` / `npm ci`.  
+3. Free port 3001: `.\start-dashboard.ps1 -Stop`.  
+4. If Mongo in `.env.local` but Docker down — app still runs on baked seed.
 
 ---
 
-## 2. Valuation numbers wrong
+### 2. Blank product list / zero ongoing
 
-1. Confirm product is **not expired** (`isValuationApplicableAt`)  
-2. Check **face** = ₹1L via `getWorkingClientInvestment()` / `getDebenturePrice()` — not raw debenture price  
-3. Verify Nifty vs Sensex for underlying (`resolveLiveIndexLevel`)  
-4. CLI test INE093JA7Q38 — see [02-valuation-excel-parity.md](02-valuation-excel-parity.md)  
-
-| Wrong X | Likely cause |
-|---------|--------------|
-| ~₹198 vs ~₹198k | Using price not face |
-| IRR extreme | Allotment date = val date |
-| Zero | Missing formula or level |
-| Coupon 100% but abs return lower | Expected — **Coupon Formed** = payoff formula at projected **O** (headline only if formula fails); abs return is discounted present value **Z** |
-| CC1 parse wrong | Check master **Coupon / PR / DM** column (internal only — not shown in specs); `getCouponPercent()` prefers `CC1:` / first `%` token — run `npm run verify:coupon-formula` |
+1. Master loaded? Home upload or baked seed.  
+2. Lifecycle filter too narrow (Obs-due / Expiring)? Switch to Ongoing.  
+3. `npm run verify:filter-parity` — expect ~thousands ongoing, expired **0**.  
+4. Clock as-of / phase end mis-parse → `product-dates.ts`.
 
 ---
 
-## 2b. Master Pivot Explorer breaks while scrolling
+### 3. Probability API 400 / 503
 
-1. Virtualized rows must use **`data-table-row-alt`** on `<tr>` (index % 2) — never rely on `tbody tr:nth-child(even)` with virtualization  
-2. Sticky `#` column: remove `bg-inherit`; striping comes from `.data-table-row-alt td.col-pinned` in `globals.css`  
-3. File: `components/ui/virtual-table-body.tsx` + `components/reference/master-sheet-pivot.tsx`
-
----
-
-## 3. Payoff / narrative wrong
-
-1. **7600% / 600% in UI** → `lib/product-narrative-format.ts`  
-2. **Wrong live move** → Payoff level must be Yahoo (`resolveLiveIndexLevel`)
-3. **Stock/commodity expired looking like Nifty Z** → Confirm `getUnderlyingKind` is `custom`; run `npm run verify:custom-underlyings`; UI label must show Infosys/Silver/etc., not Nifty
-4. **Missing formula popup** → `isHardBlockedProduct` + `deskAlert` — expected for blank Formulae  
-3. **132–133% band** → index move +32–33%, not 132% move  
-4. Run `npm run verify:full` for product-specific formula errors  
-
-→ [05-narrative-master-excel.md](05-narrative-master-excel.md), [06-payoff-formulas.md](06-payoff-formulas.md)
+| Code | Cause | Fix |
+|------|-------|-----|
+| 400 | Missing ISIN / non Nifty-Sensex | Pick eligible product |
+| 404 | ISIN not in live book | Sync master / seed |
+| 503 | Empty index series | Mongo history or bundled JSON |
 
 ---
 
-## 4. After uploading new master
+### 4. Runtime `date.getDate is not a function`
 
-```bash
-npm run verify          # full pipeline
-npm run verify:kpis     # KPI audit all buckets
-npm run verify:coupon-formula   # Coupon Formed === payoff formula
-npm run verify:all-metrics      # full-book metric parity
-npm run verify:lifecycle-full   # all ongoing + expired marks
-npm run verify:custom-underlyings  # stock/commodity — no Nifty bluff
-npm run verify:rollover-phase   # Working!F / schedule end SSOT
+API JSON stringifies `schedule[].date`.  
+
+1. Client must `hydrateProbabilityRunResult` after fetch.  
+2. `formatDisplayDate` accepts strings/serials.  
+3. Observation table keys must not call `.getTime()` on raw strings without coerce.
+
+---
+
+### 5. Initial Days ≠ Excel screenshot
+
+Expected for Phase 2: desk uses **Trade Date**; Excel Initial Prob used allotment.  
+Confirm `rolloverPhase` and `getWorkingAllotmentDate`.
+
+---
+
+### 6. All Path Taken = No / probability null
+
+1. Threshold null → missing Target or Entry or today level.  
+2. Series ends before any full observation span → refresh index history.  
+3. All Average slots blank on master row.  
+4. Custom underlying — not supported for probability.
+
+---
+
+### 7. Current Prob still uses “today” after last obs
+
+Expect `asOfLastObservation` + checking date = last obs.  
+If not: settlement — same calendar day needs **15:30 IST** NSE close (`observation-settlement.ts`).
+
+---
+
+### 8. Portfolio Initial/Current Prob stuck on —
+
+1. Network: batch `POST /api/probability/run` with `isins`.  
+2. Soft warm cap **400** ISINs — far rows stay cold until interaction/reload.  
+3. Change valuation date to invalidate store.
+
+---
+
+### 9. Parentheses still visible
+
+1. Product name hydrate (` · Rollover Phase n`).  
+2. Export “Notional in ₹ Cr”.  
+3. Logic Atlas / Effective Target tooltips.  
+4. Never reintroduce `(ROLLOVER PHASE n)`.
+
+---
+
+### 10. Excel/PDF export fails
+
+1. Must run in browser (client download).  
+2. Hover warm export.  
+3. Console: ExcelJS / jsPDF dynamic import errors.
+
+---
+
+### 11. Cloud deploy works locally but 500 on Vercel/Render
+
+1. `MONGODB_URI` set on host?  
+2. Cold start / memory — try `includePaths: false`; raise instance size on Render.  
+3. Yahoo blocked — rely on Mongo/bundled.  
+4. See [14-vercel-render-deployment.md](14-vercel-render-deployment.md).
+
+---
+
+## Recovery checklist
+
+```powershell
+npm run typecheck
+npm run verify:probability-desk
+npm run bake            # if master changed
+npm run sync:seed       # if Mongo should match seed
+.\start-dashboard.ps1 -Stop
+npm run dev
 ```
 
-Upload from Home also triggers client-side parse. If counts wrong:
-
-```bash
-npm run bake            # refresh seed
-npm run bake:underlyings  # refresh stock/commodity history
-```
-
-Expected desk canonical count: **4244** products, **4216** formulas (`lib/workbook/expected-counts.ts` / `canonical-manifest.json`). Source tab: **NEW PRIMARY** (Primary + Rollover merged). Run `npm run bake` after editing Primary or Rollover rows.
-
----
-
-## 5. Build / dev failures
-
-| Error | Fix |
-|-------|-----|
-| Google Fonts fetch | Retry `npm run build` online |
-| Port 3000 / 8000 in use | `bash start-dashboard.sh` (stops stale ports) or `bash start-dashboard.sh --stop` |
-| Python venv missing | First run of `start-dashboard.sh` creates `backend/python/.venv` |
-| Type errors | `npm run typecheck` |
-
----
-
-## 6. Ongoing products failing QA
-
-Current known master issues (re-run `verify:full` to refresh):
-
-- **Nifty Accelerator 407** — bad formula `(Z%)*100%`  
-- **Protected call 431-434** — Formulae cell is ISIN only  
-
-Fix in Excel **Formulae** column, then `npm run verify`.
-
----
-
-## Symptom → file quick map
-
-| Symptom | First file to open |
-|---------|-------------------|
-| Lifecycle count | `lib/product-lifecycle.ts` |
-| AUM / coupon KPI | `lifecycle-lab.tsx`, `product-utils.ts` |
-| Valuation X / IRR | `valuation-engine.ts` |
-| Payoff formula | `formula-engine.ts` |
-| Narrative text | `product-narrative-format.ts` |
-| Live Nifty | `market-data.ts`, `/api/market/levels`, `product-selection-provider.tsx` (soft commit, localStorage) |
-| Export Excel | `export-products.ts` (portfolio) · `export-screen.ts` (per-page screen) |
-| Slow / stuck screen Excel | `use-screen-excel-export.ts`, `excel-runtime.ts` — wait for *Building workbook…*; do not double-click |
-| Parse upload | `parser.ts` |
+Close Excel if `~$NSP's under Risk.xlsm` lock files linger.

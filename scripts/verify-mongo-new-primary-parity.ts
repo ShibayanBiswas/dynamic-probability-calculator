@@ -75,10 +75,14 @@ async function main() {
   assert(extraInMongo.length === 0, `Extra ISINs in mongo: ${extraInMongo.slice(0, 5).join(", ")}`);
 
   const phaseNamed = mongoProducts!.filter((product) =>
-    /\(ROLLOVER PHASE [12]\)/i.test(product.name),
+    /Rollover Phase [12]/i.test(product.name),
   ).length;
-  console.log("Mongo products with phase brackets:", phaseNamed);
-  assert(phaseNamed > 0, "expected phase brackets on mongo product names");
+  console.log("Mongo products with phase markers:", phaseNamed);
+  assert(phaseNamed > 0, "expected Rollover Phase markers on mongo product names");
+  assert(
+    mongoProducts!.every((product) => !/\(ROLLOVER PHASE/i.test(product.name)),
+    "mongo product names must not use parentheses for rollover phase",
+  );
 
   console.log("\n=== Intel explorer grid parity ===");
   const checks = [

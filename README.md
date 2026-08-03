@@ -1,26 +1,60 @@
 # Dynamic Probability Calculator
 
-Anand Rathi Wealth desk for live Primary structured-product **probability** analytics.
+Anand Rathi Wealth desk for **live Primary structured-product probability** analytics.
 
-Same visual system and dynamic spine as the Primary SP Dashboard — master upload, MongoDB products and index history, lifecycle book, phase-aware tenure — with desk surfaces:
+Clones the Primary SP Dashboard visual system, lifecycle book, MongoDB product/index spine, and phase-aware tenure — then replaces Product Details / Valuation / Payoff with:
 
-- **Probability** — summary results panel
-- **Initial Probability** — path backtest from actual phase start
-- **Current Probability** — path backtest from valuation date
+| Surface | Route | Excel reference |
+|---------|-------|-----------------|
+| **Probability** | `/probability` | NSP **Probability** sheet |
+| **Initial Probability** | `/initial-probability` | **Initial Prob** sheet |
+| **Current Probability** | `/current-probability` | **Backtesting** sheet |
+
+Expired products are **excluded** from UI lifecycle pills and the live book.
 
 ## Run locally
 
 ```powershell
 npm install
 npm run dev
+# → http://localhost:3001
 ```
 
-App: http://localhost:3001
-
-Or full stack:
+Or with optional Mongo:
 
 ```powershell
 .\start-dashboard.ps1
 ```
 
-Requires Node 20+. MongoDB optional but recommended (`MONGODB_URI` / `MONGODB_DB=sp_dashboard`) for shared product master and index prices since 2001.
+Requires **Node 20+**. MongoDB optional but recommended (`MONGODB_URI`, `MONGODB_DB=sp_dashboard`).
+
+## Documentation
+
+**Start here:** [docs/README.md](docs/README.md)
+
+| Need | Doc |
+|------|-----|
+| Architecture / caches | [docs/01-architecture.md](docs/01-architecture.md) |
+| Excel parity | [docs/02-probability-excel-parity.md](docs/02-probability-excel-parity.md) |
+| Debug symptoms | [docs/08-debug-playbook.md](docs/08-debug-playbook.md) |
+| Prompt PASS board | [docs/15-requirements-fulfillment.md](docs/15-requirements-fulfillment.md) |
+| Vercel / Render | [docs/14-vercel-render-deployment.md](docs/14-vercel-render-deployment.md) |
+
+## Quick verify
+
+```powershell
+npm run verify:probability-desk
+```
+
+## Labels policy
+
+User-facing labels must **not** use parentheses `()`. Rollover phase uses ` · Rollover Phase 1` / ` · Rollover Phase 2`.
+
+## References (offline)
+
+| Path | Role |
+|------|------|
+| `New Product Master_.xlsx` | Master book |
+| `NSP's under Risk.xlsm` | Probability formulas |
+| Primary SP Dashboard | UI / lifecycle / Mongo clone source |
+| Gift AIF Backtester | Daily path frequency reference only |

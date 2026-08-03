@@ -31,7 +31,9 @@ export function SearchableSelect({
   const [rect, setRect] = useState<MenuRect | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
-  const selectedLabel = options.find((o) => o.value === value)?.label;
+  // Avoid SSR/client drift: localStorage selection exists only on the client.
+  const displayValue = mounted ? value : "";
+  const selectedLabel = options.find((o) => o.value === displayValue)?.label;
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -86,7 +88,7 @@ export function SearchableSelect({
         onClick={() => setOpen((v) => !v)}
       >
         <Search className="h-4 w-4 shrink-0 text-amber-900/80" />
-        <span className={cn("min-w-0 flex-1 truncate", !value && "text-stone-500")}>
+        <span className={cn("min-w-0 flex-1 truncate", !selectedLabel && "text-stone-500")}>
           {selectedLabel ?? placeholder}
         </span>
         <ChevronDown className={cn("h-4 w-4 shrink-0 text-stone-500 transition", open && "rotate-180")} />
@@ -117,7 +119,7 @@ export function SearchableSelect({
                       <button
                         className={cn(
                           "w-full px-4 py-2.5 text-left text-sm hover:bg-gold/10",
-                          opt.value === value && "bg-gold/15 font-semibold text-maroon",
+                          opt.value === displayValue && "bg-gold/15 font-semibold text-maroon",
                         )}
                         type="button"
                         onClick={() => {

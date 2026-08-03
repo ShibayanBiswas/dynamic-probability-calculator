@@ -17,6 +17,8 @@ import type { ProductRecord } from "@/lib/types";
 
 const BATCH_SIZE = 24;
 const BETWEEN_BATCH_MS = 16;
+/** Soft cap so very large books still warm without unbounded queue growth. */
+const MAX_WARM_ISINS = 400;
 
 /** Last inputs that invalidate stored portfolio probabilities. */
 let lastInvalidateKey = "";
@@ -51,7 +53,7 @@ export function useLazyPortfolioProbabilities(products: ProductRecord[]) {
       .filter((isin): isin is string => !!isin)
       .filter((isin) => !getProbabilityPair(isin));
 
-    queueRef.current = isins.slice(0, 160);
+    queueRef.current = isins.slice(0, MAX_WARM_ISINS);
 
     let cancelled = false;
 

@@ -169,8 +169,8 @@ export function portfolioLifecycleColumnHint(
   }
   if (header === "Effective Target") {
     return (
-      "((Total Observation Dates × Target Level) − sum of underlying levels at passed observations) " +
-      "÷ Observation Dates Remaining. Blank when Target Level is missing, no pending observations remain, " +
+      "Total Observation Dates × Target Level, minus the sum of underlying levels at passed observations, " +
+      "then divided by Observation Dates Remaining. Blank when Target Level is missing, no pending observations remain, " +
       "or a passed observation has no historical level."
     );
   }

@@ -1,3 +1,6 @@
+import { existsSync, readFileSync } from "fs";
+import path from "path";
+
 import { NextResponse } from "next/server";
 
 import { getIndexPricesBetween } from "@/lib/db/index-prices";
@@ -10,13 +13,17 @@ import {
   setCachedProbability,
 } from "@/lib/probability/cache";
 import {
+  getProbabilityCheckingDate,
+  hasPassedFinalObservation,
+} from "@/lib/probability/as-of";
+import {
   buildIndexSeries,
   runProbabilityBacktest,
   resolveUnderlyingKind,
   type ProbabilityRunResult,
 } from "@/lib/probability/engine";
 import { resolveMasterProducts } from "@/lib/server/resolve-master-products";
-import { excelSerialToDate, parseExcelishDate, toLocalDateKey } from "@/lib/workbook/dates";
+import { excelSerialToDate, formatDisplayDate, parseExcelishDate, toLocalDateKey } from "@/lib/workbook/dates";
 import type { ProductRecord } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -27,43 +34,94 @@ type Series = ReturnType<typeof buildIndexSeries>;
 let seriesCache: { key: string; series: Series; loadedAt: number } | null = null;
 let productsCache: { products: ProductRecord[]; loadedAt: number } | null = null;
 
-function loadBundledSeries(): Series {
+const SERIES_FLOOR = "2001-01-01";
+
+/** Gift AIF / NSP `nifty` sheet — daily closes from 2001-01-01 (reference Excel parity). */
+function loadNiftyFromGiftCsv(): Map<string, number> {
+  const file = path.join(process.cwd(), "lib/data/nifty-daily-2001.csv");
+  const map = new Map<string, number>();
+  if (!existsSync(file)) return map;
+  const text = readFileSync(file, "utf8");
+  for (const line of text.split(/\r?\n/).slice(1)) {
+    if (!line.trim()) continue;
+    const comma = line.indexOf(",");
+    if (comma < 0) continue;
+    const date = line.slice(0, comma).trim();
+    const level = Number(line.slice(comma + 1).trim());
+    if (!date || !Number.isFinite(level) || level <= 0) continue;
+    map.set(date, level);
+  }
+  return map;
+}
+
+function loadNiftyFallbackJson(): Map<string, number> {
   const niftyMap = new Map<string, number>();
   for (const row of niftyHistory.entries as Array<{ dateSerial: number; level: number }>) {
     niftyMap.set(toLocalDateKey(excelSerialToDate(row.dateSerial)), row.level);
   }
+  return niftyMap;
+}
+
+function loadSensexBundled(): Map<string, number> {
   const sensexMap = new Map<string, number>();
   for (const row of sensexHistory.entries as Array<{ dateSerial: number; level: number }>) {
     sensexMap.set(toLocalDateKey(excelSerialToDate(row.dateSerial)), row.level);
   }
-  const dates = new Set([...niftyMap.keys(), ...sensexMap.keys()]);
+  return sensexMap;
+}
+
+function mergeForwardFilledSeries(
+  niftyMap: Map<string, number>,
+  sensexMap: Map<string, number>,
+): Series {
+  const dates = [...new Set([...niftyMap.keys(), ...sensexMap.keys()])].sort();
   const rows: Array<{ date: string; nifty: number; sensex: number }> = [];
-  for (const date of [...dates].sort()) {
-    const nifty = niftyMap.get(date);
-    const sensex = sensexMap.get(date);
+  let lastNifty: number | undefined;
+  let lastSensex: number | undefined;
+  for (const date of dates) {
+    if (date < SERIES_FLOOR) continue;
+    const nifty = niftyMap.get(date) ?? lastNifty;
+    const sensex = sensexMap.get(date) ?? lastSensex;
+    if (niftyMap.has(date)) lastNifty = niftyMap.get(date);
+    if (sensexMap.has(date)) lastSensex = sensexMap.get(date);
+    // Need both legs after forward-fill so Initial/Current can run either underlying.
     if (nifty == null || sensex == null) continue;
     rows.push({ date, nifty, sensex });
   }
   return buildIndexSeries(rows);
 }
 
+function loadBundledSeries(): Series {
+  const giftNifty = loadNiftyFromGiftCsv();
+  const niftyMap = giftNifty.size > 0 ? giftNifty : loadNiftyFallbackJson();
+  return mergeForwardFilledSeries(niftyMap, loadSensexBundled());
+}
+
 async function loadSeries(): Promise<Series> {
   const end = toLocalDateKey(new Date());
-  const cacheKey = `2001-01-01:${end}`;
+  const cacheKey = `${SERIES_FLOOR}:${end}:ffill:giftnifty-2001`;
   if (seriesCache && seriesCache.key === cacheKey && Date.now() - seriesCache.loadedAt < 5 * 60 * 1000) {
     return seriesCache.series;
   }
 
-  const mongoRows = await getIndexPricesBetween("2001-01-01", end);
-  let series: Series;
+  // Always seed from Gift/NSP Nifty since 2001 so paths never truncate at Yahoo ~2007.
+  const niftyMap = loadNiftyFromGiftCsv();
+  if (niftyMap.size === 0) {
+    for (const [d, v] of loadNiftyFallbackJson()) niftyMap.set(d, v);
+  }
+  const sensexMap = loadSensexBundled();
+
+  const mongoRows = await getIndexPricesBetween(SERIES_FLOOR, end);
   if (mongoRows.length >= 1000) {
-    series = buildIndexSeries(mongoRows.map((r) => ({ date: r.date, nifty: r.nifty, sensex: r.sensex })));
-  } else {
-    series = loadBundledSeries();
+    for (const r of mongoRows) {
+      if (r.nifty > 0) niftyMap.set(r.date, r.nifty);
+      if (r.sensex > 0) sensexMap.set(r.date, r.sensex);
+    }
   }
 
+  const series = mergeForwardFilledSeries(niftyMap, sensexMap);
   seriesCache = { key: cacheKey, series, loadedAt: Date.now() };
-  return series;
+  return seriesCache.series;
 }
 
 async function loadProducts(): Promise<ProductRecord[]> {
@@ -78,49 +136,65 @@ async function loadProducts(): Promise<ProductRecord[]> {
 function runModesForProduct(args: {
   product: ProductRecord;
   modes: Array<"initial" | "current">;
-  valuationDate: Date;
-  valuationKey: string;
+  /** Requested desk date before last-obs clamp. */
+  requestedDate: Date;
   series: Series;
   indexMaxDate: string;
   niftyLevel?: number;
   sensexLevel?: number;
   includePaths: boolean;
   bookRevision?: string;
-}): Record<string, ProbabilityRunResult> {
+}): {
+  initial?: ProbabilityRunResult;
+  current?: ProbabilityRunResult;
+  checkingDate: string;
+  asOfLastObservation: boolean;
+} {
   const underlying = resolveUnderlyingKind(args.product);
   if (!underlying) {
     throw new Error("Probability is available only for Nifty and Sensex underlyings");
   }
 
-  const results: Record<string, ProbabilityRunResult> = {};
+  const checkingDate = getProbabilityCheckingDate(args.product, args.requestedDate);
+  const valuationKey = toLocalDateKey(checkingDate);
+  const asOfLastObservation = hasPassedFinalObservation(args.product, args.requestedDate);
+  // After final obs, drop live levels so Current uses the checking-date close from history.
+  const niftyLevel = asOfLastObservation ? undefined : args.niftyLevel;
+  const sensexLevel = asOfLastObservation ? undefined : args.sensexLevel;
+
+  const results: { initial?: ProbabilityRunResult; current?: ProbabilityRunResult } = {};
   for (const m of args.modes) {
     const key = probabilityCacheKey({
       isin: args.product.isin ?? "",
       mode: m,
-      valuationDate: args.valuationKey,
+      valuationDate: valuationKey,
       underlying,
       indexMaxDate: args.indexMaxDate,
       includePaths: args.includePaths,
       bookRevision: args.bookRevision,
-      niftyLevel: args.niftyLevel,
-      sensexLevel: args.sensexLevel,
+      niftyLevel,
+      sensexLevel,
     });
     let result = getCachedProbability(key);
     if (!result) {
       result = runProbabilityBacktest({
         product: args.product,
         mode: m,
-        valuationDate: args.valuationDate,
+        valuationDate: checkingDate,
         series: args.series,
-        niftyLevel: args.niftyLevel,
-        sensexLevel: args.sensexLevel,
+        niftyLevel,
+        sensexLevel,
         includePaths: args.includePaths,
       });
       setCachedProbability(key, result);
     }
     results[m] = result;
   }
-  return results;
+  return {
+    ...results,
+    checkingDate: valuationKey,
+    asOfLastObservation,
+  };
 }
 
 export async function POST(request: Request) {
@@ -147,8 +221,7 @@ export async function POST(request: Request) {
 
     const mode = body.mode ?? "both";
     const includePaths = body.includePaths !== false;
-    const valuationDate = parseExcelishDate(body.valuationDate) ?? new Date();
-    const valuationKey = toLocalDateKey(valuationDate);
+    const requestedDate = parseExcelishDate(body.valuationDate) ?? new Date();
     const modes: Array<"initial" | "current"> = mode === "both" ? ["initial", "current"] : [mode];
 
     const series = await loadSeries();
@@ -171,6 +244,8 @@ export async function POST(request: Request) {
         error?: string;
         initial?: ProbabilityRunResult;
         current?: ProbabilityRunResult;
+        checkingDate?: string;
+        asOfLastObservation?: boolean;
       }> = [];
 
       for (const isin of batchIsins) {
@@ -191,8 +266,7 @@ export async function POST(request: Request) {
           const results = runModesForProduct({
             product,
             modes,
-            valuationDate,
-            valuationKey,
+            requestedDate,
             series,
             indexMaxDate,
             niftyLevel: body.niftyLevel,
@@ -205,6 +279,8 @@ export async function POST(request: Request) {
             ok: true,
             initial: results.initial,
             current: results.current,
+            checkingDate: results.checkingDate,
+            asOfLastObservation: results.asOfLastObservation,
           });
         } catch (error) {
           batchResults.push({
@@ -217,7 +293,7 @@ export async function POST(request: Request) {
 
       return NextResponse.json({
         ok: true,
-        valuationDate: valuationKey,
+        valuationDate: toLocalDateKey(requestedDate),
         indexMaxDate,
         results: batchResults,
       });
@@ -243,8 +319,7 @@ export async function POST(request: Request) {
     const results = runModesForProduct({
       product,
       modes,
-      valuationDate,
-      valuationKey,
+      requestedDate,
       series,
       indexMaxDate,
       niftyLevel: body.niftyLevel,
@@ -256,9 +331,13 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       isin,
-      valuationDate: valuationKey,
+      valuationDate: results.checkingDate,
+      checkingDate: results.checkingDate,
+      checkingDateDisplay: formatDisplayDate(parseExcelishDate(results.checkingDate) ?? requestedDate),
+      asOfLastObservation: results.asOfLastObservation,
       indexMaxDate,
-      ...results,
+      initial: results.initial,
+      current: results.current,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Probability run failed";

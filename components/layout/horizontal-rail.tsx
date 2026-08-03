@@ -15,7 +15,7 @@ export function HorizontalBand({
   id?: string;
 }) {
   return (
-    <section className={cn("w-full", className)} id={id}>
+    <section className={cn("w-full min-w-0", className)} id={id}>
       {children}
     </section>
   );
@@ -43,10 +43,10 @@ export function HorizontalRail({
   return (
     <div
       className={cn(
-        "horizontal-rail w-full -mx-1 px-1 pb-2",
+        "horizontal-rail w-full min-w-0 -mx-1 px-1 pb-2",
         isSpec && "horizontal-rail-spec",
         !isSpec && fillFirst && "horizontal-rail-fill",
-        !isSpec && !fillFirst && "overflow-x-auto",
+        !isSpec && !fillFirst && "overflow-x-auto [-webkit-overflow-scrolling:touch]",
         className,
       )}
     >

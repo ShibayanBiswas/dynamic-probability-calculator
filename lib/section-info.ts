@@ -4,7 +4,7 @@ import type { InfoBlurb } from "@/lib/info-blurb";
 export const SECTION_INFO: Record<string, InfoBlurb> = {
   "home-kpis": {
     title: "Understanding these headline numbers",
-    body: "These tiles summarise the live probability book: notional, ongoing deals, observation-due windows, and near expiries.\nLive Notional is the sum of trade amounts on the merged master book.\nOngoing counts the live book. Observation Due in 3M, 2M, and 1M flag products with a fixing inside that calendar window.\nExpiring in 3M and 1M highlight deals approaching phase schedule end.\nExpired products are excluded from this probability desk.",
+    body: "These tiles summarise the live probability book: notional, ongoing deals, observation-due windows, and near expiries.\nLive Notional is the sum of trade amounts on the merged master book.\nOngoing counts products whose phase end is still ahead and whose last observation has not settled yet. Observation Due in 3M, 2M, and 1M flag products with a fixing inside that calendar window under the same live-observation gate.\nExpiring in 3M and 1M highlight deals approaching phase schedule end that still have an open last observation.\nExpired products and past-final-observation products are excluded from this probability desk.",
   },
   "home-filter": {
     title: "How the portfolio filter works",
@@ -29,7 +29,7 @@ export const SECTION_INFO: Record<string, InfoBlurb> = {
   },
   "val-output": {
     title: "Reading the output sheet",
-    body: "Initial Probability backtests from phase start. Current Probability backtests from the valuation date.\nTarget Percent and Percent Required frame the success threshold for each mode.\nDays Left to Last Observation and index levels contextualise the run.\nEffective Target and observation levels live on the lifecycle register.\nFigures update whenever valuation date or market levels change.",
+    body: "Initial Probability backtests from phase start. Current Probability backtests from the valuation date.\nTarget Underlying is Target Level versus entry; Required Underlying is Target Level versus today’s mark.\nDays Left to Last Observation and index levels contextualise the run.\nEffective Target and observation levels live on the lifecycle register.\nFigures update whenever valuation date or market levels change.",
   },
   "val-products": {
     title: "About the product list",
@@ -50,7 +50,7 @@ export const SECTION_INFO: Record<string, InfoBlurb> = {
   },
   "pay-output": {
     title: "Reading the current-probability output",
-    body: "Current Probability shows the share of included daily paths that clear percent required.\nPath tables list simulated observation levels and success flags.\nPercent Required and Days Left to Last Observation frame the remaining hurdle.\nColumns match the Excel Current Prob sheet for desk reconciliation.\nThe table is used for exact numbers and the summary panel for the headline probability.",
+    body: "Current Probability shows the share of included daily paths that clear Required Underlying.\nPath tables list simulated observation levels and success flags.\nRequired Underlying and Days Left to Last Observation frame the remaining hurdle.\nColumns match the Excel Current Prob sheet for desk reconciliation.\nThe table is used for exact numbers and the summary panel for the headline probability.",
   },
   "an-lifecycle": {
     title: "Lifecycle universe",

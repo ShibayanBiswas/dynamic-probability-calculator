@@ -7,6 +7,7 @@ import {
   getRolloverPhaseKind,
   getWorkingAllotmentDate,
 } from "@/lib/product-dates";
+import { hasPassedFinalObservation } from "@/lib/probability/as-of";
 import { getExpiredValuationUpperBound } from "@/lib/expired-valuation-dates";
 import {
   hasMasterBookIdentity,
@@ -58,7 +59,9 @@ export const LIFECYCLE_FILTERS = [
 
 export type LifecycleFilter = (typeof LIFECYCLE_FILTERS)[number];
 
-/** Live-book pills only — expired products are never shown on this desk. */
+/** Live-book pills only — expired products are never shown on this desk.
+ *  Ongoing = phase still live AND final observation has not settled yet.
+ */
 export const UI_LIFECYCLE_FILTERS = [
   "ongoing",
   "obs-due-3m",
@@ -67,6 +70,17 @@ export const UI_LIFECYCLE_FILTERS = [
   "expiring-3m",
   "expiring-1m",
 ] as const satisfies readonly LifecycleFilter[];
+
+/**
+ * Probability desk live-book gate: exclude products whose last observation
+ * fixing has already settled (even if maturity/POED is still in the future).
+ */
+export function isLiveObservationBookProduct(
+  product: ProductRecord,
+  asOf: Date = new Date(),
+): boolean {
+  return !hasPassedFinalObservation(product, asOf);
+}
 
 /** Quick Analytics export on Product Details — Ongoing book only. */
 export const QUICK_ANALYTICS_LIFECYCLE_FILTERS = ["ongoing"] as const satisfies readonly LifecycleFilter[];
@@ -385,6 +399,8 @@ export function productHasObservationDueWithin(
 ): boolean {
   const status = getProductLifecycleStatus(product, asOf);
   if (status === "expired" || status === "upcoming" || status === "unknown") return false;
+  // Past final observation → not in the live probability book.
+  if (!isLiveObservationBookProduct(product, asOf)) return false;
 
   const deskDay = startOfDay(asOf);
   return getProductObservationDates(product).some((date) => {
@@ -411,11 +427,19 @@ export function filterProductsByLifecycle(
   filter: LifecycleFilter,
   asOf = new Date(),
 ): ProductRecord[] {
+  // Probability desk never surfaces phase-expired products.
+  if (filter === "expired") return [];
+
   const obsHorizon = observationDueHorizonDays(filter);
   if (obsHorizon != null) {
     return products.filter((product) => productHasObservationDueWithin(product, obsHorizon, asOf));
   }
-  return products.filter((product) => lifecycleStatusMatchesFilter(getProductLifecycleStatus(product, asOf), filter));
+
+  // Ongoing / expiring tabs: phase-status match AND last observation not yet settled.
+  return products.filter((product) => {
+    if (!isLiveObservationBookProduct(product, asOf)) return false;
+    return lifecycleStatusMatchesFilter(getProductLifecycleStatus(product, asOf), filter);
+  });
 }
 
 /** Products searchable/selectable on a lifecycle desk tab — identical to {@link filterProductsByLifecycle}. */

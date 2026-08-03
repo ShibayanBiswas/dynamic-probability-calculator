@@ -3,20 +3,26 @@ node_modules
 dist
 out
 .tools
-backend/python/.venv
-backend/python/__pycache__
-.python-api.pid
 *.log
 .env
 .env.local
 tsconfig.tsbuildinfo
+*.tsbuildinfo
 
-# LibreOffice / editor lock files
+# Python / optional analytics leftovers
+backend/
+.venv/
+**/.venv/
+**/__pycache__/
+.python-api.pid
+
+# LibreOffice / Microsoft Office lock files
 .~lock.*#
+~$*
+*~.xlsx
 
 # Local master backups
 *.backup.xlsx
-*~.xlsx
 
 # Local Excel masters (keep on disk; not versioned)
 *.xlsx

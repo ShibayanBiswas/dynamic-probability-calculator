@@ -470,8 +470,8 @@ export async function downloadLifecycleWorkbook(
     return {
       Category: bucket.name,
       Products: pool.length,
-      "Notional (₹ Cr)": Number((notional / 1e7).toFixed(4)),
-      "Notional (formatted)": formatCrores(notional),
+      "Notional in ₹ Cr": Number((notional / 1e7).toFixed(4)),
+      "Notional formatted": formatCrores(notional),
     };
   });
 
@@ -594,7 +594,7 @@ export async function downloadQuickAnalyticsWorkbook(
     return {
       Category: bucket.name,
       Products: pool.length,
-      "Notional (₹ Cr)": Number((notional / 1e7).toFixed(4)),
+      "Notional in ₹ Cr": Number((notional / 1e7).toFixed(4)),
       "Valuation Date": options.valuationDate,
       "Nifty Level": levels.niftyLevel ?? "",
       "Sensex Level": levels.sensexLevel ?? "",

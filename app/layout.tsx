@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import { DatasetProvider } from "@/lib/context/dataset-provider";
 import { DeskDialogProvider } from "@/lib/context/desk-dialog-provider";
@@ -15,6 +15,17 @@ export const metadata: Metadata = {
   description:
     "Anand Rathi Wealth structured products desk — dynamic probability, initial probability, and current probability analytics for the live Primary book.",
   icons: { icon: "/brand/arwl-logo.svg" },
+};
+
+/** Ensure the desk lays out correctly on phones and small tablets. */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#faf7f0" },
+    { media: "(prefers-color-scheme: dark)", color: "#12100c" },
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

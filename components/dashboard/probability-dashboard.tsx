@@ -2,22 +2,27 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { Download, FileText } from "lucide-react";
 
 import { ExcelInputPanel } from "@/components/dashboard/excel-input-panel";
 import { LifecycleProductList } from "@/components/dashboard/lifecycle-product-list";
+import { PastFinalObservationPanels } from "@/components/dashboard/past-final-observation-panels";
+import { ProductSpecificationsPanel } from "@/components/dashboard/product-specifications-panel";
 import { HorizontalBand } from "@/components/layout/horizontal-rail";
 import {
   AppPage,
-  FieldRow,
-  FieldStack,
+  Button,
   KpiBand,
-  Output,
-  OutputGlow,
   Panel,
+  SectionInfo,
   SectionTitle,
   SubPageTabs,
   SubTitle,
 } from "@/components/layout/app-ui";
+import { RevealOutput } from "@/components/ui/reveal-output";
+import { UniformSpecRail, useUniformSpecCardSize, type SpecRailCard } from "@/components/ui/spec-rail";
+import { MasterUploadButton } from "@/components/ui/master-upload-button";
+import { useScreenExport } from "@/lib/hooks/use-screen-excel-export";
 import { useProductSelection } from "@/lib/context/product-selection-provider";
 import { useDataset } from "@/lib/context/dataset-provider";
 import { useMasterProducts } from "@/lib/hooks/use-master-products";
@@ -35,8 +40,11 @@ import {
   UI_LIFECYCLE_FILTERS,
 } from "@/lib/product-lifecycle";
 import {
+  getCouponLabel,
   getIndexEntryLevelRaw,
+  getProductIndexFieldLabel,
   getTargetLevel,
+  isSensexLinked,
   rawField,
 } from "@/lib/product-utils";
 import {
@@ -46,21 +54,27 @@ import {
   phasePerformanceStartLabel,
 } from "@/lib/product-dates";
 import {
+  getProbabilityCheckingDate,
+  hasPassedFinalObservation,
+  hydrateProbabilityRunResult,
+} from "@/lib/probability/as-of";
+import {
   daysLeftToLastObservation,
-  requiredPercent,
-  targetPercent,
+  requiredUnderlying,
+  targetUnderlying,
   type ProbabilityRunResult,
 } from "@/lib/probability/engine";
+import {
+  resolveHistoricalNiftyLevel,
+  resolveHistoricalSensexLevel,
+} from "@/lib/expired-mark";
+import { SECTION_INFO } from "@/lib/section-info";
+import { formatDeskDate } from "@/lib/market-data";
 import { formatDisplayDate, parseExcelishDate } from "@/lib/workbook/dates";
-import { formatNumber, formatPercent } from "@/lib/utils";
-import { MasterUploadButton } from "@/components/ui/master-upload-button";
+import { formatNumber, formatPercent, formatReportAsOf } from "@/lib/utils";
+import type { ProductRecord } from "@/lib/types";
 
 export type ProbabilitySurface = "summary" | "initial" | "current";
-
-const TABS = [
-  { id: "interface", label: "Probability Interface" },
-  { id: "products", label: "Product List" },
-];
 
 function formatPct(value: number | null | undefined): string {
   if (value == null || !Number.isFinite(value)) return "—";
@@ -70,6 +84,12 @@ function formatPct(value: number | null | undefined): string {
 function formatLevel(value: number | null | undefined): string {
   if (value == null || !Number.isFinite(value)) return "—";
   return formatNumber(value, 2);
+}
+
+function interfaceTabLabel(surface: ProbabilitySurface): string {
+  if (surface === "summary") return "Probability Interface";
+  if (surface === "initial") return "Initial Probability Interface";
+  return "Current Probability Interface";
 }
 
 function ScheduleCard({
@@ -89,39 +109,48 @@ function ScheduleCard({
       </Panel>
     );
   }
+  // Present slots only — display as 1…N regardless of master Average 1–7 column index.
   const present = result.schedule.filter((s) => s.date);
+  if (present.length === 0) {
+    return (
+      <Panel className="!p-4" glow="cyan">
+        <SectionTitle>Observation Schedule</SectionTitle>
+        <p className="mt-2 text-sm text-stone-500">No observation dates on this product.</p>
+      </Panel>
+    );
+  }
   return (
     <Panel className="!p-4" glow="cyan">
       <SectionTitle>Observation Schedule</SectionTitle>
       <p className="mt-1 text-sm text-stone-500">
-        Average slots are observation dates. {daysRowLabel} are measured from {baseLabel}.
+        Observation slots and day offsets. {daysRowLabel} are measured from {baseLabel}.
       </p>
-      <div className="mt-3 overflow-x-auto">
-        <table className="min-w-full text-sm">
+      <div className="schedule-table-wrap mt-3 w-full overflow-x-auto [-webkit-overflow-scrolling:touch]">
+        <table className="schedule-table w-full min-w-full text-sm">
           <thead>
-            <tr className="border-b border-[color:var(--ar-border)] text-left text-stone-500">
-              <th className="px-2 py-2 font-semibold">Average</th>
-              {present.map((s) => (
-                <th key={s.index} className="px-2 py-2 font-semibold">
-                  {s.index}
+            <tr>
+              <th scope="col">Observation</th>
+              {present.map((_s, displayIdx) => (
+                <th key={`h-${displayIdx}`} scope="col">
+                  {displayIdx + 1}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            <tr className="border-b border-[color:var(--ar-border)]">
-              <td className="px-2 py-2 font-semibold">Dates</td>
-              {present.map((s) => (
-                <td key={`d-${s.index}`} className="px-2 py-2">
+            <tr>
+              <th scope="row">Dates</th>
+              {present.map((s, displayIdx) => (
+                <td key={`d-${displayIdx}`} className="whitespace-nowrap">
                   {s.date ? formatDisplayDate(s.date) : "—"}
                 </td>
               ))}
             </tr>
             <tr>
-              <td className="px-2 py-2 font-semibold">{daysRowLabel}</td>
-              {present.map((s) => (
-                <td key={`dy-${s.index}`} className="px-2 py-2">
-                  {formatNumber(s.daysFromBase, 2)}
+              <th scope="row">{daysRowLabel}</th>
+              {present.map((s, displayIdx) => (
+                <td key={`dy-${displayIdx}`} className="whitespace-nowrap tabular-nums">
+                  {formatNumber(s.daysFromBase, 0)}
                 </td>
               ))}
             </tr>
@@ -132,27 +161,39 @@ function ScheduleCard({
   );
 }
 
+type PathViewFilter = "included" | "excluded" | "all";
+
 function PathBacktestTable({
   result,
   showAdjustedStart,
+  loadingPaths,
+  product,
 }: {
   result: ProbabilityRunResult | null;
   showAdjustedStart: boolean;
+  loadingPaths?: boolean;
+  product?: ProductRecord | null;
 }) {
   const parentRef = useRef<HTMLDivElement>(null);
-  const [showAll, setShowAll] = useState(false);
+  const [pathFilter, setPathFilter] = useState<PathViewFilter>("included");
+  const [exportingPaths, setExportingPaths] = useState(false);
   const paths = result?.paths ?? [];
   const presentIndexes = result
     ? result.schedule.map((s, i) => (s.date ? i : -1)).filter((i) => i >= 0)
     : [];
-  const displayPaths = showAll ? paths : paths.filter((p) => p.pathIncluded);
+  const displayPaths = paths.filter((p) => {
+    if (pathFilter === "included") return p.pathIncluded;
+    if (pathFilter === "excluded") return !p.pathIncluded;
+    return true;
+  });
   const rowCount = displayPaths.length;
   const colCount = 3 + (showAdjustedStart ? 1 : 0) + presentIndexes.length * 2 + 3;
+  const seriesStart = paths[0]?.pathStartDate ?? null;
 
   const virtualizer = useVirtualizer({
     count: rowCount,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 34,
+    estimateSize: () => 36,
     overscan: 24,
   });
 
@@ -160,7 +201,22 @@ function PathBacktestTable({
     return (
       <Panel className="!p-4" glow="purple">
         <SectionTitle>Historical Path Backtest</SectionTitle>
-        <p className="mt-2 text-sm text-stone-500">Run a product to populate daily historical paths.</p>
+        <p className="mt-2 text-sm text-stone-500">
+          {loadingPaths ? "Loading daily historical paths…" : "Reveal output to load the path backtest."}
+        </p>
+      </Panel>
+    );
+  }
+
+  if (paths.length === 0) {
+    return (
+      <Panel className="!p-4" glow="purple">
+        <SectionTitle>Historical Path Backtest</SectionTitle>
+        <p className="mt-2 text-sm text-stone-500">
+          {loadingPaths
+            ? "Loading daily historical paths…"
+            : "No path rows yet — open this panel after the path run finishes."}
+        </p>
       </Panel>
     );
   }
@@ -168,39 +224,66 @@ function PathBacktestTable({
   return (
     <Panel className="!p-4" glow="purple">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
+        <div className="min-w-0">
           <SectionTitle>Historical Path Backtest</SectionTitle>
           <p className="mt-1 text-sm text-stone-500">
-            Each row is one daily path. The last included path has its final observation on the latest trading day.
+            Daily paths from {seriesStart ?? "earliest available index history"} · scroll horizontally for every
+            column. Last included path ends on the latest trading day.
           </p>
         </div>
-        <button
-          type="button"
-          className="nav-sub-pill"
-          onClick={() => setShowAll((v) => !v)}
-        >
-          {showAll ? "Show included paths only" : "Show all paths"}
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            active={pathFilter === "included"}
+            variant="pill"
+            onClick={() => setPathFilter("included")}
+          >
+            Included
+          </Button>
+          <Button
+            active={pathFilter === "excluded"}
+            variant="pill"
+            onClick={() => setPathFilter("excluded")}
+          >
+            Excluded
+          </Button>
+          <Button active={pathFilter === "all"} variant="pill" onClick={() => setPathFilter("all")}>
+            All paths
+          </Button>
+          <Button
+            disabled={exportingPaths || !product}
+            variant="primary"
+            onClick={() => {
+              if (!product || !result) return;
+              setExportingPaths(true);
+              void import("@/lib/workbook/export-probability-screen")
+                .then(({ downloadProbabilityPathsExcel }) =>
+                  downloadProbabilityPathsExcel({ product, result, filter: pathFilter }),
+                )
+                .finally(() => setExportingPaths(false));
+            }}
+          >
+            <Download className="h-4 w-4" />
+            {exportingPaths ? "Building…" : "Download Paths Excel"}
+          </Button>
+        </div>
       </div>
       <div
         ref={parentRef}
-        className="mt-3 max-h-[28rem] overflow-auto rounded-lg border border-[color:var(--ar-border)]"
+        className="path-backtest-scroll data-table-premium-wrap mt-3 max-h-[min(70vh,720px)] overflow-auto [-webkit-overflow-scrolling:touch]"
       >
         <div className="min-w-max">
           <div
-            className="sticky top-0 z-10 grid gap-2 border-b border-[color:var(--ar-border)] bg-[color:var(--ar-surface)] px-2 py-2 text-xs font-semibold text-stone-500"
-            style={{
-              gridTemplateColumns: `repeat(${colCount}, minmax(7rem, auto))`,
-            }}
+            className="path-backtest-grid sticky top-0 z-10 grid gap-2 border-b border-[color:var(--ar-border)] bg-[color:var(--ar-surface)] px-2 py-2 text-[11px] font-semibold text-stone-500 sm:text-xs"
+            style={{ gridTemplateColumns: `repeat(${colCount}, minmax(7.5rem, auto))` }}
           >
             <span>Start</span>
             <span>Underlying Closing Level</span>
             {showAdjustedStart ? <span>Start Level</span> : null}
-            {presentIndexes.map((idx) => (
-              <span key={`od-${idx}`}>Average Date {idx + 1}</span>
+            {presentIndexes.map((_idx, displayIdx) => (
+              <span key={`od-${displayIdx}`}>Average Date {displayIdx + 1}</span>
             ))}
-            {presentIndexes.map((idx) => (
-              <span key={`ol-${idx}`}>Average Level {idx + 1}</span>
+            {presentIndexes.map((_idx, displayIdx) => (
+              <span key={`ol-${displayIdx}`}>Average Level {displayIdx + 1}</span>
             ))}
             <span>Average Underlying Level</span>
             <span>Underlying Performance</span>
@@ -212,18 +295,20 @@ function PathBacktestTable({
               return (
                 <div
                   key={virtualRow.key}
-                  className="absolute left-0 grid w-full gap-2 border-b border-[color:var(--ar-border)] px-2 py-1.5 text-xs"
+                  className="path-backtest-grid absolute left-0 grid w-full gap-2 border-b border-[color:var(--ar-border)] px-2 py-1.5 text-[11px] sm:text-xs"
                   style={{
                     height: virtualRow.size,
                     transform: `translateY(${virtualRow.start}px)`,
-                    gridTemplateColumns: `repeat(${colCount}, minmax(7rem, auto))`,
+                    gridTemplateColumns: `repeat(${colCount}, minmax(7.5rem, auto))`,
                   }}
                 >
-                  <span>{row.pathStartDate}</span>
+                  <span className="whitespace-nowrap">{row.pathStartDate}</span>
                   <span>{formatLevel(row.underlyingClosingLevel)}</span>
                   {showAdjustedStart ? <span>{formatLevel(row.adjustedStartLevel)}</span> : null}
                   {presentIndexes.map((idx) => (
-                    <span key={`pd-${idx}`}>{row.observationDates[idx] ?? "—"}</span>
+                    <span key={`pd-${idx}`} className="whitespace-nowrap">
+                      {row.observationDates[idx] ?? "—"}
+                    </span>
                   ))}
                   {presentIndexes.map((idx) => (
                     <span key={`pl-${idx}`}>{formatLevel(row.observationLevels[idx])}</span>
@@ -238,8 +323,29 @@ function PathBacktestTable({
         </div>
       </div>
       <p className="mt-2 text-xs text-stone-500">
-        Showing {formatNumber(rowCount, 0)} of {formatNumber(paths.length, 0)} paths · Included {formatNumber(result.includedCount, 0)} · Successes {formatNumber(result.successCount, 0)}
+        Showing {formatNumber(rowCount, 0)} of {formatNumber(paths.length, 0)} paths · Included{" "}
+        {formatNumber(result.includedCount, 0)} · Successes {formatNumber(result.successCount, 0)}
+        {seriesStart ? ` · Series from ${seriesStart}` : ""}
       </p>
+    </Panel>
+  );
+}
+
+function ProbabilityResultsRail({
+  product,
+  cards,
+}: {
+  product: ProductRecord;
+  cards: SpecRailCard[];
+}) {
+  const { width, height, MeasureLayer } = useUniformSpecCardSize(cards);
+  return (
+    <Panel className="!p-4" glow="purple">
+      <SectionInfo {...SECTION_INFO["val-output"]} />
+      <SectionTitle>Probability Results</SectionTitle>
+      <SubTitle>Live results for {product.name}</SubTitle>
+      {MeasureLayer}
+      <UniformSpecRail cards={cards} className="mt-4" uniformHeight={height} uniformWidth={width} />
     </Panel>
   );
 }
@@ -252,74 +358,164 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
   const { filter: lifecycle, setFilter: setLifecycle } = useLifecycleFilter("ongoing");
   const [tab, setTab] = useState("interface");
   const [loading, setLoading] = useState(false);
+  const [loadingPaths, setLoadingPaths] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [initialResult, setInitialResult] = useState<ProbabilityRunResult | null>(null);
   const [currentResult, setCurrentResult] = useState<ProbabilityRunResult | null>(null);
+  const [pathsUnlocked, setPathsUnlocked] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+  const { exporting: exportingScreen, runExport: runScreenExport, warmExport: warmScreenExport } =
+    useScreenExport();
 
   const pool = useMemo(
     () => getLifecyclePickerPool(masterProducts, lifecycle, asOf),
     [masterProducts, lifecycle, asOf],
   );
-
-  useResyncProductToLifecyclePool(pool, lifecycle, asOf);
-  const { selectFromPool, resetToLifecycleDefaults } = useLifecycleProductPick(pool, lifecycle, asOf);
   const product = pickLifecyclePoolProduct(pool, selection.resolvedProduct, lifecycle, asOf);
 
-  const valuationDate = useMemo(
-    () => parseExcelishDate(selection.valuationDate) ?? asOf,
-    [selection.valuationDate, asOf],
+  useResyncProductToLifecyclePool(pool, lifecycle, asOf);
+  const { selectFromPool, resetToLifecycleDefaults } = useLifecycleProductPick(
+    pool,
+    lifecycle,
+    asOf,
   );
 
-  const niftyLevel = Number(selection.niftyLevel) || undefined;
-  const sensexLevel = Number(selection.sensexLevel) || undefined;
+  const pastFinalObservation = useMemo(
+    () => (product ? hasPassedFinalObservation(product, asOf) : false),
+    [product, asOf],
+  );
 
-  const runProbability = useCallback(async () => {
-    if (!product?.isin) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const mode =
-        surface === "summary" ? "both" : surface === "initial" ? "initial" : "current";
-      const res = await fetch("/api/probability/run", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          isin: product.isin,
-          mode,
-          valuationDate: selection.valuationDate,
-          niftyLevel,
-          sensexLevel,
-          includePaths: surface !== "summary",
-          bookRevision: `${dataset.workbookName}:${dataset.loadedAt}`,
-        }),
-      });
-      const json = await res.json();
-      if (!res.ok) {
-        setError(json.error ?? "Probability run failed");
+  const valuationParsed = parseExcelishDate(selection.valuationDate) ?? asOf;
+  const checkingDate = useMemo(
+    () => (product ? getProbabilityCheckingDate(product, valuationParsed) : valuationParsed),
+    [product, valuationParsed],
+  );
+
+  const niftyLevel = Number(selection.niftyLevel) || 0;
+  const sensexLevel = Number(selection.sensexLevel) || 0;
+
+  const effectiveNiftyLevel = useMemo(() => {
+    if (!product || !pastFinalObservation) return niftyLevel;
+    return resolveHistoricalNiftyLevel(checkingDate) ?? niftyLevel;
+  }, [product, pastFinalObservation, checkingDate, niftyLevel]);
+
+  const effectiveSensexLevel = useMemo(() => {
+    if (!product || !pastFinalObservation) return sensexLevel;
+    return resolveHistoricalSensexLevel(checkingDate) ?? sensexLevel;
+  }, [product, pastFinalObservation, checkingDate, sensexLevel]);
+
+  // Reset path unlock when product / surface / inputs change — keep first paint light.
+  useEffect(() => {
+    setPathsUnlocked(false);
+  }, [
+    product?.rowId,
+    surface,
+    selection.valuationDate,
+    selection.niftyLevel,
+    selection.sensexLevel,
+    lifecycle,
+  ]);
+
+  const runProbability = useCallback(
+    async (includePaths: boolean) => {
+      if (!product?.isin) {
         setInitialResult(null);
         setCurrentResult(null);
         return;
       }
-      setInitialResult((json.initial as ProbabilityRunResult) ?? null);
-      setCurrentResult((json.current as ProbabilityRunResult) ?? null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Probability run failed");
-    } finally {
-      setLoading(false);
-    }
-  }, [
-    product?.isin,
-    surface,
-    selection.valuationDate,
-    niftyLevel,
-    sensexLevel,
-    dataset.workbookName,
-    dataset.loadedAt,
-  ]);
 
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      if (includePaths) setLoadingPaths(true);
+      else setLoading(true);
+      setError(null);
+
+      try {
+        const mode = surface === "summary" ? "both" : surface === "initial" ? "initial" : "current";
+        const res = await fetch("/api/probability/run", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
+          body: JSON.stringify({
+            isin: product.isin,
+            mode,
+            valuationDate: formatDeskDate(checkingDate),
+            niftyLevel: pastFinalObservation ? undefined : niftyLevel,
+            sensexLevel: pastFinalObservation ? undefined : sensexLevel,
+            includePaths,
+            bookRevision: `${dataset.workbookName}:${dataset.loadedAt}`,
+          }),
+        });
+        const json = (await res.json()) as {
+          ok?: boolean;
+          error?: string;
+          initial?: ProbabilityRunResult;
+          current?: ProbabilityRunResult;
+        };
+        if (controller.signal.aborted) return;
+        if (!res.ok || json.ok === false) throw new Error(json.error || "Probability run failed");
+
+        const nextInitial = hydrateProbabilityRunResult(json.initial);
+        const nextCurrent = hydrateProbabilityRunResult(json.current);
+
+        setInitialResult((prev) => {
+          if (!nextInitial) return null;
+          if (!includePaths && prev?.paths?.length) {
+            return { ...nextInitial, paths: prev.paths };
+          }
+          return nextInitial;
+        });
+        setCurrentResult((prev) => {
+          if (!nextCurrent) return null;
+          if (!includePaths && prev?.paths?.length) {
+            return { ...nextCurrent, paths: prev.paths };
+          }
+          return nextCurrent;
+        });
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        setError(err instanceof Error ? err.message : "Probability run failed");
+        if (!includePaths) {
+          setInitialResult(null);
+          setCurrentResult(null);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          if (includePaths) setLoadingPaths(false);
+          else setLoading(false);
+        }
+      }
+    },
+    [
+      product?.isin,
+      surface,
+      checkingDate,
+      pastFinalObservation,
+      niftyLevel,
+      sensexLevel,
+      dataset.workbookName,
+      dataset.loadedAt,
+    ],
+  );
+
+  // Fast headline run (no path payload) — keeps the desk responsive.
   useEffect(() => {
-    void runProbability();
+    const timer = window.setTimeout(() => {
+      void runProbability(false);
+    }, 120);
+    return () => {
+      window.clearTimeout(timer);
+      abortRef.current?.abort();
+    };
   }, [runProbability]);
+
+  // Heavy path rows only after Primary-style Reveal opens on Initial / Current.
+  useEffect(() => {
+    if (surface === "summary" || !pathsUnlocked) return;
+    void runProbability(true);
+  }, [pathsUnlocked, surface, runProbability]);
 
   const activeResult = surface === "current" ? currentResult : initialResult;
   const startNoun = product ? phasePerformanceStartLabel(product) : "Allotment";
@@ -331,17 +527,34 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
         ? "Initial Probability"
         : "Current Probability";
 
-  const tgt = product ? targetPercent(product) : null;
-  const req = product ? requiredPercent(product, niftyLevel, sensexLevel) : null;
-  const daysLeftObs = product ? daysLeftToLastObservation(product, valuationDate) : null;
+  const filterTitle =
+    surface === "summary"
+      ? "Probability · Portfolio Filter"
+      : surface === "initial"
+        ? "Initial Probability · Portfolio Filter"
+        : "Current Probability · Portfolio Filter";
+
+  const tabs = useMemo(
+    () => [
+      { id: "interface", label: interfaceTabLabel(surface) },
+      { id: "products", label: "Product List" },
+    ],
+    [surface],
+  );
+
+  const tgt = product ? targetUnderlying(product) : null;
+  const req = product
+    ? requiredUnderlying(product, effectiveNiftyLevel, effectiveSensexLevel)
+    : null;
+  const daysLeftObs = product ? daysLeftToLastObservation(product, checkingDate) : null;
 
   const kpiItems = useMemo(() => {
     if (surface === "summary") {
       return [
         { label: "Initial Probability", value: formatPct(initialResult?.probability) },
         { label: "Current Probability", value: formatPct(currentResult?.probability) },
-        { label: "Target Percent", value: formatPct(tgt) },
-        { label: "Percent Required", value: formatPct(req) },
+        { label: "Target Underlying", value: formatPct(tgt) },
+        { label: "Required Underlying", value: formatPct(req) },
         { label: "Days Left", value: daysLeftObs != null ? formatNumber(daysLeftObs, 0) : "—" },
       ];
     }
@@ -350,61 +563,246 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
       { label: "Probability", value: formatPct(r?.probability) },
       { label: "Paths Taken", value: r ? formatNumber(r.includedCount, 0) : "—" },
       { label: "Successful Paths", value: r ? formatNumber(r.successCount, 0) : "—" },
-      { label: "Success Threshold", value: formatPct(r?.threshold) },
+      {
+        label: surface === "initial" ? "Target Underlying" : "Required Underlying",
+        value: formatPct(surface === "initial" ? tgt : req),
+      },
       { label: "Latest Index Date", value: r?.lastIndexDate ?? "—" },
     ];
   }, [surface, initialResult, currentResult, activeResult, tgt, req, daysLeftObs]);
 
+  const indexLabel = product ? getProductIndexFieldLabel(product) : "Nifty";
+  const indexLevel = product
+    ? isSensexLinked(product)
+      ? pastFinalObservation
+        ? effectiveSensexLevel
+        : sensexLevel
+      : pastFinalObservation
+        ? effectiveNiftyLevel
+        : niftyLevel
+    : null;
+
+  const resultCards = useMemo((): SpecRailCard[] => {
+    if (!product) return [];
+    return [
+      { label: "Name of Product", value: product.name },
+      { label: "ISIN", value: product.isin ?? "—", mono: true },
+      {
+        label: "Allotment Date",
+        value: getProductAllotmentDate(product)
+          ? formatDisplayDate(getProductAllotmentDate(product)!)
+          : "—",
+      },
+      {
+        label: "Maturity",
+        value: getProductMaturityDate(product)
+          ? formatDisplayDate(getProductMaturityDate(product)!)
+          : "—",
+      },
+      { label: "Tenor", value: formatNumber(getProductTenorDays(product) ?? 0, 0) },
+      { label: "Initial Entry Level", value: formatLevel(getIndexEntryLevelRaw(product)) },
+      { label: "Target Level", value: formatLevel(getTargetLevel(product)) },
+      { label: "Series", value: product.series ?? rawField(product, "Product Series") ?? "—" },
+      { label: "Coupon", value: getCouponLabel(product) ?? "—" },
+      {
+        label: "Initial Probability of Achieving Full Coupon",
+        value: formatPct(initialResult?.probability),
+      },
+      { label: "Target Underlying", value: formatPct(tgt) },
+      { label: "Current Probability", value: formatPct(currentResult?.probability) },
+      { label: "Days Left", value: daysLeftObs != null ? formatNumber(daysLeftObs, 0) : "—" },
+      { label: "Required Underlying", value: formatPct(req) },
+      {
+        label: "Probability Checking Date",
+        value: `${formatDisplayDate(checkingDate)}${pastFinalObservation ? " · last observation" : ""}`,
+      },
+      { label: `${indexLabel} Level`, value: formatLevel(indexLevel) },
+    ];
+  }, [
+    product,
+    initialResult,
+    currentResult,
+    tgt,
+    req,
+    daysLeftObs,
+    checkingDate,
+    pastFinalObservation,
+    indexLabel,
+    indexLevel,
+  ]);
+
+  const exportPayload = useMemo(() => {
+    if (!product) return null;
+    return {
+      product,
+      surface,
+      checkingDate: formatDisplayDate(checkingDate),
+      asOfLastObservation: pastFinalObservation,
+      initial: initialResult,
+      current: currentResult,
+      targetPercent: tgt,
+      requiredPercent: req,
+      daysLeft: daysLeftObs,
+      niftyLevel: pastFinalObservation ? effectiveNiftyLevel : niftyLevel,
+      sensexLevel: pastFinalObservation ? effectiveSensexLevel : sensexLevel,
+    };
+  }, [
+    product,
+    surface,
+    checkingDate,
+    pastFinalObservation,
+    initialResult,
+    currentResult,
+    tgt,
+    req,
+    daysLeftObs,
+    effectiveNiftyLevel,
+    effectiveSensexLevel,
+    niftyLevel,
+    sensexLevel,
+  ]);
+
+  const outputResetKey = useMemo(
+    () =>
+      [
+        product?.rowId,
+        surface,
+        selection.valuationDate,
+        selection.niftyLevel,
+        selection.sensexLevel,
+        lifecycle,
+      ].join("|"),
+    [
+      product?.rowId,
+      surface,
+      selection.valuationDate,
+      selection.niftyLevel,
+      selection.sensexLevel,
+      lifecycle,
+    ],
+  );
+
+  // Stable footer — do not tie disabled to soft-reload `loading` (that caused button flicker).
+  const exportFooter = useMemo(() => {
+    if (exportPayload == null) return null;
+    return (
+      <div className="flex flex-wrap justify-end gap-2">
+        <Button
+          disabled={exportingScreen}
+          variant="primary"
+          onMouseEnter={warmScreenExport}
+          onFocus={warmScreenExport}
+          onClick={() =>
+            runScreenExport(async () => {
+              const { downloadProbabilityScreenExcel } = await import(
+                "@/lib/workbook/export-probability-screen"
+              );
+              await downloadProbabilityScreenExcel(exportPayload);
+            }, "Excel download")
+          }
+        >
+          <Download className="h-4 w-4" />
+          {exportingScreen ? "Building…" : "Download Excel"}
+        </Button>
+        <Button
+          disabled={exportingScreen}
+          variant="accent"
+          onMouseEnter={warmScreenExport}
+          onFocus={warmScreenExport}
+          onClick={() =>
+            runScreenExport(async () => {
+              const { downloadProbabilityScreenPdf } = await import(
+                "@/lib/workbook/export-probability-screen"
+              );
+              await downloadProbabilityScreenPdf(exportPayload);
+            }, "PDF download")
+          }
+        >
+          <FileText className="h-4 w-4" />
+          {exportingScreen ? "Building…" : "Download PDF"}
+        </Button>
+      </div>
+    );
+  }, [exportPayload, exportingScreen, runScreenExport, warmScreenExport]);
+
+  const checkingDisplay = formatDeskDate(checkingDate);
+
   return (
     <AppPage actions={<MasterUploadButton />} dense title={title}>
       <HorizontalBand>
-        <SubPageTabs
-          tabs={TABS}
-          active={tab}
-          onSelect={setTab}
-        />
+        <Panel className="!p-4" glow="cyan">
+          <SectionInfo {...SECTION_INFO["val-filter"]} />
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <SubTitle>{filterTitle}</SubTitle>
+            <div className="flex flex-wrap gap-2">
+              {UI_LIFECYCLE_FILTERS.map((key) => (
+                <Button
+                  key={key}
+                  active={lifecycle === key}
+                  variant="pill"
+                  onClick={() => setLifecycle(key as LifecycleFilter)}
+                >
+                  {LIFECYCLE_FILTER_LABELS[key]}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <p className="mt-2 text-sm text-stone-500">
+            {formatNumber(pool.length)} products in {LIFECYCLE_FILTER_LABELS[lifecycle].toLowerCase()} book
+          </p>
+        </Panel>
+      </HorizontalBand>
+
+      <HorizontalBand className="mt-4">
+        <SubPageTabs tabs={tabs} active={tab} onSelect={setTab} />
       </HorizontalBand>
 
       {tab === "products" ? (
         <HorizontalBand className="mt-4">
           <LifecycleProductList
             activeFilter={lifecycle}
+            compact
             filter={lifecycle}
             products={masterProducts}
-            onFilterChange={setLifecycle}
+            selectedId={product?.rowId}
+            showFilterPills={false}
+            onSelect={(p) => {
+              selectFromPool(p);
+              setTab("interface");
+            }}
           />
         </HorizontalBand>
       ) : (
         <>
           <HorizontalBand className="mt-4">
-            <Panel className="!p-4" glow="cyan">
-              <div className="mb-3 flex flex-wrap gap-2">
-                {UI_LIFECYCLE_FILTERS.map((key) => (
-                  <button
-                    key={key}
-                    type="button"
-                    className={`nav-sub-pill ${lifecycle === key ? "nav-sub-pill-active" : ""}`}
-                    onClick={() => setLifecycle(key as LifecycleFilter)}
-                  >
-                    {LIFECYCLE_FILTER_LABELS[key]}
-                  </button>
-                ))}
+            <Panel className="!p-4" glow="purple">
+              <SectionInfo {...SECTION_INFO["val-inputs"]} />
+              <SectionTitle>Inputs</SectionTitle>
+              <div className="mt-4">
+                <ExcelInputPanel
+                  category="Primary"
+                  products={pool}
+                  mode="probability"
+                  compact
+                  lifecycleFilter={lifecycle}
+                  activeProduct={product ?? undefined}
+                  onPickProduct={selectFromPool}
+                  onResetDefaults={resetToLifecycleDefaults}
+                />
               </div>
-              <ExcelInputPanel
-                category="Primary"
-                products={pool}
-                mode="probability"
-                lifecycleFilter={lifecycle}
-                activeProduct={product ?? undefined}
-                onPickProduct={selectFromPool}
-                onResetDefaults={resetToLifecycleDefaults}
-              />
             </Panel>
           </HorizontalBand>
 
-          <HorizontalBand className="mt-4">
-            <KpiBand accents={["cyan", "green", "purple", "amber", "rose"]} items={kpiItems} />
-          </HorizontalBand>
+          {product ? (
+            <HorizontalBand className="mt-4">
+              <Panel className="!p-3" glow="cyan">
+                <p className="text-center text-sm font-bold uppercase tracking-[0.2em] text-amber-900/90">
+                  {formatReportAsOf(checkingDisplay)}
+                  {pastFinalObservation ? " · last observation" : ""}
+                </p>
+              </Panel>
+            </HorizontalBand>
+          ) : null}
 
           {error ? (
             <HorizontalBand className="mt-4">
@@ -414,140 +812,67 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
             </HorizontalBand>
           ) : null}
 
-          {loading ? (
+          {product ? (
             <HorizontalBand className="mt-4">
-              <p className="text-sm text-stone-500">Computing probability paths…</p>
-            </HorizontalBand>
-          ) : null}
+              <RevealOutput
+                footer={exportFooter}
+                label={
+                  surface === "summary"
+                    ? "Click here to view probability output"
+                    : surface === "initial"
+                      ? "Click here to view initial probability output"
+                      : "Click here to view current probability output"
+                }
+                resetKey={outputResetKey}
+                onReveal={() => {
+                  warmScreenExport();
+                  if (surface !== "summary") setPathsUnlocked(true);
+                }}
+              >
+                <KpiBand accents={["cyan", "green", "purple", "amber", "rose"]} items={kpiItems} />
 
-          {surface === "summary" && product ? (
-            <HorizontalBand className="mt-4">
-              <Panel className="!p-4" glow="purple">
-                <SectionTitle>Probability Results</SectionTitle>
-                <SubTitle>Live results for the selected product and checking date</SubTitle>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  <OutputGlow>
-                    <FieldStack>
-                      <FieldRow label="Name of Product">
-                        <Output>{product.name}</Output>
-                      </FieldRow>
-                      <FieldRow label="ISIN">
-                        <Output>{product.isin ?? "—"}</Output>
-                      </FieldRow>
-                      <FieldRow label="Allotment Date">
-                        <Output>
-                          {getProductAllotmentDate(product)
-                            ? formatDisplayDate(getProductAllotmentDate(product)!)
-                            : "—"}
-                        </Output>
-                      </FieldRow>
-                      <FieldRow label="Maturity">
-                        <Output>
-                          {getProductMaturityDate(product)
-                            ? formatDisplayDate(getProductMaturityDate(product)!)
-                            : "—"}
-                        </Output>
-                      </FieldRow>
-                      <FieldRow label="Tenor">
-                        <Output>{formatNumber(getProductTenorDays(product) ?? 0, 0)}</Output>
-                      </FieldRow>
-                      <FieldRow label="Initial Entry Level">
-                        <Output>{formatLevel(getIndexEntryLevelRaw(product))}</Output>
-                      </FieldRow>
-                      <FieldRow label="Target Level">
-                        <Output>{formatLevel(getTargetLevel(product))}</Output>
-                      </FieldRow>
-                      <FieldRow label="Series">
-                        <Output>{product.series ?? rawField(product, "Product Series") ?? "—"}</Output>
-                      </FieldRow>
-                    </FieldStack>
-                  </OutputGlow>
-                  <OutputGlow>
-                    <FieldStack>
-                      <FieldRow label="Initial Probability of Achieving Full Coupon">
-                        <Output>{formatPct(initialResult?.probability)}</Output>
-                      </FieldRow>
-                      <FieldRow label="Target Percent">
-                        <Output>{formatPct(tgt)}</Output>
-                      </FieldRow>
-                      <FieldRow label="Current Probability">
-                        <Output>{formatPct(currentResult?.probability)}</Output>
-                      </FieldRow>
-                      <FieldRow label="Days Left">
-                        <Output>{daysLeftObs != null ? formatNumber(daysLeftObs, 0) : "—"}</Output>
-                      </FieldRow>
-                      <FieldRow label="Percent Required">
-                        <Output>{formatPct(req)}</Output>
-                      </FieldRow>
-                      <FieldRow label="Probability Checking Date">
-                        <Output>{formatDisplayDate(valuationDate)}</Output>
-                      </FieldRow>
-                      <FieldRow label="Nifty Level">
-                        <Output>{formatLevel(niftyLevel)}</Output>
-                      </FieldRow>
-                      <FieldRow label="Sensex Level">
-                        <Output>{formatLevel(sensexLevel)}</Output>
-                      </FieldRow>
-                    </FieldStack>
-                  </OutputGlow>
-                </div>
-                {(initialResult ?? currentResult) ? (
-                  <div className="mt-4 overflow-x-auto">
-                    <SubTitle>Observation Dates Average 1 to 7</SubTitle>
-                    <table className="mt-2 min-w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-[color:var(--ar-border)] text-left text-stone-500">
-                          <th className="px-2 py-2 font-semibold">Average</th>
-                          {(initialResult ?? currentResult)!.schedule
-                            .filter((s) => s.date)
-                            .map((s) => (
-                              <th key={s.index} className="px-2 py-2 font-semibold">
-                                {s.index}
-                              </th>
-                            ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td className="px-2 py-2 font-semibold">Dates</td>
-                          {(initialResult ?? currentResult)!.schedule
-                            .filter((s) => s.date)
-                            .map((s) => (
-                              <td key={`avg-${s.index}`} className="px-2 py-2">
-                                {s.date ? formatDisplayDate(s.date) : "—"}
-                              </td>
-                            ))}
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                ) : null}
-              </Panel>
+                {surface === "summary" ? (
+                  <>
+                    <HorizontalBand className="mt-4">
+                      <ProductSpecificationsPanel product={product} />
+                    </HorizontalBand>
+                    <HorizontalBand className="mt-4">
+                      <ProbabilityResultsRail product={product} cards={resultCards} />
+                    </HorizontalBand>
+                    {pastFinalObservation ? <PastFinalObservationPanels product={product} /> : null}
+                  </>
+                ) : (
+                  <>
+                    <HorizontalBand className="mt-4">
+                      <ProductSpecificationsPanel product={product} />
+                    </HorizontalBand>
+                    <HorizontalBand className="mt-4">
+                      <ScheduleCard
+                        result={activeResult}
+                        daysRowLabel={
+                          surface === "initial"
+                            ? "Days from Phase Start"
+                            : "Days from Valuation Date"
+                        }
+                        baseLabel={
+                          surface === "initial"
+                            ? `the actual ${startNoun.toLowerCase()} start`
+                            : "the valuation date"
+                        }
+                      />
+                    </HorizontalBand>
+                    <HorizontalBand className="mt-4">
+                      <PathBacktestTable
+                        result={activeResult}
+                        showAdjustedStart={surface === "initial"}
+                        loadingPaths={loadingPaths}
+                        product={product}
+                      />
+                    </HorizontalBand>
+                  </>
+                )}
+              </RevealOutput>
             </HorizontalBand>
-          ) : null}
-
-          {surface !== "summary" ? (
-            <>
-              <HorizontalBand className="mt-4">
-                <ScheduleCard
-                  result={activeResult}
-                  daysRowLabel={
-                    surface === "initial" ? "Days from Phase Start" : "Days from Valuation Date"
-                  }
-                  baseLabel={
-                    surface === "initial"
-                      ? `the actual ${startNoun.toLowerCase()} start`
-                      : "the valuation date"
-                  }
-                />
-              </HorizontalBand>
-              <HorizontalBand className="mt-4">
-                <PathBacktestTable
-                  result={activeResult}
-                  showAdjustedStart={surface === "initial"}
-                />
-              </HorizontalBand>
-            </>
           ) : null}
         </>
       )}

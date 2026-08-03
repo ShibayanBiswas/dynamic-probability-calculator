@@ -7,7 +7,9 @@ import {
   buildIndexSeries,
   ceilingStartLevel,
   lookupPriorBar,
+  requiredUnderlying,
   runProbabilityBacktest,
+  targetUnderlying,
 } from "../lib/probability/engine";
 import type { ProductRecord } from "../lib/types";
 
@@ -65,6 +67,14 @@ const initial = runProbabilityBacktest({
 assert(initial.includedCount > 0, "initial included paths");
 assert(initial.probability != null && initial.probability >= 0 && initial.probability <= 1, "initial prob range");
 assert(Math.abs((initial.threshold ?? NaN) - (13700 / 10000 - 1)) < 1e-12, "initial threshold = target/entry − 1");
+assert(
+  Math.abs((targetUnderlying(product) ?? NaN) - (13700 / 10000 - 1)) < 1e-12,
+  "Target Underlying equals Initial success threshold",
+);
+assert(
+  Math.abs((requiredUnderlying(product, 24200, undefined) ?? NaN) - (13700 / 24200 - 1)) < 1e-12,
+  "Required Underlying equals Current success threshold at desk level",
+);
 assert(initial.paths.some((p) => p.pathIncluded), "has included path");
 assert(
   initial.paths.every((p) => !p.pathIncluded || p.averageObservationLevel != null),

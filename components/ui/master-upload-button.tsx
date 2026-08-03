@@ -12,6 +12,8 @@ type MasterUploadButtonProps = {
   label?: string;
   loadingLabel?: string;
   variant?: "primary" | "accent" | "ghost";
+  /** Hide label text below `sm` breakpoint — icon + aria-label remain. */
+  compactOnMobile?: boolean;
 };
 
 export function MasterUploadButton({
@@ -19,21 +21,24 @@ export function MasterUploadButton({
   label = "Upload Master Workbook",
   loadingLabel = "Uploading…",
   variant = "primary",
+  compactOnMobile = false,
 }: MasterUploadButtonProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const { isLoading, uploadWorkbook } = useDataset();
+  const displayLabel = isLoading ? loadingLabel : label;
 
   return (
     <>
       <Button
+        aria-label={displayLabel}
         className={cn(className)}
         disabled={isLoading}
         type="button"
         variant={variant}
         onClick={() => inputRef.current?.click()}
       >
-        <Upload className="h-4 w-4" />
-        {isLoading ? loadingLabel : label}
+        <Upload className="h-4 w-4 shrink-0" />
+        <span className={cn(compactOnMobile && "hidden sm:inline")}>{displayLabel}</span>
       </Button>
       <input
         ref={inputRef}

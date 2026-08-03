@@ -28,12 +28,12 @@ export function MarketStrip() {
 
   return (
     <div className="market-strip market-strip-live overflow-hidden">
-      <div className="mx-auto flex max-w-full items-center justify-between gap-4 px-4 py-1.5 lg:px-6">
-        <div className="flex flex-wrap items-center gap-4">
+      <div className="mx-auto flex max-w-full items-center gap-3 px-3 py-1.5 sm:justify-between sm:gap-4 sm:px-4 lg:px-6">
+        <div className="flex min-w-0 flex-1 items-center gap-3 overflow-x-auto pb-0.5 [-webkit-overflow-scrolling:touch] sm:gap-4 sm:flex-wrap sm:overflow-visible sm:pb-0">
           {items.map((item, index) => (
             <motion.span
               key={item.label}
-              className="inline-flex items-center gap-1.5 text-[11px]"
+              className="inline-flex shrink-0 items-center gap-1.5 text-[11px]"
               initial={reduce ? false : { opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.04, duration: 0.35, ease: deskEase }}
@@ -51,7 +51,7 @@ export function MarketStrip() {
           ))}
         </div>
         <motion.p
-          className="text-muted truncate text-[10px]"
+          className="text-muted hidden max-w-[9rem] truncate text-[10px] sm:block sm:max-w-[14rem] md:max-w-none"
           animate={reduce ? undefined : { opacity: [0.55, 1, 0.55] }}
           transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
         >

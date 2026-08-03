@@ -81,6 +81,7 @@ const BASE_PORTFOLIO_LIFECYCLE_COLUMN_DEFS: readonly PortfolioLifecycleColumnDef
   { kind: "dynamic", field: "daysColumn" },
   { kind: "fixed", header: "Tenor Left" },
   { kind: "fixed", header: "Years" },
+  { kind: "fixed", header: "Underlying" },
 ];
 
 const LIVE_OBS_METRIC_COLUMN_DEFS: readonly PortfolioLifecycleColumnDef[] = [
@@ -203,6 +204,7 @@ export function portfolioLifecycleCellValues({
       tenorDays != null && Number.isFinite(tenorDays)
         ? Number((tenorDays / 365).toFixed(2))
         : "",
+    Underlying: product.underlying ?? rawField(product, "Underlying", "Underlying Index") ?? "",
     ...Object.fromEntries(
       PORTFOLIO_AVG_COLUMN_LABELS.map((label, obsIndex) => [
         label,
@@ -275,7 +277,8 @@ export function portfolioLifecycleHeaderAlign(
     header === "Series" ||
     header === "ISIN" ||
     header === "Allotment Date" ||
-    header === "Maturity"
+    header === "Maturity" ||
+    header === "Underlying"
   ) {
     return "left";
   }
@@ -342,7 +345,7 @@ export function portfolioLifecycleCellParts(
     };
   }
 
-  if (header === "Investment Amount (₹ Cr)") {
+  if (header === "Investment Amount in ₹ Cr") {
     return {
       display: product.tradeAmount != null ? formatCrores(product.tradeAmount) : "—",
     };

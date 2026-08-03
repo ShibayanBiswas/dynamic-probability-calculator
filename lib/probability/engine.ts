@@ -16,7 +16,8 @@ export type IndexBar = {
 
 export type ObservationSchedule = {
   index: number;
-  date: Date | null;
+  /** Date object in-process; may be an ISO string after JSON transport until hydrated. */
+  date: Date | string | null;
   daysFromBase: number;
 };
 
@@ -277,22 +278,46 @@ export function daysLeftToLastObservation(product: ProductRecord, checkingDate: 
   return Math.max(0, differenceInCalendarDays(startOfDay(last), startOfDay(checkingDate)));
 }
 
-export function targetPercent(product: ProductRecord): number | null {
+/**
+ * Target Underlying — Excel “Target %”.
+ * Required underlying performance vs initial entry: `Target Level / Entry − 1`.
+ * Same hurdle the Initial Probability path engine uses as its success threshold.
+ */
+export function targetUnderlying(product: ProductRecord): number | null {
   const entry = getProbabilityEntryLevel(product);
   const target = getTargetLevel(product);
-  if (entry == null || entry <= 0 || target == null) return null;
+  if (entry == null || entry <= 0 || target == null || !Number.isFinite(target)) return null;
   return target / entry - 1;
 }
 
-export function requiredPercent(
+/** @deprecated Use {@link targetUnderlying} — same formula. */
+export function targetPercent(product: ProductRecord): number | null {
+  return targetUnderlying(product);
+}
+
+/**
+ * Required Underlying — Excel “% Required”.
+ * Remaining underlying move vs today’s mark: `Target Level / todayLevel − 1`.
+ * Same hurdle the Current Probability path engine uses as its success threshold.
+ */
+export function requiredUnderlying(
   product: ProductRecord,
   niftyLevel: number | undefined,
   sensexLevel: number | undefined,
 ): number | null {
   const target = getTargetLevel(product);
-  if (target == null) return null;
+  if (target == null || !Number.isFinite(target)) return null;
   const underlying = resolveUnderlyingKind(product) ?? "nifty";
   const level = underlying === "sensex" ? sensexLevel : niftyLevel;
-  if (level == null || level <= 0) return null;
+  if (level == null || level <= 0 || !Number.isFinite(level)) return null;
   return target / level - 1;
+}
+
+/** @deprecated Use {@link requiredUnderlying} — same formula. */
+export function requiredPercent(
+  product: ProductRecord,
+  niftyLevel: number | undefined,
+  sensexLevel: number | undefined,
+): number | null {
+  return requiredUnderlying(product, niftyLevel, sensexLevel);
 }
