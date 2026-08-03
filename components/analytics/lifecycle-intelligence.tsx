@@ -5,16 +5,16 @@ import { useMemo } from "react";
 import { DynamicTable, type DynamicTableColumn } from "@/components/ui/dynamic-table";
 import { Panel, SectionTitle } from "@/components/layout/app-ui";
 import { HorizontalBand } from "@/components/layout/horizontal-rail";
-import { getExpiredVsOngoingTable, getLifecycleChartData, getLifecycleTableTotals } from "@/lib/analytics";
+import {
+  getLiveBookLifecycleTable,
+  getLifecycleTableTotals,
+  type LiveBookLifecycleTableRow,
+} from "@/lib/analytics";
 import {
   filterProductsByLifecycle,
   LIFECYCLE_FILTER_LABELS,
-  LIFECYCLE_STATUS_LABELS,
-  lifecycleStatusMatchesFilter,
   type LifecycleFilter,
-  type LifecycleStatus,
 } from "@/lib/product-lifecycle";
-import { useTheme } from "@/lib/context/theme-provider";
 import { usePortfolioClock } from "@/lib/hooks/use-portfolio-clock";
 import type { ProductRecord } from "@/lib/types";
 import { cn, formatCrores, formatKpiCount, formatKpiNotional, formatNumber, formatPercent } from "@/lib/utils";
@@ -26,31 +26,24 @@ export function LifecycleIntelligencePanel({
   products: ProductRecord[];
   filter?: LifecycleFilter;
 }) {
-  const { theme } = useTheme();
   const { asOf } = usePortfolioClock();
   const categoryLabel = LIFECYCLE_FILTER_LABELS[filter];
   const tabPool = useMemo(() => filterProductsByLifecycle(products, filter, asOf), [products, filter, asOf]);
   const tabTotals = useMemo(() => getLifecycleTableTotals(tabPool, asOf), [tabPool, asOf]);
-  const lifecycleTable = useMemo(() => getExpiredVsOngoingTable(products, asOf), [products, asOf]);
-  const lifecycle = useMemo(() => getLifecycleChartData(products, asOf, theme), [products, asOf, theme]);
+  const lifecycleTable = useMemo(() => getLiveBookLifecycleTable(products, asOf), [products, asOf]);
   const bookTotals = useMemo(() => getLifecycleTableTotals(products, asOf), [products, asOf]);
 
-  const lifecycleColumns = useMemo<DynamicTableColumn<(typeof lifecycleTable)[number]>[]>(
+  const lifecycleColumns = useMemo<DynamicTableColumn<LiveBookLifecycleTableRow>[]>(
     () => [
       {
         key: "status",
         header: "Status",
         render: (row) => {
-          const inActiveTab = lifecycleStatusMatchesFilter(row.status as LifecycleStatus, filter);
+          const inActiveTab = row.filter === filter;
           return (
-            <span className="inline-flex items-center gap-2 font-semibold capitalize">
-              <span
-                className="h-2.5 w-2.5 rounded-full"
-                style={{
-                  backgroundColor: lifecycle.find((e) => e.status === row.status)?.color ?? "#64748b",
-                }}
-              />
-              {LIFECYCLE_STATUS_LABELS[row.status as keyof typeof LIFECYCLE_STATUS_LABELS] ?? row.status}
+            <span className="inline-flex items-center gap-2 font-semibold">
+              <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: row.color }} />
+              {row.label}
               {inActiveTab ? (
                 <span className="rounded-full border border-gold/35 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-gold-dark">
                   In tab
@@ -82,7 +75,7 @@ export function LifecycleIntelligencePanel({
         render: (row) => formatPercent(row.avgCoupon, 1),
       },
     ],
-    [filter, lifecycle],
+    [filter],
   );
 
   if (products.length === 0) {
@@ -107,9 +100,12 @@ export function LifecycleIntelligencePanel({
         <Panel glow="purple">
           <SectionTitle>Lifecycle Intelligence</SectionTitle>
           <p className="mt-1 text-sm text-stone-500">
-            Full book status breakdown · {categoryLabel} tab: {formatKpiCount(tabTotals.count, products.length > 0)} products ·{" "}
+            Live book tabs · {categoryLabel}: {formatKpiCount(tabTotals.count, products.length > 0)} products ·{" "}
             {formatKpiNotional(tabTotals.notional)} AUM · updated{" "}
             <span suppressHydrationWarning>{asOf.toLocaleTimeString("en-IN")}</span>
+          </p>
+          <p className="mt-1 text-xs text-stone-500">
+            Observation Due 3M / 2M / 1M are subsets of Ongoing (a product can appear in Ongoing and an Obs Due row).
           </p>
           <div className="mt-4">
             <DynamicTable
@@ -122,12 +118,9 @@ export function LifecycleIntelligencePanel({
                   <td className="text-right">{formatPercent(bookTotals.avgCoupon, 1)}</td>
                 </tr>
               }
-              getRowKey={(row) => row.status}
+              getRowKey={(row) => row.filter}
               rowClassName={(row) =>
-                cn(
-                  lifecycleStatusMatchesFilter(row.status as LifecycleStatus, filter) &&
-                    "bg-gold/[0.07] ring-1 ring-inset ring-gold/25",
-                )
+                cn(row.filter === filter && "bg-gold/[0.07] ring-1 ring-inset ring-gold/25")
               }
               rows={lifecycleTable}
               virtualizeAt={999}

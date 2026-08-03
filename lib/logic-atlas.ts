@@ -184,7 +184,7 @@ export const logicModules: LogicModule[] = [
       "Observation-due tabs for three months, two months, and one month include live products with any observation average date inside ninety, sixty, or thirty calendar days. The one-month set is nested inside the two-month set, which is nested inside the three-month set.",
       "Product lists and product search on every module use the same lifecycle picker pool as a scrollable list of every product in the active tab. Selection persists across Probability, Initial Probability, and Current Probability. A tab default is applied only when the current pick is outside the active pool.",
       "ScienceLab charts are shown on Analytics Lab only. Home keeps lifecycle intelligence and the maturity ladder.",
-      "Lifecycle Intelligence shows the full book while rows that belong to the active tab are highlighted.",
+      "Lifecycle Intelligence lists Ongoing plus Observation Due 3M / 2M / 1M; the active tab row is highlighted. Obs Due rows are subsets of Ongoing.",
       "Upload Master on Home re-parses the registry and refreshes every downstream surface.",
     ],
     outputs: [

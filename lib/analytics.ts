@@ -4,9 +4,13 @@ import type { ProductRecord } from "@/lib/types";
 import {
   MATURITY_WINDOW_1M_DAYS,
   MATURITY_WINDOW_3M_DAYS,
+  filterProductsByLifecycle,
   getLifecycleNotional,
+  LIFECYCLE_FILTER_LABELS,
   LIFECYCLE_STATUS_LABELS,
   partitionByLifecycle,
+  UI_LIFECYCLE_FILTERS,
+  type LifecycleFilter,
   type LifecycleStatus,
 } from "@/lib/product-lifecycle";
 import { formatIssuerChartLabel, normalizeIssuerKey } from "@/lib/issuer-chart-labels";
@@ -316,6 +320,41 @@ export function getExpiredVsOngoingTable(products: ProductRecord[], asOf = new D
       };
     })
     .filter((row) => row.count > 0);
+}
+
+/** Desk Lifecycle Intelligence rows — Ongoing + Observation Due 3M / 2M / 1M (always listed). */
+export type LiveBookLifecycleTableRow = {
+  filter: LifecycleFilter;
+  label: string;
+  count: number;
+  notional: number;
+  avgCoupon: number;
+  color: string;
+};
+
+const LIVE_BOOK_FILTER_COLORS: Record<(typeof UI_LIFECYCLE_FILTERS)[number], string> = {
+  ongoing: "#047857",
+  "obs-due-3m": "#6d28d9",
+  "obs-due-2m": "#7c3aed",
+  "obs-due-1m": "#a855f7",
+};
+
+export function getLiveBookLifecycleTable(
+  products: ProductRecord[],
+  asOf = new Date(),
+): LiveBookLifecycleTableRow[] {
+  return UI_LIFECYCLE_FILTERS.map((filter) => {
+    const pool = filterProductsByLifecycle(products, filter, asOf);
+    const coupons = pool.map((p) => getCouponPercent(p)).filter((c): c is number => c !== undefined);
+    return {
+      filter,
+      label: LIFECYCLE_FILTER_LABELS[filter],
+      count: pool.length,
+      notional: pool.reduce((s, p) => s + (p.tradeAmount ?? 0), 0),
+      avgCoupon: coupons.length > 0 ? coupons.reduce((s, c) => s + c, 0) / coupons.length : 0,
+      color: LIVE_BOOK_FILTER_COLORS[filter],
+    };
+  });
 }
 
 export function getLifecycleTableTotals(products: ProductRecord[], _asOf?: Date) {

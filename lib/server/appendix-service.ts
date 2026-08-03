@@ -1,4 +1,4 @@
-import { getExpiredVsOngoingTable } from "@/lib/analytics";
+import { getLiveBookLifecycleTable } from "@/lib/analytics";
 import {
   getCategoryIntelligenceMap,
   getComputationPrimitives,
@@ -16,7 +16,7 @@ import type { DashboardDataset } from "@/lib/types";
 /** Backend-only appendix payload — not exposed in frontend navigation. */
 export function buildAppendixPayload(dataset?: DashboardDataset) {
   const products = dataset?.products ?? [];
-  const lifecycle = getExpiredVsOngoingTable(products);
+  const lifecycle = getLiveBookLifecycleTable(products);
 
   return {
     generatedAt: new Date().toISOString(),
