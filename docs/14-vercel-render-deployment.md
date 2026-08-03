@@ -1,8 +1,9 @@
-# Deploy Dynamic Probability Calculator — Vercel + Render
+﻿# Deploy Dynamic Probability Calculator — Vercel + Render
 
 **Repo:** https://github.com/ShibayanBiswas/dynamic-probability-calculator  
 **Source of env values:** Primary SP Dashboard  
-`C:\Users\shiba\OneDrive\Desktop\Primary SP Dashboard\.env.local`
+`C:\Users\shiba\OneDrive\Desktop\Primary SP Dashboard\.env.local`  
+**Node:** `24.x` (required by Vercel as of 2026)
 
 ---
 
@@ -18,50 +19,26 @@
 
 > Password in the URI is `Sb@04052003` with `@` written as `%40`.
 
-### Optional keys Primary documents in `.env.example` (not set in their `.env.local`)
-
-Only needed if you build the URI from parts instead of `MONGODB_URI`:
-
-| Key | Example | Needed? |
-|-----|---------|---------|
-| `MONGODB_HOST` | `cluster0.lvoycia.mongodb.net` | No if using `MONGODB_URI` |
-| `MONGODB_PORT` | `27017` | No |
-| `MONGODB_USER` | `ae21b109` | No |
-| `MONGODB_PASSWORD` | `Sb@04052003` | No |
-| `MONGODB_AUTH_SOURCE` | `admin` | No |
-| `MONGODB_TLS` | `true` | No |
-| `MONGODB_SRV` | `true` | No |
-
-### Extra keys for Render / Vercel (not in Primary `.env.local`)
+### Extra keys for Render / Vercel
 
 | Key | Value | Where |
 |-----|-------|--------|
-| `NODE_VERSION` | `20` | **Render only** |
-| `NODE_OPTIONS` | `--max-old-space-size=1536` | Optional (Render), if path table OOMs |
-| `NODE_ENV` | *(auto)* | Do not set |
-| `PORT` | *(auto on Render)* | Do not set |
-| `VERCEL` | *(auto on Vercel)* | Do not set |
+| `NODE_VERSION` | `24` | **Render only** |
+| `NODE_OPTIONS` | `--max-old-space-size=1536` | Optional (Render) |
+| `NODE_ENV` / `PORT` / `VERCEL` | auto | Do not set |
 
 ---
 
-## 2) COPY-PASTE BLOCKS (exact)
+## 2) COPY-PASTE BLOCKS
 
-### A — Local file  
-`Dynamic Probability Calculator\.env.local`
-
-```env
-MONGODB_URI=mongodb+srv://ae21b109:Sb%4004052003@cluster0.lvoycia.mongodb.net/?retryWrites=true&w=majority
-MONGODB_DB=sp_dashboard
-```
-
-### B — Vercel (Production + Preview)
+### Vercel (Production + Preview)
 
 ```env
 MONGODB_URI=mongodb+srv://ae21b109:Sb%4004052003@cluster0.lvoycia.mongodb.net/?retryWrites=true&w=majority
 MONGODB_DB=sp_dashboard
 ```
 
-### C — Render
+### Render
 
 ```env
 MONGODB_URI=mongodb+srv://ae21b109:Sb%4004052003@cluster0.lvoycia.mongodb.net/?retryWrites=true&w=majority
@@ -69,18 +46,12 @@ MONGODB_DB=sp_dashboard
 NODE_VERSION=24
 ```
 
-Optional on Render:
-
-```env
-NODE_OPTIONS=--max-old-space-size=1536
-```
-
 ---
 
-## 3) One-time before deploy (on your PC)
+## 3) One-time before deploy (PC)
 
-1. Atlas → **Network Access** → Add IP → **Allow from Anywhere** (`0.0.0.0/0`)  
-2. In PowerShell:
+1. Atlas → Network Access → allow `0.0.0.0/0`  
+2. Then:
 
 ```powershell
 cd "C:\Users\shiba\OneDrive\Desktop\Dynamic Probability Calculator"
@@ -88,91 +59,46 @@ npm ci
 npm run sync:seed
 npm run sync:master
 npm run sync:index-2001
-npm run refresh:index-levels
 ```
 
 ---
 
 ## 4) Vercel steps
 
-1. Open https://vercel.com → **Add New** → **Project**  
-2. Import GitHub repo: **`ShibayanBiswas/dynamic-probability-calculator`**  
-3. Fill settings:
+1. https://vercel.com → **Add New** → **Project**  
+2. Import `ShibayanBiswas/dynamic-probability-calculator`  
+3. Settings:
 
-| Field | Paste this |
-|-------|------------|
-| Framework Preset | `Next.js` |
-| Root Directory | leave empty / `.` |
+| Field | Value |
+|-------|--------|
+| Framework | Next.js |
 | Build Command | `npm run build` |
-| Install Command | `npm ci` |
-| Node.js Version | `24.x` (Project Settings → General) |
+| Install Command | `npm install` (from `vercel.json`) |
+| Node.js Version | **24.x** |
 
-4. **Settings → Environment Variables** → add for **Production** and **Preview**:
+4. Add the two env vars above (Production + Preview)  
+5. Deploy  
+6. Open `https://YOUR-APP.vercel.app/probability`
 
-| Name | Value |
-|------|--------|
-| `MONGODB_URI` | `mongodb+srv://ae21b109:Sb%4004052003@cluster0.lvoycia.mongodb.net/?retryWrites=true&w=majority` |
-| `MONGODB_DB` | `sp_dashboard` |
-
-5. Click **Deploy**  
-6. Open: `https://YOUR-APP.vercel.app/probability`
+If an old deploy failed: open **Deployments** → latest on `main` (`6af992b`+) → Redeploy.
 
 ---
 
-## 5) Render steps
+## 5) Render steps (optional — Vercel alone is enough)
 
-1. Open https://render.com → **New +** → **Web Service**  
-2. Connect GitHub → **`ShibayanBiswas/dynamic-probability-calculator`**  
-3. Fill settings:
-
-| Field | Paste this |
-|-------|------------|
-| Name | `dynamic-probability-calculator` |
-| Branch | `main` |
-| Runtime | `Node` |
-| Build Command | `npm ci && npm run build` |
-| Start Command | `npm start` |
-| Health Check Path | `/` |
-| Instance | Starter or higher (Free sleeps when idle) |
-
-4. **Environment** → Bulk / raw paste:
-
-```env
-MONGODB_URI=mongodb+srv://ae21b109:Sb%4004052003@cluster0.lvoycia.mongodb.net/?retryWrites=true&w=majority
-MONGODB_DB=sp_dashboard
-NODE_VERSION=24
-```
-
-5. Click **Create Web Service** / Deploy  
-6. Open: `https://YOUR-SERVICE.onrender.com/probability`
+1. https://render.com → **New** → **Web Service**  
+2. Connect same repo  
+3. Build: `npm ci && npm run build` · Start: `npm start` · Health: `/`  
+4. Paste Render env block (`NODE_VERSION=24`)  
+5. Deploy
 
 ---
 
-## 6) After deploy — quick check
+## 6) What we fixed for Vercel build
 
-Open these URLs (swap your host):
+- Pinned all deps (no more `"latest"` drift)  
+- `engines.node` = `24.x`  
+- Locked `@emnapi/core` / `@emnapi/runtime` `1.11.3` into `package-lock.json`  
+- `vercel.json` uses `npm install` so install cannot fail on stale `npm ci` sync  
 
-- `/`
-- `/probability`
-- `/initial-probability`
-- `/current-probability`
-- `/intelligence`
-
-PowerShell API test:
-
-```powershell
-$body = @{ isin = "INE093JA77O9"; mode = "both"; valuationDate = "03-08-2026"; includePaths = $false } | ConvertTo-Json
-Invoke-RestMethod "https://YOUR-HOST/api/probability/run" -Method POST -Body $body -ContentType "application/json"
-```
-
----
-
-## 7) Cheat sheet
-
-| Platform | Must paste |
-|----------|------------|
-| **Vercel** | `MONGODB_URI` + `MONGODB_DB` + Node 24.x in UI |
-| **Render** | `MONGODB_URI` + `MONGODB_DB` + `NODE_VERSION=24` |
-| **Skip** | `PYTHON_API_URL`, `PORT`, `NODE_ENV` |
-
-Same Mongo as Primary SP = same book (`sp_dashboard` on `cluster0.lvoycia.mongodb.net`).
+Keep the repo **private** — the URI includes your Atlas password.
