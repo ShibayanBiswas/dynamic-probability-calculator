@@ -1,57 +1,45 @@
 ﻿# Deploy Dynamic Probability Calculator — Vercel + Render
 
 **Repo:** https://github.com/ShibayanBiswas/dynamic-probability-calculator  
-**Source of env values:** Primary SP Dashboard  
-`C:\Users\shiba\OneDrive\Desktop\Primary SP Dashboard\.env.local`  
-**Node:** `24.x` (required by Vercel as of 2026)
+**Env source (local only, never commit):** Primary SP Dashboard `.env.local`  
+**Node:** `24.x`
 
 ---
 
-## 1) Every env key from Primary SP
+## 1) Env keys (copy values from Primary SP `.env.local`)
 
-### What Primary actually has in `.env.local` (use these)
+| Key | Needed on DPC cloud? | Notes |
+|-----|----------------------|--------|
+| `MONGODB_URI` | **YES** | Paste from Primary SP `.env.local` |
+| `MONGODB_DB` | **YES** | Must be `sp_dashboard` |
+| `PYTHON_API_URL` | **NO** | Primary-only; DPC uses Node pivot |
+| `NODE_VERSION` | Render only | `24` |
+| `NODE_OPTIONS` | Optional (Render) | `--max-old-space-size=1536` |
 
-| Key | Value (from Primary SP) | Needed on DPC cloud? |
-|-----|-------------------------|----------------------|
-| `MONGODB_URI` | `mongodb+srv://ae21b109:Sb%4004052003@cluster0.lvoycia.mongodb.net/?retryWrites=true&w=majority` | **YES** |
-| `MONGODB_DB` | `sp_dashboard` | **YES** |
-| `PYTHON_API_URL` | `http://127.0.0.1:8000` | **NO** for this app (Node pivot is enough) |
+Do **not** commit real URIs/passwords. Set them only in Vercel / Render / local `.env.local`.
 
-> Password in the URI is `Sb@04052003` with `@` written as `%40`.
-
-### Extra keys for Render / Vercel
-
-| Key | Value | Where |
-|-----|-------|--------|
-| `NODE_VERSION` | `24` | **Render only** |
-| `NODE_OPTIONS` | `--max-old-space-size=1536` | Optional (Render) |
-| `NODE_ENV` / `PORT` / `VERCEL` | auto | Do not set |
-
----
-
-## 2) COPY-PASTE BLOCKS
-
-### Vercel (Production + Preview)
+### Vercel env (Production + Preview)
 
 ```env
-MONGODB_URI=mongodb+srv://ae21b109:Sb%4004052003@cluster0.lvoycia.mongodb.net/?retryWrites=true&w=majority
+MONGODB_URI=<paste from Primary SP .env.local>
 MONGODB_DB=sp_dashboard
 ```
 
-### Render
+### Render env
 
 ```env
-MONGODB_URI=mongodb+srv://ae21b109:Sb%4004052003@cluster0.lvoycia.mongodb.net/?retryWrites=true&w=majority
+MONGODB_URI=<paste from Primary SP .env.local>
 MONGODB_DB=sp_dashboard
 NODE_VERSION=24
 ```
 
 ---
 
-## 3) One-time before deploy (PC)
+## 2) One-time before deploy (PC)
 
 1. Atlas → Network Access → allow `0.0.0.0/0`  
-2. Then:
+2. Point this project’s `.env.local` at the same Atlas URI as Primary  
+3. Then:
 
 ```powershell
 cd "C:\Users\shiba\OneDrive\Desktop\Dynamic Probability Calculator"
@@ -63,7 +51,7 @@ npm run sync:index-2001
 
 ---
 
-## 4) Vercel steps
+## 3) Vercel steps
 
 1. https://vercel.com → **Add New** → **Project**  
 2. Import `ShibayanBiswas/dynamic-probability-calculator`  
@@ -76,29 +64,25 @@ npm run sync:index-2001
 | Install Command | `npm install` (from `vercel.json`) |
 | Node.js Version | **24.x** |
 
-4. Add the two env vars above (Production + Preview)  
-5. Deploy  
+4. Add `MONGODB_URI` + `MONGODB_DB` (Production + Preview)  
+5. Deploy the **latest `main`** commit (not an old failed deployment)  
 6. Open `https://YOUR-APP.vercel.app/probability`
-
-If an old deploy failed: open **Deployments** → latest on `main` (`6af992b`+) → Redeploy.
 
 ---
 
-## 5) Render steps (optional — Vercel alone is enough)
+## 4) Render steps (optional — Vercel alone is enough)
 
 1. https://render.com → **New** → **Web Service**  
 2. Connect same repo  
 3. Build: `npm ci && npm run build` · Start: `npm start` · Health: `/`  
-4. Paste Render env block (`NODE_VERSION=24`)  
+4. Paste Render env block  
 5. Deploy
 
 ---
 
-## 6) What we fixed for Vercel build
+## 5) Vercel build notes
 
-- Pinned all deps (no more `"latest"` drift)  
+- Pinned deps (no `"latest"` drift)  
 - `engines.node` = `24.x`  
-- Locked `@emnapi/core` / `@emnapi/runtime` `1.11.3` into `package-lock.json`  
-- `vercel.json` uses `npm install` so install cannot fail on stale `npm ci` sync  
-
-Keep the repo **private** — the URI includes your Atlas password.
+- `@emnapi/*` locked in `package-lock.json`  
+- `vercel.json` uses `npm install`
