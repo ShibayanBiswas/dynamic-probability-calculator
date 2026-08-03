@@ -185,7 +185,7 @@ export const logicModules: LogicModule[] = [
       "Product lists and product search on every module use the same lifecycle picker pool as a scrollable list of every product in the active tab. Selection persists across Probability, Initial Probability, and Current Probability. A tab default is applied only when the current pick is outside the active pool.",
       "ScienceLab charts are shown on Analytics Lab only. Home keeps lifecycle intelligence and the maturity ladder.",
       "Lifecycle Intelligence lists Ongoing plus Observation Due 3M / 2M / 1M; the active tab row is highlighted. Obs Due rows are subsets of Ongoing.",
-      "Upload Master on Home re-parses the registry and refreshes every downstream surface.",
+      "Upload Master on Home (and the Upload page) re-parses the registry and refreshes every downstream surface — same placement as Primary SP (not every module tab).",
     ],
     outputs: [
       "Headline KPIs",
