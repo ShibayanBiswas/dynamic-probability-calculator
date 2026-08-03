@@ -66,7 +66,7 @@ MONGODB_DB=sp_dashboard
 ```env
 MONGODB_URI=mongodb+srv://ae21b109:Sb%4004052003@cluster0.lvoycia.mongodb.net/?retryWrites=true&w=majority
 MONGODB_DB=sp_dashboard
-NODE_VERSION=20
+NODE_VERSION=24
 ```
 
 Optional on Render:
@@ -105,7 +105,7 @@ npm run refresh:index-levels
 | Root Directory | leave empty / `.` |
 | Build Command | `npm run build` |
 | Install Command | `npm ci` |
-| Node.js Version | `20.x` (Project Settings → General) |
+| Node.js Version | `24.x` (Project Settings → General) |
 
 4. **Settings → Environment Variables** → add for **Production** and **Preview**:
 
@@ -140,7 +140,7 @@ npm run refresh:index-levels
 ```env
 MONGODB_URI=mongodb+srv://ae21b109:Sb%4004052003@cluster0.lvoycia.mongodb.net/?retryWrites=true&w=majority
 MONGODB_DB=sp_dashboard
-NODE_VERSION=20
+NODE_VERSION=24
 ```
 
 5. Click **Create Web Service** / Deploy  
@@ -171,8 +171,8 @@ Invoke-RestMethod "https://YOUR-HOST/api/probability/run" -Method POST -Body $bo
 
 | Platform | Must paste |
 |----------|------------|
-| **Vercel** | `MONGODB_URI` + `MONGODB_DB` + Node 20.x in UI |
-| **Render** | `MONGODB_URI` + `MONGODB_DB` + `NODE_VERSION=20` |
+| **Vercel** | `MONGODB_URI` + `MONGODB_DB` + Node 24.x in UI |
+| **Render** | `MONGODB_URI` + `MONGODB_DB` + `NODE_VERSION=24` |
 | **Skip** | `PYTHON_API_URL`, `PORT`, `NODE_ENV` |
 
 Same Mongo as Primary SP = same book (`sp_dashboard` on `cluster0.lvoycia.mongodb.net`).

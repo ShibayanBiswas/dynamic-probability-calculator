@@ -1,7 +1,12 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Keep Turbopack rooted at this package (avoids false workspace-root errors on Windows).
+  turbopack: {
+    root: path.join(__dirname),
+  },
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts", "date-fns", "framer-motion"],
   },

@@ -1,4 +1,6 @@
 {
+  "installCommand": "npm install",
+  "framework": "nextjs",
   "headers": [
     {
       "source": "/data/(.*)",
