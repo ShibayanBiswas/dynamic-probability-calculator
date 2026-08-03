@@ -1101,7 +1101,10 @@ textarea {
   /* Product spec / lifecycle rails — scroll horizontally; cards size to label text. */
   .horizontal-rail-spec {
     overflow-x: auto;
+    overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pan-y;
     scrollbar-width: thin;
     scrollbar-color: rgba(212, 178, 76, 0.45) transparent;
   }
@@ -1111,15 +1114,18 @@ textarea {
     width: max-content;
     min-width: 100%;
     flex-wrap: nowrap;
+    align-items: stretch;
   }
 
   .spec-rail-item {
     flex: 0 0 auto;
     width: auto;
+    max-width: none;
   }
 
   .spec-rail-item.rail-card {
     width: auto;
+    min-width: 0;
   }
 
   .kpi-band-dense {

@@ -70,7 +70,7 @@ Five-pass checklist against the inception prompt. Status as of the Dynamic Proba
 | KPI cards full horizontal width like Primary SP | **PASS** | Primary `KpiBand` motion + dense fill grid restored |
 | Desk tab = Initial + Current Probability only | **PASS** | `components/dashboard/desk-hub.tsx` |
 | Probability / Initial / Current = Primary Valuation spine | **PASS** | Filter → Interface/Product List → Inputs → Report as-of → Reveal + downloads in footer |
-| Past-final inside Reveal: Specs → Results cards → Payoff → Obs | **PASS** | `past-final-observation-panels.tsx` |
+| Summary Reveal: Specs → Results (H-scroll) → Payoff → Obs | **PASS** | `past-final-observation-panels.tsx` |
 | Fast local: summary without paths; paths after Reveal | **PASS** | `includePaths` + AbortController |
 | Path backtest full columns with horizontal scroll | **PASS** | `PathBacktestTable` |
 

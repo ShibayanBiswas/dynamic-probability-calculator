@@ -17,11 +17,12 @@ import {
   hasPassedFinalObservation,
 } from "@/lib/probability/as-of";
 import {
-  buildIndexSeries,
   runProbabilityBacktest,
   resolveUnderlyingKind,
+  type IndexBar,
   type ProbabilityRunResult,
 } from "@/lib/probability/engine";
+import { mergeForwardFilledSeries, SERIES_FLOOR } from "@/lib/probability/index-series";
 import { resolveMasterProducts } from "@/lib/server/resolve-master-products";
 import { excelSerialToDate, formatDisplayDate, parseExcelishDate, toLocalDateKey } from "@/lib/workbook/dates";
 import type { ProductRecord } from "@/lib/types";
@@ -29,12 +30,10 @@ import type { ProductRecord } from "@/lib/types";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-type Series = ReturnType<typeof buildIndexSeries>;
+type Series = IndexBar[];
 
 let seriesCache: { key: string; series: Series; loadedAt: number } | null = null;
 let productsCache: { products: ProductRecord[]; loadedAt: number } | null = null;
-
-const SERIES_FLOOR = "2001-01-01";
 
 /** Gift AIF / NSP `nifty` sheet — daily closes from 2001-01-01 (reference Excel parity). */
 function loadNiftyFromGiftCsv(): Map<string, number> {
@@ -68,27 +67,6 @@ function loadSensexBundled(): Map<string, number> {
     sensexMap.set(toLocalDateKey(excelSerialToDate(row.dateSerial)), row.level);
   }
   return sensexMap;
-}
-
-function mergeForwardFilledSeries(
-  niftyMap: Map<string, number>,
-  sensexMap: Map<string, number>,
-): Series {
-  const dates = [...new Set([...niftyMap.keys(), ...sensexMap.keys()])].sort();
-  const rows: Array<{ date: string; nifty: number; sensex: number }> = [];
-  let lastNifty: number | undefined;
-  let lastSensex: number | undefined;
-  for (const date of dates) {
-    if (date < SERIES_FLOOR) continue;
-    const nifty = niftyMap.get(date) ?? lastNifty;
-    const sensex = sensexMap.get(date) ?? lastSensex;
-    if (niftyMap.has(date)) lastNifty = niftyMap.get(date);
-    if (sensexMap.has(date)) lastSensex = sensexMap.get(date);
-    // Need both legs after forward-fill so Initial/Current can run either underlying.
-    if (nifty == null || sensex == null) continue;
-    rows.push({ date, nifty, sensex });
-  }
-  return buildIndexSeries(rows);
 }
 
 function loadBundledSeries(): Series {

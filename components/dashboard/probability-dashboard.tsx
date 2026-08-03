@@ -175,7 +175,7 @@ function PathBacktestTable({
   product?: ProductRecord | null;
 }) {
   const parentRef = useRef<HTMLDivElement>(null);
-  const [pathFilter, setPathFilter] = useState<PathViewFilter>("included");
+  const [pathFilter, setPathFilter] = useState<PathViewFilter>("all");
   const [exportingPaths, setExportingPaths] = useState(false);
   const paths = result?.paths ?? [];
   const presentIndexes = result
@@ -227,8 +227,9 @@ function PathBacktestTable({
         <div className="min-w-0">
           <SectionTitle>Historical Path Backtest</SectionTitle>
           <p className="mt-1 text-sm text-stone-500">
-            Daily paths from {seriesStart ?? "earliest available index history"} · scroll horizontally for every
-            column. Last included path ends on the latest trading day.
+            Daily paths from <span className="font-semibold text-stone-700">2001-01-01</span>
+            {seriesStart && seriesStart !== "2001-01-01" ? ` (series opens ${seriesStart})` : ""} ·
+            scroll horizontally for every column. Default view shows all rows from the floor.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -511,9 +512,9 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
     };
   }, [runProbability]);
 
-  // Heavy path rows only after Primary-style Reveal opens on Initial / Current.
+  // Heavy path rows only after Primary-style Reveal opens (all probability surfaces).
   useEffect(() => {
-    if (surface === "summary" || !pathsUnlocked) return;
+    if (!pathsUnlocked) return;
     void runProbability(true);
   }, [pathsUnlocked, surface, runProbability]);
 
@@ -826,51 +827,48 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
                 resetKey={outputResetKey}
                 onReveal={() => {
                   warmScreenExport();
-                  if (surface !== "summary") setPathsUnlocked(true);
+                  setPathsUnlocked(true);
                 }}
               >
                 <KpiBand accents={["cyan", "green", "purple", "amber", "rose"]} items={kpiItems} />
 
+                <HorizontalBand className="mt-4">
+                  <ProductSpecificationsPanel product={product} />
+                </HorizontalBand>
+
                 {surface === "summary" ? (
                   <>
-                    <HorizontalBand className="mt-4">
-                      <ProductSpecificationsPanel product={product} />
-                    </HorizontalBand>
                     <HorizontalBand className="mt-4">
                       <ProbabilityResultsRail product={product} cards={resultCards} />
                     </HorizontalBand>
                     <PastFinalObservationPanels product={product} />
                   </>
-                ) : (
-                  <>
-                    <HorizontalBand className="mt-4">
-                      <ProductSpecificationsPanel product={product} />
-                    </HorizontalBand>
-                    <HorizontalBand className="mt-4">
-                      <ScheduleCard
-                        result={activeResult}
-                        daysRowLabel={
-                          surface === "initial"
-                            ? "Days from Phase Start"
-                            : "Days from Valuation Date"
-                        }
-                        baseLabel={
-                          surface === "initial"
-                            ? `the actual ${startNoun.toLowerCase()} start`
-                            : "the valuation date"
-                        }
-                      />
-                    </HorizontalBand>
-                    <HorizontalBand className="mt-4">
-                      <PathBacktestTable
-                        result={activeResult}
-                        showAdjustedStart={surface === "initial"}
-                        loadingPaths={loadingPaths}
-                        product={product}
-                      />
-                    </HorizontalBand>
-                  </>
-                )}
+                ) : null}
+
+                <HorizontalBand className="mt-4">
+                  <ScheduleCard
+                    result={activeResult}
+                    daysRowLabel={
+                      surface === "current"
+                        ? "Days from Valuation Date"
+                        : "Days from Phase Start"
+                    }
+                    baseLabel={
+                      surface === "current"
+                        ? "the valuation date"
+                        : `the actual ${startNoun.toLowerCase()} start`
+                    }
+                  />
+                </HorizontalBand>
+
+                <HorizontalBand className="mt-4">
+                  <PathBacktestTable
+                    result={activeResult}
+                    showAdjustedStart={surface !== "current"}
+                    loadingPaths={loadingPaths}
+                    product={product}
+                  />
+                </HorizontalBand>
               </RevealOutput>
             </HorizontalBand>
           ) : null}

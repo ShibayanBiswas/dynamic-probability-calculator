@@ -66,7 +66,7 @@ ProbabilityDashboard
    ├── summary KPIs
    ├── ScheduleCard
    ├── PathBacktestTable
-   └── PastFinalObservationPanels (when settled)
+   └── PastFinalObservationPanels (payoff + obs table on summary)
 ```
 
 ## Critical modules (debug anchors)
