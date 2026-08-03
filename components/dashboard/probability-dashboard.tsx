@@ -839,7 +839,7 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
                     <HorizontalBand className="mt-4">
                       <ProbabilityResultsRail product={product} cards={resultCards} />
                     </HorizontalBand>
-                    {pastFinalObservation ? <PastFinalObservationPanels product={product} /> : null}
+                    <PastFinalObservationPanels product={product} />
                   </>
                 ) : (
                   <>

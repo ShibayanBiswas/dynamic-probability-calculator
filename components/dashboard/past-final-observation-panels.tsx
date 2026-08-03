@@ -12,8 +12,8 @@ import { getIndexEntryLevel } from "@/lib/product-utils";
 import type { ProductRecord } from "@/lib/types";
 
 /**
- * Past-final reference panels after Probability Results cards.
- * Order on Probability tab: Product Specs → Results cards → payoff → observation dates.
+ * Probability summary reference panels after Results cards:
+ * payoff plot → observation dates table (same as Primary Product Details / past-final view).
  */
 export function PastFinalObservationPanels({ product }: { product: ProductRecord }) {
   const { asOf } = usePortfolioClock();

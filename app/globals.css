@@ -1110,6 +1110,7 @@ textarea {
     display: flex;
     width: max-content;
     min-width: 100%;
+    flex-wrap: nowrap;
   }
 
   .spec-rail-item {
@@ -1119,30 +1120,6 @@ textarea {
 
   .spec-rail-item.rail-card {
     width: auto;
-  }
-
-  /* Spec / Results cards fill the full horizontal band (wrap when many). */
-  .spec-rail-fill-grid {
-    display: grid;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .spec-rail-card-stretch {
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    height: 100%;
-  }
-
-  @media (max-width: 767px) {
-    .spec-rail-fill-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    }
-
-    .kpi-band-five {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
   }
 
   .kpi-band-dense {
