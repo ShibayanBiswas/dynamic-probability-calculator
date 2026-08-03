@@ -100,8 +100,7 @@ function main() {
       statusOk += 1;
       continue;
     }
-    const expect =
-      days < 0 ? "expired" : days <= 30 ? "expiring-1m" : days <= 90 ? "expiring-3m" : "ongoing";
+    const expect = days < 0 ? "expired" : "ongoing";
     if (st === expect) statusOk += 1;
     else if (fails.length < 40) fails.push(`status ${p.isin}: got ${st} expect ${expect}`);
   }
@@ -110,8 +109,6 @@ function main() {
   // 3) Filter pools + defaults
   const liveFilters: LifecycleFilter[] = [
     "ongoing",
-    "expiring-3m",
-    "expiring-1m",
     "obs-due-3m",
     "obs-due-2m",
     "obs-due-1m",
@@ -155,7 +152,7 @@ function main() {
   }
 
   // 4) Live calendar bounds — every product on the Ongoing live book
-  // (Ongoing already includes expiring-within-3M/1M after filter policy update).
+  // Ongoing is the full live book (no separate expiring tabs).
   const liveUnique = filterProductsByLifecycle(valid, "ongoing", asOf);
   let calOk = 0;
   for (const p of liveUnique) {

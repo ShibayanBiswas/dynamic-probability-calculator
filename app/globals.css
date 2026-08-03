@@ -1422,21 +1422,6 @@ textarea {
     @apply border-gold/35 bg-amber-50 text-gold-dark;
   }
 
-  .status-badge-expiring-3m {
-    border-color: rgb(217 119 6 / 0.45);
-    background: #fffbeb;
-    color: #b45309;
-    font-weight: 800;
-  }
-
-  .status-badge-expiring-1m {
-    border-color: rgb(185 28 28 / 0.55);
-    background: #fee2e2;
-    color: #991b1b;
-    font-weight: 800;
-    box-shadow: inset 0 0 0 1px rgb(220 38 38 / 0.25);
-  }
-
   .status-days-urgent,
   .data-table tbody td.status-days-urgent {
     font-weight: 800;
@@ -2282,18 +2267,6 @@ textarea {
     background: rgba(212, 178, 76, 0.12);
     border-color: rgba(212, 178, 76, 0.32);
     color: var(--ar-gold-light);
-  }
-
-  html.dark .status-badge-expiring-3m {
-    background: rgba(180, 130, 40, 0.2);
-    border-color: rgba(251, 191, 36, 0.45);
-    color: #fbbf24;
-  }
-
-  html.dark .status-badge-expiring-1m {
-    background: rgba(153, 27, 27, 0.32);
-    border-color: rgba(252, 165, 165, 0.55);
-    color: #fee2e2;
   }
 
   html.dark .status-days-urgent,

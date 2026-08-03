@@ -16,7 +16,7 @@ Work top-down. Prefer `npm run verify:probability` before UI hunting.
 ### 2. Blank product list / zero ongoing
 
 1. Master loaded? Home upload or baked seed.  
-2. Lifecycle filter too narrow (Obs-due / Expiring)? Switch to Ongoing.  
+2. Lifecycle filter too narrow (Obs-due)? Switch to Ongoing.  
 3. `npm run verify:filter-parity` — expect ~thousands ongoing, expired **0**.  
 4. Clock as-of / phase end mis-parse → `product-dates.ts`.
 

@@ -99,7 +99,7 @@ export const logicModules: LogicModule[] = [
       "Valid desk rows are kept only when lifecycle status is known and notionals are finite before any surface is rendered.",
       "Hidden calibration layers such as observation lookbacks and extinguished rollovers remain linked but are not shown to end users.",
       "Live Notional is driven by the sum of trade amounts on the merged master book. Lifecycle tab AUM is driven by deduped desk rows.",
-      "Ongoing and expiring status is classified from the phase schedule end on the live desk clock. Blank and Phase 2 use Maturity. Phase 1 uses POED. Ten Years uses Rollover. Expired products are excluded from this desk.",
+      "Ongoing and live status is classified from the phase schedule end on the live desk clock. Blank and Phase 2 use Maturity. Phase 1 uses POED. Ten Years uses Rollover. Expired products are excluded from this desk. There are no separate Expiring 3M / 1M tabs.",
     ],
     outputs: ["Product search index", "Formula catalog", "Category summaries", "Validation alerts"],
   },
@@ -113,7 +113,7 @@ export const logicModules: LogicModule[] = [
     stageCount: 8,
     metrics: [
       { label: "Surfaces", value: "8" },
-      { label: "Lifecycle tabs", value: "7" },
+      { label: "Lifecycle tabs", value: "4" },
       { label: "Focus", value: "Primary lane" },
     ],
     nodes: [
@@ -134,7 +134,7 @@ export const logicModules: LogicModule[] = [
         label: "Lifecycle Filter",
         kind: "process",
         description:
-          "Ongoing, observation-due, and expiring buckets are shared across Home, Probability, Initial Probability, Current Probability, and Analytics. Expiration is measured to phase schedule end. Observation due is measured to upcoming observation averages. Expired products and products whose last observation has already settled are excluded from this probability desk.",
+          "Ongoing and observation-due buckets are shared across Home, Probability, Initial Probability, Current Probability, and Analytics. Expiration is measured to phase schedule end. Observation due is measured to upcoming observation averages. Expired products and products whose last observation has already settled are excluded from this probability desk. Expiring 3M / 1M tabs are not used.",
       },
       {
         id: "list",
@@ -180,7 +180,7 @@ export const logicModules: LogicModule[] = [
     insights: [
       "Headline KPI tiles show a dash until the master book finishes loading. Live Notional uses merged master trade amounts with manifest fallback when summaries are absent.",
       "Live Notional is the sum of trade amounts on the merged master book. Lifecycle tab AUM sums deduped desk-canonical rows.",
-      "Ongoing is the full live book where phase end is still ahead, including products expiring within three months or one month. Expiring tabs are narrower subsets. Expired uses phase end in the past. Blank and Phase 2 use Maturity. Phase 1 uses POED. Ten Years uses Rollover.",
+      "Ongoing is the full live book where phase end is still ahead (including near-maturity deals). Expired uses phase end in the past. Blank and Phase 2 use Maturity. Phase 1 uses POED. Ten Years uses Rollover. This desk does not expose Expiring 3M / 1M filter tabs.",
       "Observation-due tabs for three months, two months, and one month include live products with any observation average date inside ninety, sixty, or thirty calendar days. The one-month set is nested inside the two-month set, which is nested inside the three-month set.",
       "Product lists and product search on every module use the same lifecycle picker pool as a scrollable list of every product in the active tab. Selection persists across Probability, Initial Probability, and Current Probability. A tab default is applied only when the current pick is outside the active pool.",
       "ScienceLab charts are shown on Analytics Lab only. Home keeps lifecycle intelligence and the maturity ladder.",
@@ -481,7 +481,7 @@ export const logicModules: LogicModule[] = [
     stageCount: 7,
     metrics: [
       { label: "Chart panels", value: "6" },
-      { label: "Lifecycle tabs", value: "7" },
+      { label: "Lifecycle tabs", value: "4" },
       { label: "Weighting", value: "AUM" },
     ],
     nodes: [
@@ -490,7 +490,7 @@ export const logicModules: LogicModule[] = [
         label: "Lifecycle Tab",
         kind: "input",
         description:
-          "Ongoing, observation-due, and expiring tabs drive every chart and product search pool. Products whose last observation has already settled are excluded from every live pill on this probability desk.",
+          "Ongoing and observation-due tabs drive every chart and product search pool. Products whose last observation has already settled are excluded from every live pill on this probability desk.",
       },
       {
         id: "pool",

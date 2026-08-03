@@ -6,13 +6,14 @@
 
 | Filter | Meaning |
 |--------|---------|
-| Ongoing | Live book — phase end still ahead **and** last observation has **not** settled yet (includes expiring subsets that still have open fixings) |
+| Ongoing | Live book — phase end still ahead **and** last observation has **not** settled yet |
 | Observation in 3 / 2 / 1 months | Any upcoming Average date within 90 / 60 / 30 days (same live-observation gate) |
-| Expiring in 3 / 1 months | Phase end within 90 / 30 days **and** last observation not yet settled |
 
 **Expired never appears.** Internally `filterProductsByLifecycle(..., "expired")` returns `[]`.  
 
-**Past-final observation:** once the last Average fixing has settled (`hasPassedFinalObservation` / `isLiveObservationBookProduct`), the product is excluded from **all** Ongoing / Obs-due / Expiring pills on this probability web app — even if maturity/POED is still in the future. Lifecycle index headline counts use the same filter.
+**No Expiring 3M / 1M tabs** on this probability desk — near-maturity products stay in Ongoing (and appear on Obs-due when a fixing is due).  
+
+**Past-final observation:** once the last Average fixing has settled (`hasPassedFinalObservation` / `isLiveObservationBookProduct`), the product is excluded from **all** Ongoing / Obs-due pills — even if maturity/POED is still in the future. Lifecycle index headline counts use the same filter.
 
 Picker pool ≡ filter pool: `getLifecyclePickerPool`.
 
@@ -38,8 +39,8 @@ Do not mix them when debugging.
 
 ## Home KPI band
 
-Live Notional, Ongoing, Obs Due 3M/2M/1M, Expiring 3M/1M.  
-No Expired tile. May horizontal-scroll (`.kpi-band-scroll`).
+Live Notional, Ongoing, Obs Due 3M/2M/1M.  
+No Expired tile. No Expiring 3M/1M tiles. May horizontal-scroll when denser (`.kpi-band-scroll`).
 
 ## Portfolio Analytics Lab
 

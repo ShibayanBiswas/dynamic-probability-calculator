@@ -65,10 +65,10 @@ async function main() {
   const expiredToday = products.filter((p) => getProductLifecycleStatus(p, today) === "expired");
   const ongoingToday = products.filter((p) => {
     const s = getProductLifecycleStatus(p, today);
-    return s === "ongoing" || s === "expiring-1m" || s === "expiring-3m";
+    return s === "ongoing";
   });
   console.log(`  Expired today: ${expiredToday.length}`);
-  console.log(`  Live book today (ongoing+expiring): ${ongoingToday.length}`);
+  console.log(`  Live book today (ongoing): ${ongoingToday.length}`);
 
   // Sample: product expired as of today — pick one with a known expiration
   const recentlyExpired = expiredToday
@@ -129,10 +129,10 @@ async function main() {
   // While on Expired tab, product comes for observation/valuation at last obs — that's intentional
   pass("Rule: lifecycle tabs use TODAY (asOf). Valuation Date is the mark date, not the pool filter.");
 
-  // Scan: no expired-today product should be in ongoing/expiring pools
+  // Scan: no expired-today product should be in ongoing pool
   let leaked = 0;
   for (const p of expiredToday) {
-    for (const f of ["ongoing", "expiring-1m", "expiring-3m"] as LifecycleFilter[]) {
+    for (const f of ["ongoing"] as LifecycleFilter[]) {
       if (isProductInLifecyclePickerPool(p, f, today)) leaked += 1;
     }
   }
@@ -154,7 +154,7 @@ async function main() {
   const flippedToExpiredToday = products.filter((p) => {
     const y = getProductLifecycleStatus(p, yesterday);
     const t = getProductLifecycleStatus(p, today);
-    const wasLive = y === "ongoing" || y === "expiring-1m" || y === "expiring-3m";
+    const wasLive = y === "ongoing";
     return wasLive && t === "expired";
   });
   console.log(`  Flipped live→expired overnight (y→today): ${flippedToExpiredToday.length}`);
@@ -275,7 +275,7 @@ async function main() {
     return;
   }
   console.log("CONFIRMED:");
-  console.log("  1. Expired-as-of-today products do NOT appear in Ongoing/Expiring tabs.");
+  console.log("  1. Expired-as-of-today products do NOT appear in Ongoing tabs.");
   console.log("  2. They DO appear under Expired; historical valuation/obs dates still mark correctly.");
   console.log("  3. Lifecycle buckets recompute from asOf — day-roll is dynamic (portfolio clock).");
   console.log("  4. Mongo products + index_prices are synced and parity-checked.");

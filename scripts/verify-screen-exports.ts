@@ -450,7 +450,7 @@ function main() {
   const liveObsSample = products.find((p) => {
     const status = getProductLifecycleStatus(p, today);
     return (
-      (status === "ongoing" || status === "expiring-3m" || status === "expiring-1m") &&
+      (status === "ongoing") &&
       getProductObservationDates(p).length >= 2
     );
   });

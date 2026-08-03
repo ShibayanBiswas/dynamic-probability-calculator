@@ -7,9 +7,10 @@ Five-pass checklist against the inception prompt. Status as of the Dynamic Proba
 | Requirement | Status | Where |
 |-------------|--------|-------|
 | Dashboard same format/styling as Primary SP | **PASS** | `app/globals.css`, `components/layout/*` |
-| Tabs: ongoing, obs 3m/2m/1m, expiring 3m/1m | **PASS** | `UI_LIFECYCLE_FILTERS` in `lib/product-lifecycle.ts` |
+| Tabs: ongoing, obs 3m/2m/1m | **PASS** | `UI_LIFECYCLE_FILTERS` in `lib/product-lifecycle.ts` |
 | Forget expired products | **PASS** | Lifecycle index skip; filter `"expired"` → `[]` |
-| Exclude past-final-observation from live pills | **PASS** | `isLiveObservationBookProduct` / `hasPassedFinalObservation` gate on Ongoing, Obs-due, Expiring |
+| No Expiring 3M / 1M tabs | **PASS** | Removed from UI pills, headline KPIs, market strip, status enum |
+| Exclude past-final-observation from live pills | **PASS** | `isLiveObservationBookProduct` / `hasPassedFinalObservation` gate on Ongoing, Obs-due |
 | Master from New Product Master_ / Mongo | **PASS** | Upload + `resolve-master-products` + Atlas/local Mongo |
 | Blank / Phase1 / Phase2 / 10Y actual starts & ends | **PASS** | `lib/product-dates.ts` |
 | Days Left, Tenure, Years as-of selected date | **PASS** | Phase schedule end SSOT; portfolio columns |

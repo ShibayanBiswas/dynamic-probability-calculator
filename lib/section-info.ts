@@ -4,11 +4,11 @@ import type { InfoBlurb } from "@/lib/info-blurb";
 export const SECTION_INFO: Record<string, InfoBlurb> = {
   "home-kpis": {
     title: "Understanding these headline numbers",
-    body: "These tiles summarise the live probability book: notional, ongoing deals, observation-due windows, and near expiries.\nLive Notional is the sum of trade amounts on the merged master book.\nOngoing counts products whose phase end is still ahead and whose last observation has not settled yet. Observation Due in 3M, 2M, and 1M flag products with a fixing inside that calendar window under the same live-observation gate.\nExpiring in 3M and 1M highlight deals approaching phase schedule end that still have an open last observation.\nExpired products and past-final-observation products are excluded from this probability desk.",
+    body: "These tiles summarise the live probability book: notional, ongoing deals, and observation-due windows.\nLive Notional is the sum of trade amounts on the merged master book.\nOngoing counts products whose phase end is still ahead and whose last observation has not settled yet. Observation Due in 3M, 2M, and 1M flag products with a fixing inside that calendar window under the same live-observation gate.\nExpired products and past-final-observation products are excluded from this probability desk.",
   },
   "home-filter": {
     title: "How the portfolio filter works",
-    body: "The book is filtered by Ongoing, Observation Due in 3M, 2M, or 1M, and Expiring in 3M or 1M.\nThe filter updates the whole home page including summary tiles, maturity chart, and shortcuts below.\nObservation-due tabs surface products with an upcoming fixing for probability prep.\nThe default view is the live Ongoing book for day-to-day checks.\nThe bucket that matches the client conversation being prepared should be selected.",
+    body: "The book is filtered by Ongoing and Observation Due in 3M, 2M, or 1M.\nThe filter updates the whole home page including summary tiles, maturity chart, and shortcuts below.\nObservation-due tabs surface products with an upcoming fixing for probability prep.\nThe default view is the live Ongoing book for day-to-day checks.\nThe bucket that matches the client conversation being prepared should be selected.",
   },
   "home-maturity": {
     title: "Reading the maturity ladder",
@@ -54,7 +54,7 @@ export const SECTION_INFO: Record<string, InfoBlurb> = {
   },
   "an-lifecycle": {
     title: "Lifecycle universe",
-    body: "The chart splits the book by status into ongoing and near-maturity bands, sized by money in crores.\nA large ongoing slice means most capital is still invested.\nObservation-due and expiring bands highlight near-term cash events.\nThe legend shows both product count and rupee amount per slice.\nExpired products are excluded from this probability desk.",
+    body: "The chart splits the book by status into ongoing and related live bands, sized by money in crores.\nA large ongoing slice means most capital is still invested.\nObservation-due bands highlight near-term fixing events.\nThe legend shows both product count and rupee amount per slice.\nExpired products are excluded from this probability desk.",
   },
   "an-coupon": {
     title: "Coupon distribution",

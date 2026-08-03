@@ -1,6 +1,6 @@
 /**
  * Validates lifecycle KPI tiles (AUM, Avg Coupon, Listed, Protected) per bucket.
- * Usage: npx tsx scripts/verify-lifecycle-kpis.ts [ongoing|expired|expiring-3m|expiring-1m]
+ * Usage: npx tsx scripts/verify-lifecycle-kpis.ts [ongoing|expired|obs-due-3m]
  */
 import { filterProductsByLifecycle, LIFECYCLE_FILTERS, type LifecycleFilter } from "../lib/product-lifecycle";
 import { getCouponPercent, classifyProtection } from "../lib/product-utils";

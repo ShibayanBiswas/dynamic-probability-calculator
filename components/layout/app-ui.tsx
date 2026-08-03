@@ -322,8 +322,6 @@ const kpiIcons: Record<string, LucideIcon> = {
   "Live Notional": Wallet,
   Products: Package,
   "Avg Coupon": Calculator,
-  "Expiring in 3M": LineChart,
-  "Expiring in 1M": LineChart,
   "Observation Due in 3M": LineChart,
   "Observation Due in 2M": LineChart,
   "Observation Due in 1M": LineChart,

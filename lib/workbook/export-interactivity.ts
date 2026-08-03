@@ -57,7 +57,7 @@ export const PORTFOLIO_FORMULA_GUIDE: FormulaGuideEntry[] = [
     column: "Days Left",
     formula: "= calendar days to phase schedule end",
     description:
-      "Live / observation-due / expiring tabs — days remaining until Blank/Phase 2 Maturity, Phase 1 POED, or 10Y Rollover C/P.",
+      "Live / observation-due tabs — days remaining until Blank/Phase 2 Maturity, Phase 1 POED, or 10Y Rollover C/P.",
   },
   {
     column: "Initial Prob",

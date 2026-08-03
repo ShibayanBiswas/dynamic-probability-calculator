@@ -13,7 +13,7 @@ Two views:
 
 ## How to use the screens
 
-1. Pick a lifecycle tab (Ongoing, Observation due, Expiring). Expired deals are hidden. Products whose **last observation has already settled** are also excluded from every live tab on this desk.  
+1. Pick a lifecycle tab (Ongoing, Observation due). Expired deals are hidden. Products whose **last observation has already settled** are also excluded from every live tab on this desk.  
 2. Search by name / ISIN.  
 3. Set the valuation date if you are not using today. Index levels fill in automatically.  
 4. Read the probability KPIs.  
@@ -39,7 +39,7 @@ The last Yes path is designed so its final observation lands on the latest tradi
 
 ## After the last observation has passed
 
-Those products leave the Ongoing / Obs-due / Expiring books entirely on this web app.  
+Those products leave the Ongoing / Obs-due books entirely on this web app.  
 If you still open one via a deep link or frozen as-of view, numbers lock **as of that last observation date**. You still see product specifications, coupon, a payoff shape plot, and the observation level table — not long product stories, scenario grids, or IRR valuations.
 
 ## Downloads

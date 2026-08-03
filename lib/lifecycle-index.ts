@@ -30,8 +30,6 @@ export type PortfolioHeadlineSnapshot = {
   averageCoupon: number;
   listedShare: number;
   protectedShare: number;
-  maturingSoon: number;
-  expiring1m: number;
   obsDue3m: number;
   obsDue2m: number;
   obsDue1m: number;
@@ -51,13 +49,10 @@ function emptyBuckets(): LifecycleBuckets {
     ongoing: [],
     expired: [],
     perpetual: [],
-    "expiring-1m": [],
-    "expiring-3m": [],
     unknown: [],
     upcoming: [],
   };
 }
-
 
 function bucketNotional(bucket: ProductRecord[]) {
   return bucket.reduce((sum, product) => sum + (product.tradeAmount ?? 0), 0);
@@ -103,40 +98,23 @@ export function buildLifecycleIndex(
   }
 
   const filterCounts = {
-    ongoing:
-      buckets.ongoing.length +
-      buckets.perpetual.length +
-      buckets["expiring-1m"].length +
-      buckets["expiring-3m"].length,
+    ongoing: buckets.ongoing.length + buckets.perpetual.length,
     expired: buckets.expired.length,
-    "expiring-1m": buckets["expiring-1m"].length,
-    "expiring-3m": buckets["expiring-1m"].length + buckets["expiring-3m"].length,
     "obs-due-1m": 0,
     "obs-due-2m": 0,
     "obs-due-3m": 0,
   } as Record<LifecycleFilter, number>;
 
   const filterNotional = {
-    ongoing:
-      bucketNotional(buckets.ongoing) +
-      bucketNotional(buckets.perpetual) +
-      bucketNotional(buckets["expiring-1m"]) +
-      bucketNotional(buckets["expiring-3m"]),
+    ongoing: bucketNotional(buckets.ongoing) + bucketNotional(buckets.perpetual),
     expired: bucketNotional(buckets.expired),
-    "expiring-1m": bucketNotional(buckets["expiring-1m"]),
-    "expiring-3m": bucketNotional(buckets["expiring-1m"]) + bucketNotional(buckets["expiring-3m"]),
     "obs-due-1m": 0,
     "obs-due-2m": 0,
     "obs-due-3m": 0,
   } as Record<LifecycleFilter, number>;
 
-  // One pass for Observation Due tabs (instead of 6 full-book filters).
-  const liveForObs = [
-    ...buckets.ongoing,
-    ...buckets.perpetual,
-    ...buckets["expiring-1m"],
-    ...buckets["expiring-3m"],
-  ];
+  // One pass for Observation Due tabs.
+  const liveForObs = [...buckets.ongoing, ...buckets.perpetual];
   for (const product of liveForObs) {
     const days = getDaysToNextObservation(product, asOf);
     if (days == null || days < 0) continue;
@@ -155,15 +133,12 @@ export function buildLifecycleIndex(
     }
   }
 
-  // Keep filter key order stable for callers that iterate LIFECYCLE_FILTERS.
   for (const filter of LIFECYCLE_FILTERS) {
     filterCounts[filter] = filterCounts[filter] ?? 0;
     filterNotional[filter] = filterNotional[filter] ?? 0;
   }
 
   const ongoingCount = filterCounts.ongoing;
-  const maturingSoon = filterCounts["expiring-3m"];
-  const expiring1m = filterCounts["expiring-1m"];
   const obsDue3m = filterCounts["obs-due-3m"];
   const obsDue2m = filterCounts["obs-due-2m"];
   const obsDue1m = filterCounts["obs-due-1m"];
@@ -175,13 +150,11 @@ export function buildLifecycleIndex(
     averageCoupon: couponCount > 0 ? couponSum / couponCount : 0,
     listedShare: validProducts.length > 0 ? listed / validProducts.length : 0,
     protectedShare: validProducts.length > 0 ? protectedCount / validProducts.length : 0,
-    maturingSoon,
-    expiring1m,
     obsDue3m,
     obsDue2m,
     obsDue1m,
-    activeCount: ongoingCount + maturingSoon,
-    activeNotional: filterNotional.ongoing + filterNotional["expiring-3m"],
+    activeCount: ongoingCount,
+    activeNotional: filterNotional.ongoing,
     ongoingCount,
     expiredCount: filterCounts.expired,
     perpetualCount: buckets.perpetual.length,

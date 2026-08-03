@@ -4,7 +4,8 @@
  * - Observation tabs (obs-due-1m / 2m / 3m) → upcoming Average 1 / Avg. 2–7 within horizon
  * - Picker pool === filter pool on every UI tab
  * - Probability desk: expired filter is always empty
- * - Probability desk: products whose last observation has settled are excluded from ongoing / obs-due / expiring
+ * - Probability desk: products whose last observation has settled are excluded from ongoing / obs-due
+ * - Probability desk: no Expiring 3M / 1M filters
  *
  * Usage: npx tsx scripts/verify-lifecycle-filter-parity.ts
  */
@@ -133,11 +134,6 @@ const expiredInOngoing = ongoingOnly.filter(
 const pastFinalInOngoing = ongoingOnly.filter((product) =>
   hasPassedFinalObservation(product, asOf),
 );
-const expiringInOngoing = ongoingOnly.filter((product) => {
-  const status = getProductLifecycleStatus(product, asOf);
-  return status === "expiring-1m" || status === "expiring-3m";
-});
-const expiring3m = filterProductsByLifecycle(products, "expiring-3m", asOf);
 if (expiredInOngoing.length > 0) {
   console.error(`Ongoing tab includes ${expiredInOngoing.length} expired products`);
   failed = true;
@@ -150,15 +146,11 @@ if (pastFinalInOngoing.length > 0) {
 } else {
   console.log("Ongoing excludes past-final-observation products");
 }
-if (expiringInOngoing.length !== expiring3m.length) {
-  console.error(
-    `Ongoing should include all expiring-3m (${expiring3m.length}); found ${expiringInOngoing.length}`,
-  );
+if (UI_LIFECYCLE_FILTERS.some((f) => f.startsWith("expiring"))) {
+  console.error("UI_LIFECYCLE_FILTERS must not include expiring tabs");
   failed = true;
 } else {
-  console.log(
-    `\nOngoing live book: ${ongoingOnly.length} rows (includes ${expiringInOngoing.length} expiring within 3M; no expired; no past-final obs)`,
-  );
+  console.log(`\nOngoing live book: ${ongoingOnly.length} rows (no expired; no past-final obs; no expiring tabs)`);
 }
 
 const obs3m = filterProductsByLifecycle(products, "obs-due-3m", asOf).length;

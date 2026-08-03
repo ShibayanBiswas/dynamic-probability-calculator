@@ -1,6 +1,6 @@
 /**
  * Audit Analytics Lab (ScienceLab) chart numbers vs canonical master-seed book.
- * Usage: npx tsx scripts/verify-analytics-plots.ts [ongoing|expired|expiring-3m|expiring-1m]
+ * Usage: npx tsx scripts/verify-analytics-plots.ts [ongoing|expired|obs-due-3m]
  */
 import {
   getCouponDistribution,

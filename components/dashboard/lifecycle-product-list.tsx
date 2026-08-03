@@ -55,8 +55,6 @@ import {
 const STATUS_BADGE: Record<LifecycleStatus, string> = {
   ongoing: "status-badge status-badge-ongoing",
   perpetual: "status-badge status-badge-perpetual",
-  "expiring-3m": "status-badge status-badge-expiring-3m",
-  "expiring-1m": "status-badge status-badge-expiring-1m",
   expired: "status-badge status-badge-expired",
   upcoming: "status-badge status-badge-upcoming",
   unknown: "status-badge status-badge-unknown",
@@ -272,7 +270,6 @@ export function LifecycleProductList({
           const selected = p.rowId === selectedId;
           const live = getLiveValuation(p);
           const rowStatus = getProductLifecycleStatus(p, asOf);
-          const isExpiringRow = rowStatus === "expiring-1m" || rowStatus === "expiring-3m";
           const onObsTab = isObservationDueFilter(lifecycle);
           const observationDays = onObsTab ? getDaysToNextObservation(p, asOf) : undefined;
           const observationUrgency = getObservationUrgency(observationDays);
@@ -292,7 +289,9 @@ export function LifecycleProductList({
           const daysUrgent =
             lifecycle !== "expired" &&
             !daysCritical &&
-            ((rawDays != null && rawDays > 30 && rawDays <= 90) || isExpiringRow);
+            rawDays != null &&
+            rawDays > 30 &&
+            rawDays <= 90;
 
           return (
             <tr
@@ -352,8 +351,8 @@ export function LifecycleProductList({
                     {isStatus ? (
                       <span
                         className={cn(
-                          // Observation Due tabs: red (≤7D) vs green (further) — not all red.
-                          // Expiring / Ongoing tabs: true lifecycle colour (1M red, 3M amber, Ongoing green).
+                          // Observation Due tabs: red (≤7D) vs green (further).
+                          // Ongoing tab: lifecycle colour (Ongoing green).
                           onObsTab && observationUrgency === "near"
                             ? "status-badge status-badge-observation-near"
                             : onObsTab && observationUrgency === "scheduled"

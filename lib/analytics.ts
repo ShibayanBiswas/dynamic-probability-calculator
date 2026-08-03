@@ -2,8 +2,8 @@ import { differenceInCalendarDays } from "date-fns";
 
 import type { ProductRecord } from "@/lib/types";
 import {
-  EXPIRING_1M_DAYS,
-  EXPIRING_3M_DAYS,
+  MATURITY_WINDOW_1M_DAYS,
+  MATURITY_WINDOW_3M_DAYS,
   getLifecycleNotional,
   LIFECYCLE_STATUS_LABELS,
   partitionByLifecycle,
@@ -28,8 +28,8 @@ import { computeValuation } from "@/lib/workbook/valuation-engine";
 
 /** Remaining-time windows spanning the full portfolio horizon. */
 const MATURITY_WINDOWS: Array<{ label: string; maxDays: number }> = [
-  { label: "0-1M", maxDays: EXPIRING_1M_DAYS },
-  { label: "1-3M", maxDays: EXPIRING_3M_DAYS },
+  { label: "0-1M", maxDays: MATURITY_WINDOW_1M_DAYS },
+  { label: "1-3M", maxDays: MATURITY_WINDOW_3M_DAYS },
   { label: "3-6M", maxDays: 180 },
   { label: "6-12M", maxDays: 365 },
   { label: "1-2Y", maxDays: 730 },
@@ -91,8 +91,6 @@ const LIFECYCLE_COLORS_LIGHT: Record<LifecycleStatus, string> = {
   expired: "#78716c",
   perpetual: "#b8860b",
   upcoming: "#7a1e2c",
-  "expiring-1m": "#be123c",
-  "expiring-3m": "#c2410c",
   unknown: "#57534e",
 };
 
@@ -101,8 +99,6 @@ const LIFECYCLE_COLORS_DARK: Record<LifecycleStatus, string> = {
   expired: "#8a8278",
   perpetual: "#d4b24c",
   upcoming: "#b8956a",
-  "expiring-1m": "#c9a040",
-  "expiring-3m": "#a8821f",
   unknown: "#78716c",
 };
 
@@ -255,7 +251,7 @@ function tenorBand(days: number): string {
  *
  * | Book | Days measured |
  * |------|----------------|
- * | Live (ongoing / obs-due / expiring) | Remaining as-of → phase schedule end |
+ * | Live (ongoing / obs-due) | Remaining as-of → phase schedule end |
  * | Expired | Full phase tenure (Working!F → schedule end) |
  */
 export function getTenorDistribution(products: ProductRecord[], asOf = new Date()) {
@@ -303,8 +299,6 @@ export function getExpiredVsOngoingTable(products: ProductRecord[], asOf = new D
   const buckets = partitionByLifecycle(products, asOf);
   const statusOrder: LifecycleStatus[] = [
     "ongoing",
-    "expiring-3m",
-    "expiring-1m",
     "upcoming",
     "expired",
     "perpetual",

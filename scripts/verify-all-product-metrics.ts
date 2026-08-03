@@ -137,9 +137,6 @@ async function main() {
       isValuationApplicableAt(p, deskDate),
     ),
     expired: filterProductsByLifecycle(withFormula, "expired", asOf),
-    expiring: filterProductsByLifecycle(withFormula, "expiring-3m", asOf).filter((p) =>
-      isValuationApplicableAt(p, deskDate),
-    ),
     obsDue: filterProductsByLifecycle(withFormula, "obs-due-3m", asOf).filter((p) =>
       isValuationApplicableAt(p, deskDate),
     ),
@@ -246,7 +243,7 @@ async function main() {
   console.log(`Desk date: ${deskDate}`);
   console.log(`Index: Nifty ${niftyLevel ?? "—"} · Sensex ${sensexLevel ?? "—"} (${levels?.source ?? "—"})`);
   console.log(`\nPools checked: ${totalChecked} (with formula)`);
-  console.log(`  ongoing: ${pools.ongoing.length} · expired: ${pools.expired.length} · expiring: ${pools.expiring.length} · obs-due: ${pools.obsDue.length}`);
+  console.log(`  ongoing: ${pools.ongoing.length} · expired: ${pools.expired.length} · obs-due: ${pools.obsDue.length}`);
   console.log(`\nMarked (finite value + abs + IRR): ${totalMarked}`);
   console.log(`No index / level: ${totalNoIndex}`);
   console.log(`Metric issues: ${issues.length}`);

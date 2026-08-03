@@ -64,7 +64,7 @@ function useProductUniverses(lifecycleFilter: LifecycleFilter | undefined, pool:
     const tabPool = getLifecyclePickerPool(book, lifecycleFilter, asOf);
 
     // Browse + search both use the full tab pool so "Select the Primary Structured
-    // Product" scrolls every product under Ongoing / Expiring / Obs-due / Expired.
+    // Product" scrolls every product under Ongoing / Obs-due.
     return {
       searchProducts: tabPool,
       browseProducts: tabPool,

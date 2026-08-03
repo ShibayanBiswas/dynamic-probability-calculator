@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { Activity, CalendarClock, TrendingUp, Zap } from "lucide-react";
+import { CalendarClock, TrendingUp, Zap } from "lucide-react";
 
 import { useDataset } from "@/lib/context/dataset-provider";
 import { useHeadlineKpis } from "@/lib/hooks/use-headline-kpis";
@@ -22,8 +22,6 @@ export function MarketStrip() {
     { icon: CalendarClock, label: "Obs 3M", value: count(stats.obsDue3m), color: "text-violet-700" },
     { icon: CalendarClock, label: "Obs 2M", value: count(stats.obsDue2m), color: "text-violet-600" },
     { icon: CalendarClock, label: "Obs 1M", value: count(stats.obsDue1m), color: "text-violet-500" },
-    { icon: Activity, label: "3M", value: count(stats.maturingSoon), color: "text-orange-400" },
-    { icon: Activity, label: "1M", value: count(stats.expiring1m), color: "text-rose-400" },
   ];
 
   return (

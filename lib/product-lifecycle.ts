@@ -16,12 +16,13 @@ import {
 import { formatDisplayDate, parseExcelishDate } from "@/lib/workbook/dates";
 import { differenceInCalendarDays, startOfDay } from "date-fns";
 
-/** Calendar-day horizons — labelled as months in the UI. */
-export const EXPIRING_1M_DAYS = 30;
-export const EXPIRING_3M_DAYS = 90;
+/** Calendar-day horizons for observation-due tabs and maturity ladder windows. */
 export const OBS_DUE_1M_DAYS = 30;
 export const OBS_DUE_2M_DAYS = 60;
 export const OBS_DUE_3M_DAYS = 90;
+/** Maturity-ladder window edges (not lifecycle tabs). */
+export const MATURITY_WINDOW_1M_DAYS = 30;
+export const MATURITY_WINDOW_3M_DAYS = 90;
 /** Within an Observation Due tab: ≤ this many days → red; further → green. */
 export const OBS_URGENCY_NEAR_DAYS = 7;
 
@@ -41,8 +42,6 @@ export type LifecycleStatus =
   | "ongoing"
   | "expired"
   | "perpetual"
-  | "expiring-1m"
-  | "expiring-3m"
   | "unknown"
   | "upcoming";
 
@@ -52,8 +51,6 @@ export const LIFECYCLE_FILTERS = [
   "obs-due-3m",
   "obs-due-2m",
   "obs-due-1m",
-  "expiring-3m",
-  "expiring-1m",
   "expired",
 ] as const;
 
@@ -61,14 +58,13 @@ export type LifecycleFilter = (typeof LIFECYCLE_FILTERS)[number];
 
 /** Live-book pills only — expired products are never shown on this desk.
  *  Ongoing = phase still live AND final observation has not settled yet.
+ *  No separate Expiring 3M / 1M tabs on this probability desk.
  */
 export const UI_LIFECYCLE_FILTERS = [
   "ongoing",
   "obs-due-3m",
   "obs-due-2m",
   "obs-due-1m",
-  "expiring-3m",
-  "expiring-1m",
 ] as const satisfies readonly LifecycleFilter[];
 
 /**
@@ -88,13 +84,11 @@ export const QUICK_ANALYTICS_LIFECYCLE_FILTERS = ["ongoing"] as const satisfies 
 const OBS_DUE_FILTERS = new Set<LifecycleFilter>(["obs-due-3m", "obs-due-2m", "obs-due-1m"]);
 
 /**
- * Expiration tabs — phase schedule end via `getProductExpirationDate`:
+ * Phase-schedule filters (ongoing / expired). Obs-due tabs are separate.
  * Blank / Phase 2 → Maturity · Phase 1 → POED · 10 Years → Rollover C/P.
  */
 export const EXPIRATION_LIFECYCLE_FILTERS = [
   "ongoing",
-  "expiring-3m",
-  "expiring-1m",
   "expired",
 ] as const satisfies readonly LifecycleFilter[];
 
@@ -109,8 +103,6 @@ export function isExpirationLifecycleFilter(filter: LifecycleFilter): boolean {
 export const LIFECYCLE_FILTER_LABELS: Record<LifecycleFilter, string> = {
   ongoing: "Ongoing",
   expired: "Expired",
-  "expiring-3m": "Expiring in 3M",
-  "expiring-1m": "Expiring in 1M",
   "obs-due-3m": "Observation Due in 3M",
   "obs-due-2m": "Observation Due in 2M",
   "obs-due-1m": "Observation Due in 1M",
@@ -122,7 +114,7 @@ export function lifecycleFilterBookLabel(filter: LifecycleFilter | undefined): s
   return LIFECYCLE_FILTER_LABELS[filter];
 }
 
-/** Badge text in product list — true product status on every tab (Ongoing vs Expiring in 1M/3M). */
+/** Badge text in product list — true product status on every tab. */
 export function lifecycleListBadgeLabel(status: LifecycleStatus, _filter?: LifecycleFilter): string {
   return LIFECYCLE_STATUS_LABELS[status];
 }
@@ -131,8 +123,6 @@ export const LIFECYCLE_STATUS_LABELS: Record<LifecycleStatus, string> = {
   ongoing: "Ongoing",
   expired: "Expired",
   perpetual: "Perpetual",
-  "expiring-1m": "Expiring in 1M",
-  "expiring-3m": "Expiring in 3M",
   unknown: "Unknown",
   upcoming: "Upcoming",
 };
@@ -156,8 +146,6 @@ export function getProductLifecycleStatus(product: ProductRecord, asOf = new Dat
 
   const days = differenceInCalendarDays(expiration, asOf);
   if (days < 0) return "expired";
-  if (days <= EXPIRING_1M_DAYS) return "expiring-1m";
-  if (days <= EXPIRING_3M_DAYS) return "expiring-3m";
   return "ongoing";
 }
 
@@ -435,7 +423,7 @@ export function filterProductsByLifecycle(
     return products.filter((product) => productHasObservationDueWithin(product, obsHorizon, asOf));
   }
 
-  // Ongoing / expiring tabs: phase-status match AND last observation not yet settled.
+  // Ongoing tab: phase still live AND last observation not yet settled.
   return products.filter((product) => {
     if (!isLiveObservationBookProduct(product, asOf)) return false;
     return lifecycleStatusMatchesFilter(getProductLifecycleStatus(product, asOf), filter);
@@ -462,18 +450,9 @@ export function isProductInLifecyclePickerPool(
 export function lifecycleStatusMatchesFilter(status: LifecycleStatus, filter: LifecycleFilter): boolean {
   if (isObservationDueFilter(filter)) return false;
   if (filter === "ongoing") {
-    // Live book: long-dated ongoing + anything expiring within 3M / 1M (and perpetual).
-    // Dedicated Expiring tabs remain narrower subsets of this pool.
-    return (
-      status === "ongoing" ||
-      status === "perpetual" ||
-      status === "expiring-3m" ||
-      status === "expiring-1m"
-    );
+    return status === "ongoing" || status === "perpetual";
   }
   if (filter === "expired") return status === "expired";
-  if (filter === "expiring-1m") return status === "expiring-1m";
-  if (filter === "expiring-3m") return status === "expiring-1m" || status === "expiring-3m";
   return false;
 }
 
@@ -490,8 +469,6 @@ export function partitionByLifecycle(products: ProductRecord[], asOf = new Date(
     ongoing: [],
     expired: [],
     perpetual: [],
-    "expiring-1m": [],
-    "expiring-3m": [],
     unknown: [],
     upcoming: [],
   };

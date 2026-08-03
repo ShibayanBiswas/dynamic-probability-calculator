@@ -28,8 +28,6 @@ const LIVE_TABS: LifecycleFilter[] = [
   "obs-due-3m",
   "obs-due-2m",
   "obs-due-1m",
-  "expiring-3m",
-  "expiring-1m",
 ];
 
 function pct(n: number) {
