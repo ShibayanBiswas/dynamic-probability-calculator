@@ -1,6 +1,7 @@
 {
   "installCommand": "npm install",
   "framework": "nextjs",
+  "buildCommand": "npm run build",
   "headers": [
     {
       "source": "/data/(.*)",
@@ -11,6 +12,5 @@
         }
       ]
     }
-  ],
-  "buildCommand": "npm run build"
+  ]
 }

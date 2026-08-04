@@ -59,6 +59,10 @@ export async function GET() {
           "mongo bootstrap",
         );
         if (products?.length && isPlausibleNewPrimaryDeskBook(products)) {
+          // Never JSON-serialize the full ~11MB desk through a Vercel serverless
+          // response — cold starts time out / OOM. Client loads CDN seed first;
+          // post-upload freshness stays in IndexedDB via the upload pipeline.
+          if (process.env.VERCEL) return staticSeedHint();
           return NextResponse.json(buildDataset(products, "MongoDB · New Product Master"), {
             headers: {
               "Cache-Control": "private, max-age=30, stale-while-revalidate=120",

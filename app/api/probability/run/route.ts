@@ -29,6 +29,8 @@ import type { ProductRecord } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+/** Path tables can be ~6k rows; allow headroom on Fluid Compute without hanging the default 10s budget. */
+export const maxDuration = 60;
 
 type Series = IndexBar[];
 
@@ -198,7 +200,8 @@ export async function POST(request: Request) {
     }
 
     const mode = body.mode ?? "both";
-    const includePaths = body.includePaths !== false;
+    // Opt-in only — full path payloads are large (~6k rows). Dashboard loads KPIs first, then unlocks paths.
+    const includePaths = body.includePaths === true;
     const requestedDate = parseExcelishDate(body.valuationDate) ?? new Date();
     const modes: Array<"initial" | "current"> = mode === "both" ? ["initial", "current"] : [mode];
 
