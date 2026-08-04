@@ -34,8 +34,7 @@ export function PathLoadProgress({
   const pct = Math.min(100, Math.max(0, progress));
 
   return (
-    <div className="mt-4 overflow-hidden rounded-xl border border-[rgba(212,178,76,0.35)] bg-[color:var(--ar-surface)]">
-      <div className="h-1.5 w-full bg-gradient-to-r from-[var(--ar-maroon)] via-[var(--ar-gold)] to-[var(--ar-maroon)]" />
+    <div className="mt-4 overflow-hidden rounded-xl border border-[rgba(212,178,76,0.35)] bg-[color:var(--ar-surface)] shadow-[0_10px_28px_-18px_rgba(122,30,44,0.35)]">
       <div className="px-5 py-4">
         <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-stone-500">
           Live path engine

@@ -169,11 +169,13 @@ function PathBacktestTable({
   showAdjustedStart,
   loadingPaths,
   product,
+  mode = "initial",
 }: {
   result: ProbabilityRunResult | null;
   showAdjustedStart: boolean;
   loadingPaths?: boolean;
   product?: ProductRecord | null;
+  mode?: "initial" | "current";
 }) {
   const parentRef = useRef<HTMLDivElement>(null);
   const [pathFilter, setPathFilter] = useState<PathViewFilter>("included");
@@ -193,6 +195,7 @@ function PathBacktestTable({
   const lastIncluded = [...paths].reverse().find((p) => p.pathIncluded) ?? null;
   const lastIncludedFinalObs =
     lastIncluded?.observationDates.filter((d): d is string => Boolean(d)).at(-1) ?? null;
+  const isInitial = (result?.mode ?? mode) === "initial";
 
   const virtualizer = useVirtualizer({
     count: rowCount,
@@ -201,16 +204,16 @@ function PathBacktestTable({
     overscan: 24,
   });
 
+  const pathLoadLabel = isInitial
+    ? "Building daily historical paths from 2001-01-01 — same engine as the Gift AIF Backtester."
+    : "Building daily historical paths through the latest trading session — same engine as the Gift AIF Backtester.";
+
   if (!result || paths.length === 0) {
     return (
       <Panel className="!p-4" glow="purple">
         <SectionTitle>Historical Path Backtest</SectionTitle>
         {loadingPaths ? (
-          <PathLoadProgress
-            key="path-load"
-            active
-            label="Building daily historical paths from 2001-01-01 — same engine as the Gift AIF Backtester."
-          />
+          <PathLoadProgress key="path-load" active label={pathLoadLabel} />
         ) : (
           <p className="mt-2 text-sm text-stone-500">
             {!result
@@ -228,13 +231,33 @@ function PathBacktestTable({
         <div className="min-w-0">
           <SectionTitle>Historical Path Backtest</SectionTitle>
           <p className="mt-1 text-sm text-stone-500">
-            Daily paths from <span className="font-semibold text-stone-700">2001-01-01</span>
-            {seriesStart && seriesStart !== "2001-01-01" ? ` (series opens ${seriesStart})` : ""}{" "}
-            through the latest trading session
+            {isInitial ? (
+              <>
+                Daily paths from <span className="font-semibold text-stone-700">2001-01-01</span>
+                {seriesStart && seriesStart !== "2001-01-01" ? (
+                  <>
+                    {" "}
+                    · series opens <span className="font-semibold text-stone-700">{seriesStart}</span>
+                  </>
+                ) : null}{" "}
+                through the latest trading session
+              </>
+            ) : (
+              <>
+                Daily paths from available index history
+                {seriesStart ? (
+                  <>
+                    {" "}
+                    · series opens <span className="font-semibold text-stone-700">{seriesStart}</span>
+                  </>
+                ) : null}{" "}
+                through the latest trading session
+              </>
+            )}
             {result.lastIndexDate ? (
               <>
                 {" "}
-                (<span className="font-semibold text-stone-700">{result.lastIndexDate}</span>)
+                · as of <span className="font-semibold text-stone-700">{result.lastIndexDate}</span>
               </>
             ) : null}
             . Last included path final observation lands on that as-of date. Scroll horizontally for
@@ -879,6 +902,7 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
                       showAdjustedStart={surface !== "current"}
                       loadingPaths={loadingPaths}
                       product={product}
+                      mode={surface === "current" ? "current" : "initial"}
                     />
                   </HorizontalBand>
                 )}

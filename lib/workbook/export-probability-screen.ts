@@ -22,7 +22,7 @@ import {
 } from "@/lib/workbook/export-theme";
 import { SCREEN_EXPORT_DISCLAIMER, screenExportStamp } from "@/lib/workbook/export-screen-shared";
 import { loadAutoTable, loadJsPdf } from "@/lib/workbook/pdf-runtime";
-import { pdfSafeText } from "@/lib/workbook/pdf-format";
+import { pdfSafeText, stripUserFacingBrackets } from "@/lib/workbook/pdf-format";
 import { buildProductSpecCards } from "@/lib/product-specifications";
 import type { ProbabilityRunResult } from "@/lib/probability/engine";
 import type { ProductRecord } from "@/lib/types";
@@ -81,6 +81,45 @@ function scheduleDateLabel(value: Date | string | null | undefined): string {
     return parsed ? formatDisplayDate(parsed) : value;
   }
   return formatDisplayDate(value);
+}
+
+function productExportLabel(product: ProductRecord): string {
+  return stripUserFacingBrackets(`${product.name}${product.isin ? ` · ${product.isin}` : ""}`);
+}
+
+function surfaceKpis(input: ProbabilityScreenExportInput): Array<[string, string]> {
+  switch (input.surface) {
+    case "initial":
+      return [
+        ["Initial Probability", pct(input.initial?.probability)],
+        ["Target Underlying", pct(input.targetPercent)],
+        ["Paths Taken", num(input.initial?.includedCount, 0)],
+        ["Successful Paths", num(input.initial?.successCount, 0)],
+        ["Days Left", num(input.daysLeft, 0)],
+        ["Index As Of", input.initial?.lastIndexDate ?? "—"],
+      ];
+    case "current":
+      return [
+        ["Current Probability", pct(input.current?.probability)],
+        ["Required Underlying", pct(input.requiredPercent)],
+        ["Paths Taken", num(input.current?.includedCount, 0)],
+        ["Successful Paths", num(input.current?.successCount, 0)],
+        ["Days Left", num(input.daysLeft, 0)],
+        ["Index As Of", input.current?.lastIndexDate ?? "—"],
+      ];
+    case "summary":
+      return [
+        ["Initial Probability", pct(input.initial?.probability)],
+        ["Current Probability", pct(input.current?.probability)],
+        ["Target Underlying", pct(input.targetPercent)],
+        ["Required Underlying", pct(input.requiredPercent)],
+        ["Days Left", num(input.daysLeft, 0)],
+      ];
+    default: {
+      const _exhaustive: never = input.surface;
+      return _exhaustive;
+    }
+  }
 }
 
 function triggerDownload(blob: Blob, filename: string) {
@@ -156,7 +195,7 @@ function writeScheduleSheet(
   if (logo) rowOffset = embedBrandLogo(wb, sheet, logo);
   let row = addExcelMasthead(sheet, {
     title,
-    subtitle: `${product.name} · ${product.isin ?? "—"}`,
+    subtitle: productExportLabel(product),
     eyebrow: "Anand Rathi Wealth · Dynamic Probability Calculator",
     fromCol: 1,
     toCol: 8,
@@ -165,25 +204,41 @@ function writeScheduleSheet(
   row = addExcelSection(sheet, row, "Observation Schedule", 1, 8);
 
   const present = result.schedule.filter((s) => s.date);
+  const headerRow = row;
   sheet.getCell(row, 1).value = "Observation";
   sheet.getCell(row, 1).font = { bold: true, color: { argb: "FFFFFFFF" }, name: EXCEL_FONT };
   sheet.getCell(row, 1).fill = excelFill(EXCEL_THEME.maroon);
+  sheet.getCell(row, 1).border = { bottom: excelMedium(EXCEL_THEME.gold) };
   present.forEach((_s, i) => {
     const cell = sheet.getCell(row, i + 2);
     cell.value = i + 1;
     cell.font = { bold: true, color: { argb: "FFFFFFFF" }, name: EXCEL_FONT };
     cell.fill = excelFill(EXCEL_THEME.maroon);
+    cell.alignment = { horizontal: "center" };
+    cell.border = { bottom: excelMedium(EXCEL_THEME.gold) };
   });
   row += 1;
   sheet.getCell(row, 1).value = "Dates";
+  sheet.getCell(row, 1).font = { bold: true, color: { argb: EXCEL_THEME.inkSoft }, name: EXCEL_FONT };
+  sheet.getCell(row, 1).fill = excelFill(EXCEL_THEME.label);
   present.forEach((s, i) => {
-    sheet.getCell(row, i + 2).value = scheduleDateLabel(s.date);
+    const cell = sheet.getCell(row, i + 2);
+    cell.value = scheduleDateLabel(s.date);
+    cell.alignment = { horizontal: "center" };
+    cell.fill = excelFill(EXCEL_THEME.ivory);
   });
   row += 1;
   sheet.getCell(row, 1).value = daysLabel;
+  sheet.getCell(row, 1).font = { bold: true, color: { argb: EXCEL_THEME.inkSoft }, name: EXCEL_FONT };
+  sheet.getCell(row, 1).fill = excelFill(EXCEL_THEME.label);
   present.forEach((s, i) => {
-    sheet.getCell(row, i + 2).value = s.daysFromBase;
+    const cell = sheet.getCell(row, i + 2);
+    cell.value = s.daysFromBase;
+    cell.alignment = { horizontal: "center" };
+    cell.numFmt = "0";
+    cell.fill = excelFill(EXCEL_THEME.goldPale);
   });
+  sheet.views = [{ state: "frozen", ySplit: headerRow }];
   sheet.columns = [{ width: 28 }, ...present.map(() => ({ width: 14 }))];
 }
 
@@ -202,7 +257,7 @@ function writePathsSheet(
     const rowOffset = embedBrandLogo(wb, sheet, logo);
     headerRow = addExcelMasthead(sheet, {
       title,
-      subtitle: `${product.name} · ${product.isin ?? "—"} · As of ${result.lastIndexDate ?? "—"}`,
+      subtitle: `${productExportLabel(product)} · Index as of ${result.lastIndexDate ?? "—"}`,
       eyebrow: "Anand Rathi Wealth · Dynamic Probability Calculator",
       fromCol: 1,
       toCol: 10,
@@ -222,12 +277,16 @@ function writePathsSheet(
     "Underlying Performance",
     "Path Taken",
   ];
+  const perfCol = headers.indexOf("Underlying Performance") + 1;
   headers.forEach((h, i) => {
     const cell = sheet.getCell(headerRow, i + 1);
     cell.value = h;
-    cell.font = { bold: true, color: { argb: "FFFFFFFF" }, name: EXCEL_FONT };
+    cell.font = { bold: true, color: { argb: "FFFFFFFF" }, name: EXCEL_FONT, size: 10 };
     cell.fill = excelFill(EXCEL_THEME.maroon);
+    cell.alignment = { vertical: "middle", wrapText: true };
+    cell.border = { bottom: excelMedium(EXCEL_THEME.gold) };
   });
+  sheet.getRow(headerRow).height = 28;
 
   const filtered = result.paths.filter((p) => {
     if (filter === "included") return p.pathIncluded;
@@ -250,10 +309,27 @@ function writePathsSheet(
     values.forEach((v, c) => {
       const cell = sheet.getCell(headerRow + 1 + r, c + 1);
       cell.value = v;
+      cell.font = { size: 9, name: EXCEL_FONT, color: { argb: EXCEL_THEME.ink } };
+      cell.alignment = { vertical: "middle" };
       if (r % 2 === 1) cell.fill = excelFill(EXCEL_THEME.ivory);
+      if (c + 1 === perfCol && typeof v === "number") {
+        cell.numFmt = "0.00%";
+      } else if (typeof v === "number" && c > 0) {
+        cell.numFmt = "#,##0.00";
+      }
+      if (path.pathIncluded && headers[c] === "Path Taken") {
+        cell.font = { bold: true, size: 9, name: EXCEL_FONT, color: { argb: EXCEL_THEME.maroon } };
+      }
     });
   }
-  sheet.columns = headers.map(() => ({ width: 16 }));
+  sheet.views = [{ state: "frozen", ySplit: headerRow, xSplit: 1 }];
+  sheet.autoFilter = {
+    from: { row: headerRow, column: 1 },
+    to: { row: headerRow + maxRows, column: headers.length },
+  };
+  sheet.columns = headers.map((h) => ({
+    width: h.startsWith("Average Date") || h === "Start" ? 12 : h.includes("Performance") ? 14 : 15,
+  }));
 }
 
 /** Dedicated path workbook — Included / Excluded / All sheets. */
@@ -300,7 +376,7 @@ export async function downloadProbabilityScreenExcel(input: ProbabilityScreenExp
 
   let row = addExcelMasthead(sheet, {
     title,
-    subtitle: `${input.product.name} · ${input.product.isin ?? "—"}`,
+    subtitle: productExportLabel(input.product),
     eyebrow: "Anand Rathi Wealth · Dynamic Probability Calculator",
     fromCol: 1,
     toCol: 8,
@@ -308,13 +384,7 @@ export async function downloadProbabilityScreenExcel(input: ProbabilityScreenExp
   });
 
   row = addExcelSection(sheet, row, "Probability Results", 1, 8);
-  row = addExcelKpiTiles(sheet, row, [
-    ["Initial Probability", pct(input.initial?.probability)],
-    ["Current Probability", pct(input.current?.probability)],
-    ["Target Underlying", pct(input.targetPercent)],
-    ["Required Underlying", pct(input.requiredPercent)],
-    ["Days Left", num(input.daysLeft, 0)],
-  ]);
+  row = addExcelKpiTiles(sheet, row, surfaceKpis(input));
 
   row = addExcelSection(sheet, row, "Desk Inputs", 1, 8);
   const meta: Array<[string, string]> = [
@@ -322,22 +392,30 @@ export async function downloadProbabilityScreenExcel(input: ProbabilityScreenExp
     ["As of Last Observation", input.asOfLastObservation ? "Yes" : "No"],
     ["Nifty Level", num(input.niftyLevel)],
     ["Sensex Level", num(input.sensexLevel)],
-    ["Paths Taken · Initial", num(input.initial?.includedCount, 0)],
-    ["Successful Paths · Initial", num(input.initial?.successCount, 0)],
-    ["Paths Taken · Current", num(input.current?.includedCount, 0)],
-    ["Successful Paths · Current", num(input.current?.successCount, 0)],
-    ["Index As Of · Initial", input.initial?.lastIndexDate ?? "—"],
-    ["Index As Of · Current", input.current?.lastIndexDate ?? "—"],
   ];
+  if (input.surface === "summary" || input.surface === "initial") {
+    meta.push(
+      ["Paths Taken · Initial", num(input.initial?.includedCount, 0)],
+      ["Successful Paths · Initial", num(input.initial?.successCount, 0)],
+      ["Index As Of · Initial", input.initial?.lastIndexDate ?? "—"],
+    );
+  }
+  if (input.surface === "summary" || input.surface === "current") {
+    meta.push(
+      ["Paths Taken · Current", num(input.current?.includedCount, 0)],
+      ["Successful Paths · Current", num(input.current?.successCount, 0)],
+      ["Index As Of · Current", input.current?.lastIndexDate ?? "—"],
+    );
+  }
   for (const [label, value] of meta) {
-    styleMetaRow(sheet, row, label, value);
+    styleMetaRow(sheet, row, label, stripUserFacingBrackets(value));
     row += 1;
   }
 
   row += 1;
   row = addExcelSection(sheet, row, "Product Specifications", 1, 8);
   for (const card of buildProductSpecCards(input.product)) {
-    styleMetaRow(sheet, row, card.label, String(card.value));
+    styleMetaRow(sheet, row, card.label, stripUserFacingBrackets(String(card.value)));
     row += 1;
   }
 
@@ -345,12 +423,16 @@ export async function downloadProbabilityScreenExcel(input: ProbabilityScreenExp
   addExcelDisclaimerBlock(sheet, row, 8);
   sheet.columns = [{ width: 36 }, { width: 28 }, { width: 18 }, { width: 18 }, { width: 14 }, { width: 14 }, { width: 14 }, { width: 14 }];
 
-  writeScheduleSheet(wb, "Initial Schedule", input.initial, "Days from Phase Start", logo, input.product);
-  writeScheduleSheet(wb, "Current Schedule", input.current, "Days from Valuation Date", logo, input.product);
-  if ((input.initial?.paths?.length ?? 0) > 0) {
+  if (input.surface === "summary" || input.surface === "initial") {
+    writeScheduleSheet(wb, "Initial Schedule", input.initial, "Days from Phase Start", logo, input.product);
+  }
+  if (input.surface === "summary" || input.surface === "current") {
+    writeScheduleSheet(wb, "Current Schedule", input.current, "Days from Valuation Date", logo, input.product);
+  }
+  if ((input.initial?.paths?.length ?? 0) > 0 && (input.surface === "summary" || input.surface === "initial")) {
     writePathsSheet(wb, "Initial Paths", input.initial, "included", logo, input.product);
   }
-  if ((input.current?.paths?.length ?? 0) > 0) {
+  if ((input.current?.paths?.length ?? 0) > 0 && (input.surface === "summary" || input.surface === "current")) {
     writePathsSheet(wb, "Current Paths", input.current, "included", logo, input.product);
   }
 
@@ -551,6 +633,44 @@ class ProbabilityPdfBuilder {
     this.y = (this.doc.lastAutoTable?.finalY ?? this.y) + 1.5;
   }
 
+  addScheduleSnapshot(result: ProbabilityRunResult | null | undefined, daysLabel: string) {
+    if (!result) return;
+    const present = result.schedule.filter((s) => s.date);
+    if (present.length === 0) return;
+    this.addSection("Observation Schedule");
+    this.autoTable(this.doc, {
+      startY: this.y,
+      tableWidth: this.contentWidth,
+      margin: { left: MARGIN, right: MARGIN },
+      head: [["", ...present.map((_s, i) => String(i + 1))]],
+      body: [
+        ["Dates", ...present.map((s) => scheduleDateLabel(s.date))],
+        [daysLabel, ...present.map((s) => String(s.daysFromBase))],
+      ],
+      theme: "grid",
+      styles: {
+        fontSize: 7,
+        cellPadding: { top: 1.6, right: 1.4, bottom: 1.6, left: 1.4 },
+        textColor: PDF_THEME.ink,
+        lineColor: [231, 225, 207],
+        lineWidth: 0.1,
+        halign: "center",
+        valign: "middle",
+      },
+      headStyles: {
+        fillColor: PDF_THEME.maroon,
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+        halign: "center",
+      },
+      columnStyles: {
+        0: { fontStyle: "bold", fillColor: PDF_THEME.label, halign: "left", cellWidth: 42 },
+      },
+      alternateRowStyles: { fillColor: PDF_THEME.ivory },
+    });
+    this.y = (this.doc.lastAutoTable?.finalY ?? this.y) + 2;
+  }
+
   addDisclaimer() {
     this.ensureSpace(28);
     const w = this.contentWidth;
@@ -605,32 +725,46 @@ export async function downloadProbabilityScreenPdf(input: ProbabilityScreenExpor
   });
 
   await pdf.addLogo();
-  pdf.addBanner(title, `${input.product.name} · ${input.product.isin ?? "—"}`);
+  pdf.addBanner(title, productExportLabel(input.product));
   pdf.addProductHero(input.product);
 
   pdf.addSection("Probability Results");
-  pdf.addKpiHighlightTable([
-    ["Initial Probability", pct(input.initial?.probability)],
-    ["Current Probability", pct(input.current?.probability)],
-    ["Target Underlying", pct(input.targetPercent)],
-    ["Required Underlying", pct(input.requiredPercent)],
-    ["Days Left", num(input.daysLeft, 0)],
-  ]);
+  pdf.addKpiHighlightTable(surfaceKpis(input));
 
   pdf.addSection("Desk Inputs");
-  pdf.addKeyValueTable([
+  const deskRows: Array<[string, string]> = [
     ["Checking Date", input.checkingDate],
     ["As of Last Observation", input.asOfLastObservation ? "Yes" : "No"],
     ["Nifty Level", num(input.niftyLevel)],
     ["Sensex Level", num(input.sensexLevel)],
-    ["Paths Taken · Initial", num(input.initial?.includedCount, 0)],
-    ["Successful Paths · Initial", num(input.initial?.successCount, 0)],
-    ["Paths Taken · Current", num(input.current?.includedCount, 0)],
-    ["Successful Paths · Current", num(input.current?.successCount, 0)],
-  ]);
+  ];
+  if (input.surface === "summary" || input.surface === "initial") {
+    deskRows.push(
+      ["Paths Taken · Initial", num(input.initial?.includedCount, 0)],
+      ["Successful Paths · Initial", num(input.initial?.successCount, 0)],
+      ["Index As Of · Initial", input.initial?.lastIndexDate ?? "—"],
+    );
+  }
+  if (input.surface === "summary" || input.surface === "current") {
+    deskRows.push(
+      ["Paths Taken · Current", num(input.current?.includedCount, 0)],
+      ["Successful Paths · Current", num(input.current?.successCount, 0)],
+      ["Index As Of · Current", input.current?.lastIndexDate ?? "—"],
+    );
+  }
+  pdf.addKeyValueTable(deskRows);
+
+  if (input.surface === "summary" || input.surface === "initial") {
+    pdf.addScheduleSnapshot(input.initial, "Days from Phase Start");
+  }
+  if (input.surface === "summary" || input.surface === "current") {
+    pdf.addScheduleSnapshot(input.current, "Days from Valuation Date");
+  }
 
   pdf.addSection("Product Specifications");
-  pdf.addKeyValueTable(buildProductSpecCards(input.product).map((c) => [c.label, String(c.value)]));
+  pdf.addKeyValueTable(
+    buildProductSpecCards(input.product).map((c) => [c.label, stripUserFacingBrackets(String(c.value))]),
+  );
 
   pdf.addDisclaimer();
   pdf.save(
