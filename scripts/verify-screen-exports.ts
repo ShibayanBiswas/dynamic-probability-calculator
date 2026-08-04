@@ -85,26 +85,32 @@ function main() {
   assert(ongoing != null, "Need at least one ongoing product");
   assert(expired != null, "Need at least one expired product");
 
-  // Live portfolio columns: yellow DATA + Initial/Current Prob + obs levels + Effective Target.
+  // Live portfolio columns: phase calendars + Initial/Current Prob as of desk mark.
   const EXPECTED_LIVE_PORTFOLIO_HEADERS = [
     "No.",
     "Status",
     "Product Name",
+    "As of Today's Date",
     "Initial Prob",
     "Current Prob",
     "Series",
-    "Tenor",
-    "Allotment Date",
-    "Actual Entry Level",
+    "Underlying",
+    "Initial Level",
     "Target Level",
+    "Trade Date",
+    "Allotment Date",
+    "Actual Start",
+    "POED",
+    "Rollover Phase",
+    "Maturity Date",
+    "Rollover Date",
+    "Tenor",
     ...PORTFOLIO_AVG_COLUMN_LABELS,
     "Amount",
-    "Maturity",
     "ISIN",
     PORTFOLIO_DAYS_COLUMN_LABEL,
     "Tenor Left",
     "Years",
-    "Underlying",
     ...PORTFOLIO_OBS_LEVEL_COLUMN_LABELS,
     ...PORTFOLIO_OBS_COUNT_COLUMN_LABELS,
     PORTFOLIO_EFFECTIVE_TARGET_COLUMN_LABEL,
@@ -132,10 +138,10 @@ function main() {
       `Export column ${i + 1} out of sync with UI`,
     );
   }
-  assert(PORTFOLIO_LIFECYCLE_TABLE_COLUMN_COUNT === 35, "Live portfolio table should have 35 columns");
-  assert(PORTFOLIO_LIFECYCLE_COLUMN_DEFS.length === 21, "Live column spec should have 21 slots");
-  assert(EXPIRED_PORTFOLIO_LIFECYCLE_TABLE_COLUMN_COUNT === 35, "Expired portfolio table should have 35 columns");
-  assert(portfolioLifecycleColumnDefs("expired").length === 21, "Expired column spec should have 21 slots");
+  assert(PORTFOLIO_LIFECYCLE_TABLE_COLUMN_COUNT === 41, "Live portfolio table should have 41 columns");
+  assert(PORTFOLIO_LIFECYCLE_COLUMN_DEFS.length === 27, "Live column spec should have 27 slots");
+  assert(EXPIRED_PORTFOLIO_LIFECYCLE_TABLE_COLUMN_COUNT === 41, "Expired portfolio table should have 41 columns");
+  assert(portfolioLifecycleColumnDefs("expired").length === 27, "Expired column spec should have 27 slots");
 
   for (const filter of LIFECYCLE_FILTERS) {
     const headers = portfolioLifecycleTableHeaders(lifecyclePortfolioColumnLabels(filter), filter);
@@ -156,6 +162,14 @@ function main() {
   assert(PORTFOLIO_EXPORT_COLUMNS.includes("Series"), "Portfolio export missing Series column");
   assert(PORTFOLIO_EXPORT_COLUMNS.includes("Initial Prob"), "Portfolio export missing Initial Prob column");
   assert(PORTFOLIO_EXPORT_COLUMNS.includes("Current Prob"), "Portfolio export missing Current Prob column");
+  assert(PORTFOLIO_EXPORT_COLUMNS.includes("Initial Level"), "Portfolio export missing Initial Level column");
+  assert(PORTFOLIO_EXPORT_COLUMNS.includes("As of Today's Date"), "Portfolio export missing As of Today's Date");
+  assert(PORTFOLIO_EXPORT_COLUMNS.includes("Trade Date"), "Portfolio export missing Trade Date");
+  assert(PORTFOLIO_EXPORT_COLUMNS.includes("POED"), "Portfolio export missing POED");
+  assert(PORTFOLIO_EXPORT_COLUMNS.includes("Rollover Phase"), "Portfolio export missing Rollover Phase");
+  assert(PORTFOLIO_EXPORT_COLUMNS.includes("Maturity Date"), "Portfolio export missing Maturity Date");
+  assert(PORTFOLIO_EXPORT_COLUMNS.includes("Rollover Date"), "Portfolio export missing Rollover Date");
+  assert(PORTFOLIO_EXPORT_COLUMNS.includes("Actual Start"), "Portfolio export missing Actual Start");
   assert(
     PORTFOLIO_EXPORT_COLUMNS.includes(PORTFOLIO_EFFECTIVE_TARGET_COLUMN_LABEL),
     "Portfolio export missing Effective Target column",

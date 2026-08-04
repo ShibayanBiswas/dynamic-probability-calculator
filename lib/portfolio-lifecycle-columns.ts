@@ -33,17 +33,22 @@ import type { ProductRecord } from "@/lib/types";
 import type { PortfolioValuationSnapshot } from "@/lib/workbook/portfolio-snapshots";
 import { formatCrores, formatNumber, formatProductUnitValue } from "@/lib/utils";
 import {
+  formatProductActualStartDate,
   formatProductAllotmentDate,
+  formatProductMaturityDate,
+  formatProductPoedDate,
+  formatProductRolloverPhaseLabel,
+  formatProductRolloverScheduleDate,
+  formatProductTradeDate,
   getDisplayTenorDays,
-  getProductMaturityDate,
 } from "@/lib/product-dates";
 import { getDaysToExpiry } from "@/lib/product-lifecycle";
 import { getProbabilityPair } from "@/lib/probability/portfolio-prob-store";
-import { formatDisplayDate } from "@/lib/workbook/dates";
+import { resolveMarkDateFallback } from "@/lib/desk-mark-as-of";
 
 /**
- * Lifecycle table columns aligned to yellow DATA-sheet reference columns.
- * No parenthetical labels.
+ * Lifecycle table columns for the probability desk.
+ * Phase calendars + Initial/Current Prob as of the desk mark session.
  */
 export type PortfolioLifecycleColumnDef =
   | { kind: "fixed"; header: string }
@@ -63,25 +68,34 @@ export const PORTFOLIO_AVG_COLUMN_LABELS = [
   "Average 7",
 ] as const;
 
+/** Desk mark column — previous trading day until NSE close, then today. */
+export const PORTFOLIO_AS_OF_TODAY_COLUMN_LABEL = "As of Today's Date";
+
 const BASE_PORTFOLIO_LIFECYCLE_COLUMN_DEFS: readonly PortfolioLifecycleColumnDef[] = [
   { kind: "fixed", header: "No." },
   { kind: "fixed", header: "Status" },
   { kind: "fixed", header: "Product Name" },
+  { kind: "fixed", header: PORTFOLIO_AS_OF_TODAY_COLUMN_LABEL },
   { kind: "fixed", header: "Initial Prob" },
   { kind: "fixed", header: "Current Prob" },
   { kind: "fixed", header: "Series" },
-  { kind: "fixed", header: "Tenor" },
-  { kind: "fixed", header: "Allotment Date" },
-  { kind: "fixed", header: "Actual Entry Level" },
+  { kind: "fixed", header: "Underlying" },
+  { kind: "fixed", header: "Initial Level" },
   { kind: "fixed", header: "Target Level" },
+  { kind: "fixed", header: "Trade Date" },
+  { kind: "fixed", header: "Allotment Date" },
+  { kind: "fixed", header: "Actual Start" },
+  { kind: "fixed", header: "POED" },
+  { kind: "fixed", header: "Rollover Phase" },
+  { kind: "fixed", header: "Maturity Date" },
+  { kind: "fixed", header: "Rollover Date" },
+  { kind: "fixed", header: "Tenor" },
   { kind: "observations" },
   { kind: "fixed", header: "Amount" },
-  { kind: "fixed", header: "Maturity" },
   { kind: "fixed", header: "ISIN" },
   { kind: "dynamic", field: "daysColumn" },
   { kind: "fixed", header: "Tenor Left" },
   { kind: "fixed", header: "Years" },
-  { kind: "fixed", header: "Underlying" },
 ];
 
 const LIVE_OBS_METRIC_COLUMN_DEFS: readonly PortfolioLifecycleColumnDef[] = [
@@ -90,7 +104,7 @@ const LIVE_OBS_METRIC_COLUMN_DEFS: readonly PortfolioLifecycleColumnDef[] = [
   { kind: "effectiveTarget" },
 ];
 
-/** Probability desk: DATA yellow columns + observation / Effective Target metrics. */
+/** Probability desk: phase calendars + observation / Effective Target metrics. */
 export function portfolioLifecycleColumnDefs(
   _filter: LifecycleFilter = "ongoing",
 ): readonly PortfolioLifecycleColumnDef[] {
@@ -174,12 +188,16 @@ export function portfolioLifecycleCellValues({
   const targetLevel = getTargetLevel(product);
   const tenorDays = getDisplayTenorDays(product, asOf);
   const probs = getProbabilityPair(product.isin ?? "");
-  const maturity = getProductMaturityDate(product);
+  const markFallback = resolveMarkDateFallback(asOf);
+  const asOfToday =
+    probs?.asOfDate?.trim() ||
+    markFallback.markDateLabel;
 
   const values: Record<string, string | number> = {
     "No.": index + 1,
     Status: lifecycleListBadgeLabel(status, badgeFilter),
     "Product Name": product.name,
+    [PORTFOLIO_AS_OF_TODAY_COLUMN_LABEL]: asOfToday,
     "Initial Prob":
       probs?.initial != null && Number.isFinite(probs.initial)
         ? Number((probs.initial * 100).toFixed(2))
@@ -189,13 +207,19 @@ export function portfolioLifecycleCellValues({
         ? Number((probs.current * 100).toFixed(2))
         : "—",
     Series: product.series ?? rawField(product, "Product Series", "Series") ?? "",
-    Tenor: tenorDays ?? "",
-    "Allotment Date": formatProductAllotmentDate(product),
-    "Actual Entry Level": initialLevel ?? "",
+    Underlying: product.underlying ?? rawField(product, "Underlying", "Underlying Index") ?? "",
+    "Initial Level": initialLevel ?? "",
     "Target Level": targetLevel ?? "",
+    "Trade Date": formatProductTradeDate(product),
+    "Allotment Date": formatProductAllotmentDate(product),
+    "Actual Start": formatProductActualStartDate(product, asOf),
+    POED: formatProductPoedDate(product),
+    "Rollover Phase": formatProductRolloverPhaseLabel(product) ?? "",
+    "Maturity Date": formatProductMaturityDate(product),
+    "Rollover Date": formatProductRolloverScheduleDate(product) ?? "—",
+    Tenor: tenorDays ?? "",
     Amount:
       product.tradeAmount != null ? Number((product.tradeAmount / 1e7).toFixed(4)) : "",
-    Maturity: maturity ? formatDisplayDate(maturity) : "",
     ISIN: product.isin ?? "",
     [labels.daysColumn]: days ?? "",
     "Tenor Left":
@@ -204,7 +228,6 @@ export function portfolioLifecycleCellValues({
       tenorDays != null && Number.isFinite(tenorDays)
         ? Number((tenorDays / 365).toFixed(2))
         : "",
-    Underlying: product.underlying ?? rawField(product, "Underlying", "Underlying Index") ?? "",
     ...Object.fromEntries(
       PORTFOLIO_AVG_COLUMN_LABELS.map((label, obsIndex) => [
         label,
@@ -253,7 +276,7 @@ const NUMERIC_RIGHT_HEADERS = new Set([
   "Initial Prob",
   "Current Prob",
   "Tenor",
-  "Actual Entry Level",
+  "Initial Level",
   "Target Level",
   "Amount",
   "Tenor Left",
@@ -276,8 +299,14 @@ export function portfolioLifecycleHeaderAlign(
     header === "Product Name" ||
     header === "Series" ||
     header === "ISIN" ||
+    header === PORTFOLIO_AS_OF_TODAY_COLUMN_LABEL ||
+    header === "Trade Date" ||
     header === "Allotment Date" ||
-    header === "Maturity" ||
+    header === "Actual Start" ||
+    header === "POED" ||
+    header === "Rollover Phase" ||
+    header === "Maturity Date" ||
+    header === "Rollover Date" ||
     header === "Underlying"
   ) {
     return "left";
@@ -420,10 +449,7 @@ export function formatPortfolioLifecycleValue(
   if ((header === "Initial Prob" || header === "Current Prob") && typeof value === "number") {
     return `${formatNumber(value, 2)}%`;
   }
-  if (
-    (header === "Actual Entry Level" || header === "Target Level") &&
-    typeof value === "number"
-  ) {
+  if ((header === "Initial Level" || header === "Target Level") && typeof value === "number") {
     return formatNumber(value);
   }
   if ((header === "Tenor" || header === "No.") && typeof value === "number") {

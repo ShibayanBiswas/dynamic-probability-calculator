@@ -1,6 +1,8 @@
 type ProbPair = {
   initial: number | null;
   current: number | null;
+  /** Mark session date shown in As of Today's Date (DD-MM-YYYY). */
+  asOfDate: string | null;
   updatedAt: number;
 };
 
@@ -23,9 +25,10 @@ export function setProbabilityPair(
   isin: string,
   initial: number | null,
   current: number | null,
+  asOfDate: string | null = null,
 ): void {
   if (!isin) return;
-  store.set(isin, { initial, current, updatedAt: Date.now() });
+  store.set(isin, { initial, current, asOfDate, updatedAt: Date.now() });
   bump();
 }
 

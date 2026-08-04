@@ -5,6 +5,7 @@ import { useSyncExternalStore } from "react";
 
 import { useDataset } from "@/lib/context/dataset-provider";
 import { useProductSelection } from "@/lib/context/product-selection-provider";
+import { resolveMarkDateFallback } from "@/lib/desk-mark-as-of";
 import { toLocalDateKey } from "@/lib/workbook/dates";
 import {
   clearProbabilityStore,
@@ -37,9 +38,12 @@ export function useLazyPortfolioProbabilities(products: ProductRecord[]) {
   const niftyLevel = Number(selection.niftyLevel) || undefined;
   const sensexLevel = Number(selection.sensexLevel) || undefined;
   const bookRevision = `${dataset.workbookName}:${dataset.loadedAt}`;
+  const markAsOfLabel =
+    selection.marketLevels?.valuationDate?.trim() ||
+    resolveMarkDateFallback().markDateLabel;
 
   useEffect(() => {
-    const runKey = `${bookRevision}|${valuationDate}|${niftyLevel ?? ""}|${sensexLevel ?? ""}`;
+    const runKey = `${bookRevision}|${valuationDate}|${niftyLevel ?? ""}|${sensexLevel ?? ""}|${markAsOfLabel}`;
     const generation = generationRef.current + 1;
     generationRef.current = generation;
 
@@ -89,6 +93,7 @@ export function useLazyPortfolioProbabilities(products: ProductRecord[]) {
               row.isin,
               typeof row.initial?.probability === "number" ? row.initial.probability : null,
               typeof row.current?.probability === "number" ? row.current.probability : null,
+              markAsOfLabel,
             );
           }
         } catch {
@@ -104,5 +109,5 @@ export function useLazyPortfolioProbabilities(products: ProductRecord[]) {
     return () => {
       cancelled = true;
     };
-  }, [products, valuationDate, niftyLevel, sensexLevel, bookRevision]);
+  }, [products, valuationDate, niftyLevel, sensexLevel, bookRevision, markAsOfLabel]);
 }

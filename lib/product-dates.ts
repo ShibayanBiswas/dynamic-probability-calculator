@@ -442,6 +442,19 @@ export function formatProductTradeDate(product: ProductRecord): string {
   return formatProductCalendarDate(getProductTradeOpeningDate(product)) ?? "—";
 }
 
+export function formatProductPoedDate(product: ProductRecord): string {
+  return formatProductCalendarDate(getProductPoedDate(product)) ?? "—";
+}
+
+export function formatProductMaturityDate(product: ProductRecord): string {
+  return formatProductCalendarDate(getProductMaturityDate(product)) ?? "—";
+}
+
+/** Phase-aware actual start — Allotment (Blank / Phase 1 / 10Y) or Trade Date (Phase 2). */
+export function formatProductActualStartDate(product: ProductRecord, asOf?: Date): string {
+  return formatProductCalendarDate(getWorkingAllotmentDate(product, asOf)) ?? "—";
+}
+
 export function formatProductAllotmentDate(product: ProductRecord): string {
   return formatProductCalendarDate(getProductAllotmentDate(product)) ?? "—";
 }
