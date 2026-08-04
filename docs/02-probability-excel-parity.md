@@ -1,5 +1,7 @@
 # 02 — Probability Excel parity
 
+**Updated:** 2026-08-04 · Product-type deep dive: [16-product-type-probability-logic.md](16-product-type-probability-logic.md)
+
 Reference workbook (local, gitignored): `NSP's under Risk.xlsm`
 
 ## Unhidden sheets (hard reference)
@@ -101,13 +103,27 @@ Desk: last bar of merged series (Mongo overlay + Gift CSV) — usually **newer**
 
 ## DATA sheet → lifecycle table
 
-`lib/portfolio-lifecycle-columns.ts` — live yellow columns (Target Level header, ₹ Cr amount, etc.).
+`lib/portfolio-lifecycle-columns.ts` — live yellow columns (Target Level header, ₹ Cr amount, **Initial Level**, Effective Target, Observation Levels, as-of mark date, phase calendar fields, Initial/Current probs).
 
 ---
 
 ## Past final observation
 
-`lib/probability/as-of.ts`: after final obs settles → checking date clamps to last obs; Current uses historical close (no live level).
+`lib/probability/as-of.ts`: after final obs settles → checking date clamps to last obs; Current uses historical close (no live level). Same-day settlement waits until **15:30 IST**.
+
+---
+
+## Intentional desk overrides vs Excel
+
+| Topic | Excel | Desk |
+|-------|-------|------|
+| Initial days base | Often allotment cell `D16` | Actual Start by Rollover Phase (Phase 2 = Trade) |
+| Initial path frontier | Allotment cutoff / sometimes Avg 1–6 MAX | Latest merged series bar (same as Current) |
+| Path history floor | nifty may start ~2000-12-31 | Hard lock **2001-01-01** |
+| Headers | Excel jargon / parentheses | Layman English, no `()` |
+| Mark for % Required | Manual today cells | Desk mark 15:30 IST rule |
+
+Small pp deltas vs a stale NSP workbook are expected when the desk series frontier is newer.
 
 ---
 

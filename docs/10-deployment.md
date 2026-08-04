@@ -1,8 +1,12 @@
 # 10 — Deployment (local)
 
+**Updated:** 2026-08-04
+
 For **Vercel and Render cloud deploy**, use the full guide:
 
 → **[14-vercel-render-deployment.md](14-vercel-render-deployment.md)**
+
+Example live app: https://dynamic-probability-calculator-9aso.vercel.app
 
 ## Local development
 
@@ -23,7 +27,7 @@ MONGODB_URI=mongodb://127.0.0.1:27017
 MONGODB_DB=sp_dashboard
 ```
 
-Mongo optional. Without it, baked `master-seed.json` and bundled index JSON power the desk.
+Mongo optional. Without it, baked `master-seed.json`, Gift `nifty-daily-2001.csv`, and bundled Sensex JSON power the desk. On Vercel, product bootstrap prefers the static CDN seed even when Mongo is configured for prices.
 
 ### Docker Mongo
 

@@ -1,6 +1,8 @@
 # 08 — Debug playbook
 
-Work top-down. Prefer `npm run verify:probability` before UI hunting.
+**Updated:** 2026-08-04 · Phase audit: [16-product-type-probability-logic.md](16-product-type-probability-logic.md)
+
+Work top-down. Prefer `npm run verify:probability` / `verify:probability-desk` before UI hunting.
 
 ---
 
@@ -92,10 +94,40 @@ If not: settlement — same calendar day needs **15:30 IST** NSE close (`observa
 
 ### 11. Cloud deploy works locally but 500 on Vercel/Render
 
-1. `MONGODB_URI` set on host?  
+1. `MONGODB_URI` set on host? (prices/paths — products may still come from CDN seed)  
 2. Cold start / memory — try `includePaths: false`; raise instance size on Render.  
 3. Yahoo blocked — rely on Mongo/bundled.  
-4. See [14-vercel-render-deployment.md](14-vercel-render-deployment.md).
+4. Confirm Node **20.x** on Vercel.  
+5. See [14-vercel-render-deployment.md](14-vercel-render-deployment.md).
+
+---
+
+### 12. Path table shows dates far in the future / many Path Taken = No
+
+1. Frontier trim should stop emitting after the last includable path (`engine.ts`).  
+2. UI default filter should be **Included**.  
+3. If still wrong after deploy, hard-refresh — stale client bundle.  
+4. Confirm series `lastIndexDate` is recent (`verify:series-floor` / API debug).
+
+---
+
+### 13. Lifecycle “today” price looks like yesterday
+
+Expected before **15:30 IST**. Desk mark uses previous trading-day close until NSE cash close (`desk-mark-as-of.ts`). After 15:30, expect today’s bar when synced.
+
+---
+
+### 14. Logic Atlas Active pipeline looks thin or wrong
+
+1. Confirm latest `main` deployed (`logic-flow-diagram.tsx` + enriched `logic-atlas.ts`).  
+2. Click a stage — Module Intelligence should show detail + metrics + tags.  
+3. Cross-check claims against [16 §11](16-product-type-probability-logic.md).
+
+---
+
+### 15. Phase 2 Initial days do not match Blank sibling
+
+Expected if Trade Date ≠ Allotment. Confirm both dates on the master row and `getRolloverPhaseKind` → `phase2`.
 
 ---
 

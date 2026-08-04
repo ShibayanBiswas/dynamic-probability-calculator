@@ -129,7 +129,7 @@ export const logicModules: LogicModule[] = [
           "Bootstrap on Vercel prefers the static master seed with Mongo overlays for prices and paths. Local desks can hydrate from Atlas when configured. Every module reads the same canonical product index.",
         metrics: [
           { label: "Consumers", value: "All modules" },
-          { label: "Seed", value: "Master + Mongo" },
+          { label: "Seed", value: "CDN / Mongo" },
         ],
         tags: ["Search", "Probability", "Analytics"],
       },
@@ -148,7 +148,8 @@ export const logicModules: LogicModule[] = [
       "Valid desk rows are kept only when lifecycle status is known and notionals are finite before any surface is rendered.",
       "Hidden calibration layers such as observation lookbacks and extinguished rollovers remain linked but are not shown to end users.",
       "Live Notional is driven by the sum of trade amounts on the merged master book. Lifecycle tab AUM is driven by deduped desk rows.",
-      "Ongoing and live status is classified from the phase schedule end on the live desk clock. Blank and Phase 2 use Maturity. Phase 1 uses POED. Ten Years uses Rollover. Expired products are excluded from this desk. There are no separate Expiring 3M / 1M tabs.",
+      "Ongoing and live status is classified from the phase schedule end on the live desk clock. Blank and Phase 2 use Maturity. Phase 1 uses POED when it is on or after Last Observation, otherwise Maturity. Ten Years uses Rollover C/P when present, otherwise Maturity. Expired products are excluded from this desk. There are no separate Expiring 3M / 1M tabs.",
+      "On Vercel, product bootstrap prefers the static CDN master seed. Mongo may still overlay index prices and path history when configured.",
     ],
     outputs: ["Product search index", "Formula catalog", "Category summaries", "Validation alerts"],
   },
@@ -183,12 +184,12 @@ export const logicModules: LogicModule[] = [
         id: "clock",
         label: "Portfolio Clock",
         kind: "process",
-        description: "Lifecycle buckets are refreshed every minute from the live as-of date without reload.",
+        description: "Lifecycle as-of is polled about once a minute and advances when the IST calendar day or EOD flag changes.",
         detail:
-          "Desk as-of follows the NSE cash clock: previous trading-day close before 15:30 IST, then today’s session after the cash close. Bucket membership recomputes without a hard page refresh.",
+          "The portfolio clock uses wall-clock time for bucket membership. Index mark levels for Current Probability and Effective Target settlement use a separate desk-mark rule: previous trading-day close before 15:30 IST, then today’s bar after the cash close.",
         metrics: [
-          { label: "Refresh", value: "1 min" },
-          { label: "Mark", value: "15:30 IST" },
+          { label: "Poll", value: "≈60s" },
+          { label: "Advance", value: "IST day / EOD" },
         ],
         tags: ["As-of", "Live clock"],
       },
@@ -199,7 +200,7 @@ export const logicModules: LogicModule[] = [
         description:
           "Ongoing and observation-due buckets are shared across Home, Probability, Initial Probability, Current Probability, and Analytics. Expiration is measured to phase schedule end. Observation due is measured to upcoming observation averages. Expired products and products whose last observation has already settled are excluded from this probability desk. Expiring 3M / 1M tabs are not used.",
         detail:
-          "Obs Due 1M ⊂ 2M ⊂ 3M ⊂ Ongoing. Blank and Phase 2 end on Maturity, Phase 1 on POED, Ten Years on Rollover. Last-observation settled names drop from every live pill.",
+          "Obs Due 1M ⊂ 2M ⊂ 3M ⊂ Ongoing. Blank and Phase 2 end on Maturity. Phase 1 ends on POED when valid, else Maturity. Ten Years ends on Rollover C/P when present, else Maturity. Last-observation settled names drop from every live pill.",
         metrics: [
           { label: "Buckets", value: "Ongoing + Obs Due" },
           { label: "Nested", value: "1M⊂2M⊂3M" },
@@ -334,7 +335,7 @@ export const logicModules: LogicModule[] = [
         description:
           "Nifty and Sensex closes for the valuation date are supplied for Current Probability and percent required.",
         detail:
-          "Desk mark policy uses the previous trading-day close before 15:30 IST and today’s close after the cash session. Initial Probability still uses Entry / Actual Start rather than this mark.",
+          "Desk mark policy uses the previous trading-day close before 15:30 IST and today’s close after the cash session. That mark feeds Current % Required only. Initial Probability thresholds use Target versus Entry. Initial schedule days use Actual Start. Path starts themselves are historical daily closes from 2001 onward.",
         metrics: [
           { label: "Indexes", value: "Nifty + Sensex" },
           { label: "Mark", value: "Desk as-of" },
@@ -348,7 +349,7 @@ export const logicModules: LogicModule[] = [
         description:
           "Average 1–7 dates become day offsets from phase start for Initial Probability, or from the valuation date for Current Probability.",
         detail:
-          "Schedule sits above Product Specs on the Probability tab. Trading-day resolution snaps holiday Average dates to the prior session before offsets are sent to either engine.",
+          "Schedule sits above Product Specs on the Probability tab. Offsets are calendar days from the stored Average dates to the mode base. When each historical path is scored, holiday or weekend projections snap to the nearest prior trading-day close for the level and displayed Average Date.",
         metrics: [
           { label: "Initial base", value: "Actual Start" },
           { label: "Current base", value: "Checking date" },
@@ -406,10 +407,10 @@ export const logicModules: LogicModule[] = [
       { from: "formula", to: "surface" },
     ],
     insights: [
-      "Phase tenure is set by Rollover Phase. Blank runs from Allotment to Maturity. Phase 1 runs from Allotment to POED. Phase 2 runs from Trade Date to Maturity. Ten Years runs from Allotment to Rollover.",
+      "Phase tenure is set by Rollover Phase. Blank runs from Allotment to Maturity. Phase 1 runs from Allotment to POED when POED is on or after Last Observation, otherwise Maturity. Phase 2 runs from Trade Date to Maturity. Ten Years runs from Allotment to Rollover C/P when present, otherwise Maturity.",
       "Included paths require the index history to cover every simulated observation.",
-      "The last included path has its last observation on the current trading day.",
-      "Effective Target on the lifecycle register uses passed observation levels versus Target Level.",
+      "The last included path ends so its final simulated observation lands on the latest trading bar available in the path series, which may be today or the previous session if today is not yet loaded.",
+      "Effective Target on the lifecycle register uses passed observation levels versus Target Level and is independent of the path engines.",
     ],
     outputs: [
       "Initial Probability",
@@ -477,12 +478,12 @@ export const logicModules: LogicModule[] = [
         kind: "engine",
         description: "Passed observation dates resolve to prior Nifty or Sensex closes.",
         detail:
-          "Each settled Average date uses the nearest previous trading-day close from Gift/NSP history with Mongo overlay. Future or blank Average slots stay empty in the Observation Level columns.",
+          "Each settled Average date uses the nearest previous trading-day close from the bundled Nifty or Sensex valuation history used by portfolio observation metrics. Custom underlyings can resolve via their own helper. Future or blank Average slots stay empty. This path does not use the Gift CSV plus Mongo overlay that feeds Initial and Current path runs.",
         metrics: [
-          { label: "Source", value: "History" },
+          { label: "Source", value: "Bundled history" },
           { label: "Rule", value: "Prior close" },
         ],
-        tags: ["Nifty", "Sensex", "VLOOKUP"],
+        tags: ["Nifty", "Sensex", "Custom"],
       },
       {
         id: "matrix",
@@ -738,8 +739,8 @@ export const logicModules: LogicModule[] = [
     ],
     insights: [
       "Included paths require the index history to cover every simulated observation.",
-      "The last included path has its last observation on the current trading day.",
-      "Daily path starts use Nifty history from 2001-01-01 (Gift AIF / NSP nifty sheet parity), forward-filled with Sensex.",
+      "The last included path ends so its final simulated observation lands on the latest trading bar available in the path series.",
+      "Daily path starts use Nifty history from 2001-01-01 (Gift AIF / NSP nifty sheet parity), forward-filled with Sensex, with Mongo overlays when available.",
     ],
     outputs: ["Initial probability", "Path table", "Observation schedule"],
   },
@@ -761,9 +762,9 @@ export const logicModules: LogicModule[] = [
         id: "cp-schedule",
         label: "Forward Offsets",
         kind: "input",
-        description: "Days from valuation date to each remaining observation.",
+        description: "Days from the checking date to each present Average observation date.",
         detail:
-          "Matches NSP Backtesting: observation calendar date minus the Probability checking date. Blank Average slots stay at zero days and are skipped.",
+          "Matches NSP Backtesting: each present Average calendar date minus the Probability checking date. Past observations can produce zero or negative day counts. Blank Average slots stay at zero days and are skipped.",
         metrics: [
           { label: "Base", value: "Checking date" },
           { label: "Sheet", value: "Backtesting" },

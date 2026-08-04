@@ -1,6 +1,8 @@
 # 15 — Requirements fulfillment board
 
-Five-pass checklist against the inception prompt. Status as of the Dynamic Probability Calculator desk.
+Five-pass checklist against the inception prompt. Status as of **2026-08-04**.
+
+Deep logic audit: [16-product-type-probability-logic.md](16-product-type-probability-logic.md).
 
 ## A. Shell, lifecycle, master, Intel
 
@@ -15,7 +17,7 @@ Five-pass checklist against the inception prompt. Status as of the Dynamic Proba
 | Blank / Phase1 / Phase2 / 10Y actual starts & ends | **PASS** | `lib/product-dates.ts` |
 | Days Left, Tenure, Years as-of selected date | **PASS** | Phase schedule end SSOT; portfolio columns |
 | Intel product master same formatting | **PASS** | `MasterSheetPivot` on `/intelligence` |
-| Logic Atlas like Primary SP | **PASS** | `lib/logic-atlas.ts` + `logic-atlas-console.tsx` |
+| Logic Atlas like Primary SP | **PASS** | Enriched pipeline cards (detail/metrics/tags); verified vs engine 2026-08-04 |
 
 ## B. Nav & Probability summary
 
@@ -73,9 +75,19 @@ Five-pass checklist against the inception prompt. Status as of the Dynamic Proba
 | Summary Reveal: Specs → Results (H-scroll) → Payoff → Obs | **PASS** | `past-final-observation-panels.tsx` |
 | Fast local: summary without paths; paths after Reveal | **PASS** | `includePaths` + AbortController |
 | Path backtest full columns with horizontal scroll | **PASS** | `PathBacktestTable` |
+| Schedule above specs on Probability summary | **PASS** | `probability-dashboard.tsx` |
+| Inline path load progress (no modal) | **PASS** | `PathLoadProgress` |
+| Path frontier trim / Included default | **PASS** | `engine.ts` + path table filter |
+| Desk mark 15:30 IST | **PASS** | `desk-mark-as-of.ts` |
+| Lifecycle Initial Level + as-of + phase dates | **PASS** | `portfolio-lifecycle-columns.ts` |
+| Primary-grade Excel/PDF | **PASS** | `export-probability-screen.ts` |
+| Vercel harden (CDN seed, includePaths, maxDuration) | **PASS** | bootstrap + `api/probability/run` |
+| Docs cover product-type logic | **PASS** | docs 01–16, especially 12 + 16 |
 
 ## Verify commands
 
 ```powershell
 npm run verify:probability-desk
+npm run verify:phase-logic
+npm run verify:rollover-phase
 ```

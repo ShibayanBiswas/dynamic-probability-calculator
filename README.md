@@ -10,7 +10,32 @@ Clones the Primary SP Dashboard visual system, lifecycle book, MongoDB product/i
 | **Initial Probability** | `/initial-probability` | **Initial Prob** sheet |
 | **Current Probability** | `/current-probability` | **Backtesting** sheet |
 
-Expired products are **excluded** from UI lifecycle pills and the live book.
+Expired products and names whose **last observation has already settled** are **excluded** from UI lifecycle pills and the live book.
+
+## Probability by product type (Rollover Phase)
+
+| Phase | Actual Start for Initial | Live-book phase end |
+|-------|--------------------------|---------------------|
+| Blank | Allotment (else Trade) | Maturity |
+| Phase 1 | Allotment (else Trade) | POED if valid, else Maturity |
+| Phase 2 | **Trade Date** | Maturity |
+| 10 Years | Allotment (else Trade) | Rollover if present, else Maturity |
+
+Initial uses a Start Level cushion (Nifty ×1.01 / Sensex ×1.006, ceiling to 100) vs Target÷Entry.  
+Current uses raw closes vs Target÷desk mark (15:30 IST rule).  
+Effective Target on the lifecycle table is a separate remaining-hurdle average.
+
+**Read:** [docs/12-probability-plain-english.md](docs/12-probability-plain-english.md) · **Deep audit:** [docs/16-product-type-probability-logic.md](docs/16-product-type-probability-logic.md)
+
+## Recent desk behaviour (do not regress)
+
+- Schedule **above** Product Specs on Probability summary; no path table on summary  
+- Inline path-load progress on Initial/Current (no modal)  
+- Path frontier trimmed to latest series trading bar; default filter Included  
+- Lifecycle columns: **Initial Level**, **As of Today's Date**, Trade / Allotment / Actual Start / POED / Rollover Phase / Maturity / Rollover  
+- Primary-grade Excel/PDF exports  
+- Logic Atlas Active pipeline cards with detail, metrics, tags  
+- Vercel: Node 20, CDN master seed preferred, `includePaths` opt-in, capped probability API duration  
 
 ## Run locally
 
@@ -34,8 +59,13 @@ Requires **Node 20+**. MongoDB optional but recommended (`MONGODB_URI`, `MONGODB
 
 | Need | Doc |
 |------|-----|
+| Layman probability | [docs/12-probability-plain-english.md](docs/12-probability-plain-english.md) |
+| Product-type / phase audit | [docs/16-product-type-probability-logic.md](docs/16-product-type-probability-logic.md) |
+| Path engine | [docs/06-probability-path-engine.md](docs/06-probability-path-engine.md) |
+| Math review | [docs/11-calculation-review.md](docs/11-calculation-review.md) |
 | Architecture / caches | [docs/01-architecture.md](docs/01-architecture.md) |
 | Excel parity | [docs/02-probability-excel-parity.md](docs/02-probability-excel-parity.md) |
+| Lifecycle / Effective Target | [docs/04-lifecycle-analytics-kpis.md](docs/04-lifecycle-analytics-kpis.md) |
 | Debug symptoms | [docs/08-debug-playbook.md](docs/08-debug-playbook.md) |
 | Prompt PASS board | [docs/15-requirements-fulfillment.md](docs/15-requirements-fulfillment.md) |
 | Vercel / Render | [docs/14-vercel-render-deployment.md](docs/14-vercel-render-deployment.md) |
@@ -44,11 +74,17 @@ Requires **Node 20+**. MongoDB optional but recommended (`MONGODB_URI`, `MONGODB
 
 ```powershell
 npm run verify:probability-desk
+npm run verify:phase-logic
 ```
 
 ## Labels policy
 
 User-facing labels must **not** use parentheses `()`. Rollover phase uses ` · Rollover Phase 1` / ` · Rollover Phase 2`.
+
+## Production
+
+Example Vercel app: https://dynamic-probability-calculator-9aso.vercel.app  
+Repo: https://github.com/ShibayanBiswas/dynamic-probability-calculator
 
 ## References (offline)
 

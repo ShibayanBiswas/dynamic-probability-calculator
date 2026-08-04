@@ -2,17 +2,31 @@
 
 | File | Role |
 |------|------|
-| `lib/probability/engine.ts` | Core math |
-| `app/api/probability/run/route.ts` | HTTP + caches + past-final clamp |
-| `lib/probability/as-of.ts` | Checking date + hydrate |
-| `lib/probability/cache.ts` | LRU results |
+| `lib/probability/engine.ts` | Core math (`runProbabilityBacktest`, schedule, ceilings) |
+| `lib/probability/index-series.ts` | `SERIES_FLOOR`, merge + forward-fill |
+| `lib/probability/as-of.ts` | Checking date + past-final lock |
+| `lib/probability/cache.ts` | LRU result cache |
+| `lib/probability/portfolio-prob-store.ts` | Client portfolio probability cache |
+| `app/api/probability/run/route.ts` | HTTP, Gift CSV + Mongo + Yahoo, past-final clamp |
+| `lib/product-dates.ts` | Actual Start / phase end by Rollover Phase |
+| `lib/desk-mark-as-of.ts` | 15:30 IST mark policy for live levels |
+| `components/ui/path-load-progress.tsx` | Inline path-load progress (no modal) |
+
+Deep product-type audit: [16-product-type-probability-logic.md](16-product-type-probability-logic.md).
 
 ## Modes
 
-| Mode | Schedule base | Start Level | Performance ÷ |
-|------|---------------|-------------|----------------|
-| `initial` | Phase start | Yes — ceiling | Start Level |
-| `current` | Checking date | No | Path start close |
+| Mode | Schedule base | Start Level | Performance ÷ | Threshold |
+|------|---------------|-------------|----------------|-----------|
+| `initial` | Actual Start (`getWorkingAllotmentDate`) | Yes — ceiling | Start Level | `target/entry − 1` |
+| `current` | Checking / valuation date | No (`null`) | Path start close | `target/todayLevel − 1` |
+
+### Actual Start by phase
+
+| Phase | Actual Start |
+|-------|--------------|
+| Blank / Phase 1 / 10 Years | Allotment, else Trade |
+| Phase 2 | Trade Date only |
 
 ## Schedule builder
 
@@ -20,28 +34,57 @@
 buildObservationSchedule(product, baseDate)
 ```
 
-Each Average 1…7 slot: blank → skipped; else `daysFromBase = calendarDays(obs, base)`.
+Each Average 1…7 slot: blank → skipped; else `daysFromBase = differenceInCalendarDays(obsDate, base)`.
+
+**Offsets are calendar days.** Trading-day snap to prior close happens later inside each path row via `lookupPriorBar`, not when offsets are built.
 
 ## Path series floor
 
-Index series load from **2001-01-01** with forward-fill across Nifty/Sensex legs (parity with Gift AIF `nifty_daily.csv` / NSP `nifty` sheet).  
+Index series load from **2001-01-01** with forward-fill across Nifty/Sensex legs (Gift AIF `nifty_daily` / NSP `nifty` parity).
 
-Bundled source: `lib/data/nifty-daily-2001.csv` (Nifty closes from 2001-01-01) + Sensex history; Mongo `index_prices` overlays newer bars when available. Earliest path start is the first trading day where **both** legs exist after fill — typically **2001-01-01** once Sensex is forward-filled onto the Nifty calendar.
+Sources (API route):
 
-1. Underlying close.  
-2. Initial: `ceilingStartLevel(close)`.  
-3. Project each present slot: `startTime + daysFromBase`; prior-close lookup.  
+1. Gift CSV `lib/data/nifty-daily-2001.csv`  
+2. Bundled Sensex history  
+3. Mongo `index_prices` overlay when dense enough  
+4. Yahoo recent sync / live marks  
+
+Earliest path start = first day where **both** legs exist after fill.
+
+## Path loop (both modes)
+
+1. For each trading day from series start → frontier: take underlying close.  
+2. Initial only: `ceilingStartLevel(close)` — Nifty ×1.01, Sensex ×1.006, `ceil(/100)*100`.  
+3. Project each present slot: `startTime + daysFromBase`; prior-close lookup for date + level.  
 4. Require all present slots filled for inclusion eligibility.  
-5. Average + performance.  
-6. Include while series end covers max obs time; stop frontier when next path would need future bars.
+5. Average + performance vs mode divisor.  
+6. Compare to threshold when ready.  
+7. Include while series covers max simulated obs time; **stop emitting** when the next path would need future bars (`!stillEligible && !pathIncluded`).  
+8. Trim trailing Path-Taken-No rows — UI default filter **Included**.
 
 ## Thresholds
 
-- Initial / Target Underlying: `target/entry − 1`  
-- Current / Required Underlying: `target/todayLevel − 1`  
-  todayLevel = request levels, else prior close on checking date  
+- **Target Underlying (Initial):** `target / entry − 1`  
+  Entry = `getProbabilityEntryLevel` (Actual Entry / Entry / Initial / Initial Fixing only — **no Target fallback**).  
+- **Required Underlying (Current):** `target / todayLevel − 1`  
+  `todayLevel` = request `niftyLevel`/`sensexLevel` (desk mark), else series close on checking date.  
 
-Probability = `successCount / includedCount` when threshold ready.
+Probability = `successCount / includedCount` when threshold ready; otherwise not ready.
+
+## Checking date / past final observation
+
+`resolveProbabilityCheckingDate` (`lib/probability/as-of.ts`):
+
+- If final observation fixing is already settled as of the requested valuation date → lock checking date to that final obs day.  
+- Else use requested valuation date.  
+
+API clears live levels after final obs so Current uses history close on the locked date.
+
+## Underlying gate
+
+`resolveUnderlyingKind`: Sensex if labelled Sensex; else Nifty if empty/Nifty; else **null** → API error *Probability is available only for Nifty and Sensex*.
+
+Custom underlyings may still show Effective Target on the lifecycle table via a separate metrics path.
 
 ## API
 
@@ -62,17 +105,31 @@ Content-Type: application/json
 }
 ```
 
-Response: `initial` / `current`, optional `asOfLastObservation`, `checkingDate`.  
-**Always hydrate** schedule dates on the client after JSON.
+Notes:
 
-## UI path headers
+- On Vercel, prefer `includePaths` only when the UI needs the table (summary can skip).  
+- `maxDuration` on the route is capped for serverless.  
+- Response: `initial` / `current`, optional `asOfLastObservation`, `checkingDate`.  
+- **Always hydrate** schedule dates on the client after JSON.
 
-Start · Underlying Closing Level · Start Level (Initial only) · Average Date/Level N · Average Underlying Level · Underlying Performance · Path Taken
+## UI behaviour
+
+| Surface | Behaviour |
+|---------|-----------|
+| `/probability` | Schedule above specs; Initial + Current KPIs; no path table |
+| `/initial-probability` | Inline progress → schedule + path table |
+| `/current-probability` | Same with Current mode |
+| Exports | Primary-grade Excel/PDF via `lib/workbook/export-probability-screen.ts` |
+
+## Effective Target (separate from this engine)
+
+See [04-lifecycle-analytics-kpis.md](04-lifecycle-analytics-kpis.md) and doc 16. Uses bundled valuation history + settlement clock, not this path series.
 
 ## Debug tips
 
 1. `resolveUnderlyingKind` must be nifty/sensex.  
-2. `lastIndexDate` should be recent.  
-3. Log `presentSlotCount`, `includedCount`, `threshold`.  
+2. `lastIndexDate` / series frontier should be recent.  
+3. Log `presentSlotCount`, `includedCount`, `threshold`, `phaseStart`.  
 4. Phase 2 Initial → Trade Date base.  
-5. After fetch → hydrate before formatting dates.
+5. After fetch → hydrate before formatting dates.  
+6. If frontier looks “stuck yesterday”, check 15:30 IST + Yahoo/Mongo sync.

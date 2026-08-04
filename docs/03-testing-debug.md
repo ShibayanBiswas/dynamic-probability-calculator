@@ -6,12 +6,14 @@
 npm run verify:probability-desk
 ```
 
-Runs:
+Runs (`package.json` → `verify:probability-desk`):
 
 | Step | Command |
 |------|---------|
 | Types | `tsc --noEmit` |
+| Series floor 2001 | `verify:series-floor` |
 | Engine parity | `verify:probability` |
+| NSP Excel parity | `verify:nsp-excel` |
 | Column / export registry | `verify:exports` |
 | Effective Target | `verify:effective-target` |
 | Obs settlement 15:30 IST | `verify:obs-settlement` |
@@ -19,7 +21,14 @@ Runs:
 | Obs-due nesting | `verify:obs-due` |
 | Timing | `bench:probability` |
 
-Expect: all PASS; expired filter count **0**; UI pills exclude expired.
+Also run after phase / Actual Start changes:
+
+```powershell
+npm run verify:phase-logic
+npm run verify:rollover-phase
+```
+
+Expect: all PASS; expired filter count **0**; UI pills exclude expired **and** past-final-observation names.
 
 ## Smoke the running app
 
@@ -73,6 +82,10 @@ If past final obs: `asOfLastObservation=true` and `checkingDate` locked.
 | Past-final panels missing | `hasPassedFinalObservation`; settlement 15:30 IST |
 | Mongo empty | `.env.local`; `verify:mongo`; `sync:seed` |
 | Historical levels wrong | `/api/market/index-at-date`; joint Nifty+Sensex series |
+| Path table shows future No rows | Frontier trim in `engine.ts`; default Included filter |
+| Mark looks like yesterday before 15:30 | `desk-mark-as-of.ts` — expected |
+| Logic Atlas thin / wrong copy | `lib/logic-atlas.ts` + doc 16 §11 |
+| Phase 2 Initial days wrong | Trade Date must be populated on master |
 
 ## Shared spine verifies (optional)
 
@@ -82,16 +95,18 @@ Valuation/payoff verifies (`verify:valuation`, `verify:payoff-xirr`, …) are **
 
 ## Manual UI checklist
 
-1. Lifecycle pills — no Expired.  
+1. Lifecycle pills — no Expired; no past-final-obs names.  
 2. Probability inputs — search, date, levels, **no debentures**.  
-3. Initial — Days from Phase Start; Start Level column present.  
-4. Current — Days from Valuation Date; no Start Level.  
-5. Path Taken Yes rows end near latest trading day.  
-6. Past last obs — coupon in Probability Results; payoff plot + specs + obs table (no mid-page banner / no Average 1–7 mini-table). Final obs row shows a level, not “Yet to come”.  
-7. Download Excel / PDF works.  
-8. Intel Master pivot + Logic Atlas load.  
-9. Theme toggle; Home KPI band usable.  
-10. Phone / small tablet — no horizontal page scroll; nav, lifecycle, and tables scroll inside their rails.
+3. Probability summary — **schedule above specs**; no path table; KPIs only.  
+4. Initial — Days from Actual Start; Start Level column; **inline** path progress.  
+5. Current — Days from Valuation Date; no Start Level; inline progress.  
+6. Path Taken Yes rows end near latest series trading bar; no long future No tail.  
+7. Lifecycle table — Initial Level, As of Today's Date, Actual Start, phase dates.  
+8. Past last obs deep-link — coupon in Results; payoff + specs + obs table.  
+9. Download Excel / PDF — Primary gold masthead + disclaimer.  
+10. Intel — Logic Atlas Connected cards + detailed Active pipeline stages.  
+11. Theme toggle; Home KPI band usable.  
+12. Phone / small tablet — no horizontal page scroll; nav, lifecycle, and tables scroll inside their rails.
 
 ## Small devices
 
