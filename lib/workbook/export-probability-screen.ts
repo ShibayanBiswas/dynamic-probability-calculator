@@ -246,8 +246,13 @@ export async function downloadProbabilityScreenExcel(input: ProbabilityScreenExp
 
   writeScheduleSheet(wb, "Initial Schedule", input.initial, "Days from Phase Start");
   writeScheduleSheet(wb, "Current Schedule", input.current, "Days from Valuation Date");
-  writePathsSheet(wb, "Initial Paths", input.initial);
-  writePathsSheet(wb, "Current Paths", input.current);
+  // Probability tab does not load path rows in the UI — only write sheets when present.
+  if ((input.initial?.paths?.length ?? 0) > 0) {
+    writePathsSheet(wb, "Initial Paths", input.initial);
+  }
+  if ((input.current?.paths?.length ?? 0) > 0) {
+    writePathsSheet(wb, "Current Paths", input.current);
+  }
 
   const buffer = await wb.xlsx.writeBuffer();
   triggerDownload(

@@ -19,6 +19,7 @@ import {
   SubPageTabs,
   SubTitle,
 } from "@/components/layout/app-ui";
+import { PathLoadProgress } from "@/components/ui/path-load-progress";
 import { RevealOutput } from "@/components/ui/reveal-output";
 import { UniformSpecRail, useUniformSpecCardSize, type SpecRailCard } from "@/components/ui/spec-rail";
 import { MasterUploadButton } from "@/components/ui/master-upload-button";
@@ -197,26 +198,23 @@ function PathBacktestTable({
     overscan: 24,
   });
 
-  if (!result) {
+  if (!result || paths.length === 0) {
     return (
       <Panel className="!p-4" glow="purple">
         <SectionTitle>Historical Path Backtest</SectionTitle>
-        <p className="mt-2 text-sm text-stone-500">
-          {loadingPaths ? "Loading daily historical paths…" : "Reveal output to load the path backtest."}
-        </p>
-      </Panel>
-    );
-  }
-
-  if (paths.length === 0) {
-    return (
-      <Panel className="!p-4" glow="purple">
-        <SectionTitle>Historical Path Backtest</SectionTitle>
-        <p className="mt-2 text-sm text-stone-500">
-          {loadingPaths
-            ? "Loading daily historical paths…"
-            : "No path rows yet — open this panel after the path run finishes."}
-        </p>
+        {loadingPaths ? (
+          <PathLoadProgress
+            key="path-load"
+            active
+            label="Building daily historical paths from 2001-01-01 — same engine as the Gift AIF Backtester."
+          />
+        ) : (
+          <p className="mt-2 text-sm text-stone-500">
+            {!result
+              ? "Reveal output to load the path backtest."
+              : "No path rows yet — open this panel after the path run finishes."}
+          </p>
+        )}
       </Panel>
     );
   }
@@ -358,7 +356,6 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
   const { asOf } = usePortfolioClock();
   const { filter: lifecycle, setFilter: setLifecycle } = useLifecycleFilter("ongoing");
   const [tab, setTab] = useState("interface");
-  const [loading, setLoading] = useState(false);
   const [loadingPaths, setLoadingPaths] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [initialResult, setInitialResult] = useState<ProbabilityRunResult | null>(null);
@@ -430,7 +427,6 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
       abortRef.current = controller;
 
       if (includePaths) setLoadingPaths(true);
-      else setLoading(true);
       setError(null);
 
       try {
@@ -485,12 +481,11 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
       } finally {
         if (!controller.signal.aborted) {
           if (includePaths) setLoadingPaths(false);
-          else setLoading(false);
         }
       }
     },
     [
-      product?.isin,
+      product,
       surface,
       checkingDate,
       pastFinalObservation,
@@ -512,9 +507,10 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
     };
   }, [runProbability]);
 
-  // Heavy path rows only after Primary-style Reveal opens (all probability surfaces).
+  // Heavy path rows only on Initial / Current after Reveal — Probability tab skips the table.
   useEffect(() => {
     if (!pathsUnlocked) return;
+    if (surface === "summary") return;
     void runProbability(true);
   }, [pathsUnlocked, surface, runProbability]);
 
@@ -683,7 +679,7 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
     ],
   );
 
-  // Stable footer — do not tie disabled to soft-reload `loading` (that caused button flicker).
+  // Stable footer — do not tie disabled to soft-reload KPI fetches (that caused button flicker).
   const exportFooter = useMemo(() => {
     if (exportPayload == null) return null;
     return (
@@ -833,19 +829,6 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
                 <KpiBand accents={["cyan", "green", "purple", "amber", "rose"]} items={kpiItems} />
 
                 <HorizontalBand className="mt-4">
-                  <ProductSpecificationsPanel product={product} />
-                </HorizontalBand>
-
-                {surface === "summary" ? (
-                  <>
-                    <HorizontalBand className="mt-4">
-                      <ProbabilityResultsRail product={product} cards={resultCards} />
-                    </HorizontalBand>
-                    <PastFinalObservationPanels product={product} />
-                  </>
-                ) : null}
-
-                <HorizontalBand className="mt-4">
                   <ScheduleCard
                     result={activeResult}
                     daysRowLabel={
@@ -862,13 +845,26 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
                 </HorizontalBand>
 
                 <HorizontalBand className="mt-4">
-                  <PathBacktestTable
-                    result={activeResult}
-                    showAdjustedStart={surface !== "current"}
-                    loadingPaths={loadingPaths}
-                    product={product}
-                  />
+                  <ProductSpecificationsPanel product={product} />
                 </HorizontalBand>
+
+                {surface === "summary" ? (
+                  <>
+                    <HorizontalBand className="mt-4">
+                      <ProbabilityResultsRail product={product} cards={resultCards} />
+                    </HorizontalBand>
+                    <PastFinalObservationPanels product={product} />
+                  </>
+                ) : (
+                  <HorizontalBand className="mt-4">
+                    <PathBacktestTable
+                      result={activeResult}
+                      showAdjustedStart={surface !== "current"}
+                      loadingPaths={loadingPaths}
+                      product={product}
+                    />
+                  </HorizontalBand>
+                )}
               </RevealOutput>
             </HorizontalBand>
           ) : null}
