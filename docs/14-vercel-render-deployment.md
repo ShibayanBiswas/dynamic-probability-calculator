@@ -1,36 +1,37 @@
 ﻿# Deploy Dynamic Probability Calculator — Vercel + Render
 
 **Repo:** https://github.com/ShibayanBiswas/dynamic-probability-calculator  
-**Env source (local only, never commit):** Primary SP Dashboard `.env.local`  
-**Node:** `24.x`
+**Env source (local only — never commit secrets):** Primary SP Dashboard `.env.local`  
+**Node:** `20.x`
+
+> **Security:** Never put `MONGODB_URI`, passwords, or Atlas connection strings in this repo.  
+> Set them only in Vercel / Render project env panels and your local `.env.local` (gitignored).
 
 ---
 
-## 1) Env keys (copy values from Primary SP `.env.local`)
+## 1) Env keys (values from Primary SP `.env.local` on your PC only)
 
 | Key | Needed on DPC cloud? | Notes |
 |-----|----------------------|--------|
-| `MONGODB_URI` | **YES** | Paste from Primary SP `.env.local` |
-| `MONGODB_DB` | **YES** | Must be `sp_dashboard` |
-| `PYTHON_API_URL` | **NO** | Primary-only; DPC uses Node pivot |
-| `NODE_VERSION` | Render only | `24` |
+| `MONGODB_URI` | **YES** | Paste from Primary `.env.local` into Vercel/Render only |
+| `MONGODB_DB` | **YES** | `sp_dashboard` |
+| `PYTHON_API_URL` | **NO** | Not required for this app |
+| `NODE_VERSION` | Render only | `20` |
 | `NODE_OPTIONS` | Optional (Render) | `--max-old-space-size=1536` |
 
-Do **not** commit real URIs/passwords. Set them only in Vercel / Render / local `.env.local`.
-
-### Vercel env (Production + Preview)
+### Vercel (Production + Preview) — paste values privately in the Vercel UI
 
 ```env
-MONGODB_URI=<paste from Primary SP .env.local>
+MONGODB_URI=<from Primary SP .env.local — do not commit>
 MONGODB_DB=sp_dashboard
 ```
 
-### Render env
+### Render
 
 ```env
-MONGODB_URI=<paste from Primary SP .env.local>
+MONGODB_URI=<from Primary SP .env.local — do not commit>
 MONGODB_DB=sp_dashboard
-NODE_VERSION=24
+NODE_VERSION=20
 ```
 
 ---
@@ -38,7 +39,7 @@ NODE_VERSION=24
 ## 2) One-time before deploy (PC)
 
 1. Atlas → Network Access → allow `0.0.0.0/0`  
-2. Point this project’s `.env.local` at the same Atlas URI as Primary  
+2. Copy Mongo lines into this project’s `.env.local` (gitignored)  
 3. Then:
 
 ```powershell
@@ -62,27 +63,25 @@ npm run sync:index-2001
 | Framework | Next.js |
 | Build Command | `npm run build` |
 | Install Command | `npm install` (from `vercel.json`) |
-| Node.js Version | **24.x** |
+| Node.js Version | **20.x** |
 
-4. Add `MONGODB_URI` + `MONGODB_DB` (Production + Preview)  
-5. Deploy the **latest `main`** commit (not an old failed deployment)  
+4. Add env vars in the Vercel UI only (never in git)  
+5. Deploy **latest `main`** (not an old failed commit)  
 6. Open `https://YOUR-APP.vercel.app/probability`
 
 ---
 
-## 4) Render steps (optional — Vercel alone is enough)
+## 4) Render (optional — Vercel alone works)
 
-1. https://render.com → **New** → **Web Service**  
-2. Connect same repo  
-3. Build: `npm ci && npm run build` · Start: `npm start` · Health: `/`  
-4. Paste Render env block  
-5. Deploy
+1. New Web Service → same repo  
+2. Build: `npm ci && npm run build` · Start: `npm start` · Health: `/`  
+3. Env: `MONGODB_URI`, `MONGODB_DB=sp_dashboard`, `NODE_VERSION=20`
 
 ---
 
-## 5) Vercel build notes
+## 5) Build notes
 
-- Pinned deps (no `"latest"` drift)  
-- `engines.node` = `24.x`  
-- `@emnapi/*` locked in `package-lock.json`  
+- Pinned deps (no `"latest"`)  
+- `engines.node` = `20.x`  
+- `framer-motion` pinned compatible with `motion-dom`  
 - `vercel.json` uses `npm install`
