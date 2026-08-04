@@ -3,7 +3,7 @@ import path from "path";
 
 import { NextResponse } from "next/server";
 
-import { getIndexPricesBetween } from "@/lib/db/index-prices";
+import { getIndexPricesBetween, syncIndexPricesFromYahoo } from "@/lib/db/index-prices";
 import niftyHistory from "@/lib/data/valuation-index-history.json";
 import sensexHistory from "@/lib/data/sensex-index-history.json";
 import {
@@ -82,6 +82,15 @@ async function loadSeries(): Promise<Series> {
   const cacheKey = `${SERIES_FLOOR}:${end}:ffill:giftnifty-2001`;
   if (seriesCache && seriesCache.key === cacheKey && Date.now() - seriesCache.loadedAt < 5 * 60 * 1000) {
     return seriesCache.series;
+  }
+
+  // Refresh recent Mongo bars so the path frontier tracks the latest trading session.
+  try {
+    const from = new Date();
+    from.setUTCDate(from.getUTCDate() - 45);
+    await syncIndexPricesFromYahoo(from);
+  } catch {
+    /* Yahoo optional — Gift CSV + existing Mongo still drive the book */
   }
 
   // Always seed from Gift/NSP Nifty since 2001 so paths never truncate at Yahoo ~2007.

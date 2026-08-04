@@ -176,7 +176,7 @@ function PathBacktestTable({
   product?: ProductRecord | null;
 }) {
   const parentRef = useRef<HTMLDivElement>(null);
-  const [pathFilter, setPathFilter] = useState<PathViewFilter>("all");
+  const [pathFilter, setPathFilter] = useState<PathViewFilter>("included");
   const [exportingPaths, setExportingPaths] = useState(false);
   const paths = result?.paths ?? [];
   const presentIndexes = result
@@ -190,6 +190,9 @@ function PathBacktestTable({
   const rowCount = displayPaths.length;
   const colCount = 3 + (showAdjustedStart ? 1 : 0) + presentIndexes.length * 2 + 3;
   const seriesStart = paths[0]?.pathStartDate ?? null;
+  const lastIncluded = [...paths].reverse().find((p) => p.pathIncluded) ?? null;
+  const lastIncludedFinalObs =
+    lastIncluded?.observationDates.filter((d): d is string => Boolean(d)).at(-1) ?? null;
 
   const virtualizer = useVirtualizer({
     count: rowCount,
@@ -226,8 +229,16 @@ function PathBacktestTable({
           <SectionTitle>Historical Path Backtest</SectionTitle>
           <p className="mt-1 text-sm text-stone-500">
             Daily paths from <span className="font-semibold text-stone-700">2001-01-01</span>
-            {seriesStart && seriesStart !== "2001-01-01" ? ` (series opens ${seriesStart})` : ""} ·
-            scroll horizontally for every column. Default view shows all rows from the floor.
+            {seriesStart && seriesStart !== "2001-01-01" ? ` (series opens ${seriesStart})` : ""}{" "}
+            through the latest trading session
+            {result.lastIndexDate ? (
+              <>
+                {" "}
+                (<span className="font-semibold text-stone-700">{result.lastIndexDate}</span>)
+              </>
+            ) : null}
+            . Last included path final observation lands on that as-of date. Scroll horizontally for
+            every column.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -322,9 +333,15 @@ function PathBacktestTable({
         </div>
       </div>
       <p className="mt-2 text-xs text-stone-500">
-        Showing {formatNumber(rowCount, 0)} of {formatNumber(paths.length, 0)} paths · Included{" "}
-        {formatNumber(result.includedCount, 0)} · Successes {formatNumber(result.successCount, 0)}
+        Showing {formatNumber(rowCount, 0)} of {formatNumber(paths.length, 0)} frontier paths ·
+        Included {formatNumber(result.includedCount, 0)} · Successes{" "}
+        {formatNumber(result.successCount, 0)}
         {seriesStart ? ` · Series from ${seriesStart}` : ""}
+        {result.lastIndexDate ? ` · As of ${result.lastIndexDate}` : ""}
+        {lastIncludedFinalObs ? ` · Last included final obs ${lastIncludedFinalObs}` : ""}
+        {pathFilter === "excluded" && rowCount === 0
+          ? " · Trailing Path-Taken-No rows beyond the trading-day frontier are omitted"
+          : ""}
       </p>
     </Panel>
   );

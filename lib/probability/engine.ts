@@ -191,14 +191,17 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
       const obsTime = addCalendarDaysMs(startBar.time, slot.daysFromBase);
       if (obsTime > maxObsTime) maxObsTime = obsTime;
 
-      observationDates.push(toLocalDateKey(new Date(obsTime)));
       const obsBar = lookupPriorBar(series, obsTime);
       if (obsBar) {
+        // Show the trading session used for the level (nearest previous trading day),
+        // not a weekend/holiday calendar projection.
+        observationDates.push(obsBar.date);
         const lvl = closeAt(obsBar, underlying);
         observationLevels.push(lvl);
         levelSum += lvl;
         levelCount += 1;
       } else {
+        observationDates.push(toLocalDateKey(new Date(obsTime)));
         observationLevels.push(null);
       }
     }
@@ -241,6 +244,12 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
     }
 
     if (includePaths) {
+      // Stop at the trading-day frontier so the last emitted path is the last Yes —
+      // its final observation lands on (or just before) the latest index session.
+      // Trailing Path-Taken-No rows with future dates are not useful on the desk.
+      if (!stillEligible && !pathIncluded) {
+        break;
+      }
       paths.push({
         pathStartDate: startBar.date,
         underlyingClosingLevel: close,
