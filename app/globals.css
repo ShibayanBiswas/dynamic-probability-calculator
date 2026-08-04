@@ -439,8 +439,8 @@ textarea {
   }
 
   .category-intel-rail .rail-card-fill {
-    min-width: 0;
-    flex: 1 1 0;
+    min-width: min(28rem, 88vw);
+    flex: 0 0 min(28rem, 88vw);
   }
 
   .intel-rail-card {
