@@ -40,7 +40,16 @@ export type PathRow = {
 export type ProbabilityRunResult = {
   mode: "initial" | "current";
   underlying: UnderlyingKind;
+  /**
+   * Full Average 1–7 schedule for the Observation Schedule card / exports.
+   * Current keeps passed slots (including non-positive day offsets) here.
+   */
   schedule: ObservationSchedule[];
+  /**
+   * Slots used by the Historical Path Backtest columns and probability math.
+   * Current: remaining only (`daysFromBase > 0`). Initial: same as `schedule`.
+   */
+  pathSchedule: ObservationSchedule[];
   includedCount: number;
   successCount: number;
   probability: number | null;
@@ -88,8 +97,9 @@ export function buildObservationSchedule(
 }
 
 /**
- * Current Probability — only remaining observations with a positive day count
- * from the checking date. Passed / same-day slots are excluded from the path table.
+ * Current Probability path schedule — only remaining observations with a positive
+ * day count from the checking date. Used by the Historical Path Backtest and
+ * probability math; the Observation Schedule card still shows the full schedule.
  */
 export function buildCurrentRemainingSchedule(
   product: ProductRecord,
@@ -204,14 +214,14 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
 
   const baseDate = mode === "initial" ? (phaseStart ?? valuationDate) : valuationDate;
 
-  // Initial: full Average 1–7 schedule from Actual Start.
-  // Current: only remaining slots with daysFromBase > 0 (passed obs dropped).
-  const fullSchedule = buildObservationSchedule(product, baseDate);
-  const schedule =
+  // Observation Schedule card: always the full Average 1–7 schedule from the mode base.
+  // Path backtest + probability: Current drops passed / non-positive day offsets only.
+  const schedule = buildObservationSchedule(product, baseDate);
+  const pathSchedule =
     mode === "current"
-      ? fullSchedule.filter((slot) => slot.date != null && slot.daysFromBase > 0)
-      : fullSchedule;
-  const presentSlotCount = schedule.filter((slot) => slot.date != null).length;
+      ? schedule.filter((slot) => slot.date != null && slot.daysFromBase > 0)
+      : schedule;
+  const presentSlotCount = pathSchedule.filter((slot) => slot.date != null).length;
 
   const lastBar = series.length > 0 ? series[series.length - 1]! : null;
   const lastIndexDate = lastBar?.date ?? null;
@@ -275,7 +285,7 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
     let levelSum = 0;
     let levelCount = 0;
 
-    for (const slot of schedule) {
+    for (const slot of pathSchedule) {
       if (!slot.date) {
         observationDates.push(null);
         observationLevels.push(null);
@@ -376,6 +386,7 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
     mode,
     underlying,
     schedule,
+    pathSchedule,
     includedCount,
     successCount,
     probability:

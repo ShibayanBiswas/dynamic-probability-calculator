@@ -41,10 +41,20 @@ export function hydrateProbabilityRunResult(
   raw: ProbabilityRunResult | null | undefined,
 ): ProbabilityRunResult | null {
   if (!raw) return null;
-  const schedule: ObservationSchedule[] = (raw.schedule ?? []).map((slot) => ({
-    index: slot.index,
-    daysFromBase: slot.daysFromBase,
-    date: reviveScheduleDate(slot.date as ExcelishDateInput),
-  }));
-  return { ...raw, schedule };
+  const revive = (slots: ObservationSchedule[] | undefined): ObservationSchedule[] =>
+    (slots ?? []).map((slot) => ({
+      index: slot.index,
+      daysFromBase: slot.daysFromBase,
+      date: reviveScheduleDate(slot.date as ExcelishDateInput),
+    }));
+  const schedule = revive(raw.schedule);
+  // Older API payloads may omit pathSchedule — fall back to schedule (Initial) or
+  // remaining-only filter (Current) so path columns stay aligned with path rows.
+  const pathSchedule =
+    raw.pathSchedule != null && raw.pathSchedule.length > 0
+      ? revive(raw.pathSchedule)
+      : raw.mode === "current"
+        ? schedule.filter((slot) => slot.date != null && slot.daysFromBase > 0)
+        : schedule;
+  return { ...raw, schedule, pathSchedule };
 }

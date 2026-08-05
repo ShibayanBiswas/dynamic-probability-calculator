@@ -19,7 +19,7 @@ Deep product-type audit: [16-product-type-probability-logic.md](16-product-type-
 | Mode | Schedule base | Start Level | Performance ÷ | Threshold | Path frontier |
 |------|---------------|-------------|----------------|-----------|--------------|
 | `initial` | Actual Start (`getWorkingAllotmentDate`) | Yes — ceiling | Start Level | `target/entry − 1` | Actual Start ≥ MAX(projected obs) |
-| `current` | Checking date; **remaining slots only** (`days > 0`) | No (`null`) | Path start close | `EffectiveTarget/todayLevel − 1` | Latest series bar ≥ MAX(projected obs) |
+| `current` | Checking date; **full** Observation Schedule; path table uses remaining (`days > 0`) | No (`null`) | Path start close | `EffectiveTarget/todayLevel − 1` | Latest series bar ≥ MAX(projected obs) |
 
 ### Actual Start by phase
 

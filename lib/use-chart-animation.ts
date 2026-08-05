@@ -37,3 +37,27 @@ export function useChartAnimation(): ChartAnimationProps {
 
   return anim;
 }
+
+/**
+ * Entrance draw that plays once per `resetKey`, then goes static.
+ *
+ * Interactive charts re-render on every cursor move, keystroke, or live mark, and
+ * Recharts replays the draw each time the series props change — which reads as a
+ * flickering line. Holding the animation to the entrance keeps updates steady.
+ */
+export function useEntranceChartAnimation(resetKey?: string | number): ChartAnimationProps {
+  const base = useChartAnimation();
+  const [entranceDone, setEntranceDone] = useState(false);
+
+  useEffect(() => {
+    if (!base.isAnimationActive) return;
+    setEntranceDone(false);
+    const id = window.setTimeout(
+      () => setEntranceDone(true),
+      base.animationBegin + base.animationDuration + 120,
+    );
+    return () => window.clearTimeout(id);
+  }, [resetKey, base.isAnimationActive, base.animationBegin, base.animationDuration]);
+
+  return entranceDone ? STATIC_CHART_ANIM : base;
+}

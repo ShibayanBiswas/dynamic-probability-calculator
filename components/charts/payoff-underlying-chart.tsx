@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { memo, useId, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Area,
@@ -16,8 +16,7 @@ import {
 
 import { ChartPanel, InputGlow, OutputGlow } from "@/components/layout/app-ui";
 import { ChartStage, PremiumGrid } from "@/components/charts/chart-kit";
-import { usePropsSync } from "@/lib/hooks/use-props-sync";
-import { useChartAnimation } from "@/lib/use-chart-animation";
+import { useEntranceChartAnimation } from "@/lib/use-chart-animation";
 import { useChartTheme } from "@/lib/use-chart-theme";
 import { buildPayoffCurve, evaluatePayoffFormula } from "@/lib/workbook/formula-engine";
 import { findPayoffPlotKinks } from "@/lib/workbook/payoff-kinks";
@@ -63,7 +62,38 @@ function PayoffTooltip({
   );
 }
 
-export function PayoffUnderlyingChart({
+function moveTextFromZ(z: number) {
+  return String(Number((z * 100).toFixed(2)));
+}
+
+/** Round live Z so tiny Yahoo ticks do not re-seed the draft every sync. */
+function stabilizeMove(z: number) {
+  if (!Number.isFinite(z)) return 0;
+  return Math.round(z * 10000) / 10000;
+}
+
+type MoveDraft = {
+  /** Product / formula identity this draft belongs to. */
+  productKey: string;
+  /** Live market move already folded into this draft. */
+  seed: number;
+  /** True once the desk types a move — live marks stop overwriting it. */
+  edited: boolean;
+  z: number;
+  text: string;
+};
+
+function seedMoveDraft(productKey: string, marketMove: number): MoveDraft {
+  return {
+    productKey,
+    seed: marketMove,
+    edited: false,
+    z: marketMove,
+    text: moveTextFromZ(marketMove),
+  };
+}
+
+function PayoffUnderlyingChartImpl({
   formula,
   title,
   entryLevel,
@@ -77,20 +107,33 @@ export function PayoffUnderlyingChart({
   compact?: boolean;
 }) {
   const chartTheme = useChartTheme();
-  const chartAnim = useChartAnimation();
-  const [zInput, setZInput] = usePropsSync(marketMove, formula);
-  const [moveText, setMoveText] = usePropsSync(
-    String(Number((marketMove * 100).toFixed(2))),
-    `${formula}:${marketMove}`,
-  );
+  const chartAnim = useEntranceChartAnimation(`${formula}|${entryLevel}`);
+
+  // Gradient ids must be unique per instance — duplicate ids across payoff panels make
+  // the underlying line resolve to another chart's gradient and flicker on re-render.
+  const gradientScope = useId().replace(/[^a-zA-Z0-9_-]/g, "");
+  const payoffGradientId = `payoffGradient-${gradientScope}`;
+  const underlyingStrokeId = `underlyingStroke-${gradientScope}`;
+
+  const productKey = `${formula}|${entryLevel}`;
+  // Non-finite / noisy marks would never compare equal and would re-seed forever.
+  const liveMove = stabilizeMove(marketMove);
+  const [draft, setDraft] = useState<MoveDraft>(() => seedMoveDraft(productKey, liveMove));
+
+  // Re-seed on product change, and keep following the live mark until the desk types.
+  if (draft.productKey !== productKey || (!draft.edited && draft.seed !== liveMove)) {
+    setDraft(seedMoveDraft(productKey, liveMove));
+  }
+
+  const zInput = draft.z;
+  const moveText = draft.text;
 
   function handleMoveChange(raw: string) {
     // Accept floating-point numbers only (optional sign, digits, single decimal point).
     if (raw !== "" && !/^-?\d*\.?\d*$/.test(raw)) return;
-    setMoveText(raw);
     const parsed = Number.parseFloat(raw);
-    if (Number.isFinite(parsed)) setZInput(parsed / 100);
-    else if (raw === "" || raw === "-") setZInput(0);
+    const nextZ = Number.isFinite(parsed) ? parsed / 100 : 0;
+    setDraft((current) => ({ ...current, edited: true, text: raw, z: nextZ }));
   }
 
   const curve = useMemo(() => {
@@ -111,13 +154,17 @@ export function PayoffUnderlyingChart({
     [curve, entryLevel],
   );
 
-  const kinkPoints = useMemo(() => findPayoffPlotKinks(formula), [formula]);
+  const kinkDots = useMemo(
+    () => findPayoffPlotKinks(formula).map((z) => ({ z, y: evaluatePayoffFormula(formula, z) })),
+    [formula],
+  );
 
   const payoffAtZ = evaluatePayoffFormula(formula, zInput);
   const underlyingAtZ = entryLevel * (1 + zInput);
 
   const payoffDomain = useMemo(() => {
-    const values = comboData.map((p) => p.payoff);
+    const values = comboData.map((p) => p.payoff).filter((v) => Number.isFinite(v));
+    if (values.length === 0) return [-0.6, 0.6] as [number, number];
     const min = Math.min(...values, -0.5);
     const max = Math.max(...values, 0.5);
     const pad = Math.max((max - min) * 0.12, 0.08);
@@ -125,10 +172,14 @@ export function PayoffUnderlyingChart({
   }, [comboData]);
 
   const underlyingDomain = useMemo(() => {
-    const levels = comboData.map((p) => p.underlyingLevel);
+    const levels = comboData.map((p) => p.underlyingLevel).filter((v) => Number.isFinite(v));
+    // Without an initial fixing every level collapses to zero; a flat domain makes
+    // Recharts scale to NaN and the underlying line drops out of the plot.
+    if (!(entryLevel > 0) || levels.length === 0) return [0, 1] as [number, number];
     const min = Math.min(...levels, entryLevel * 0.6);
     const max = Math.max(...levels, entryLevel * 1.5);
-    const pad = (max - min) * 0.06;
+    const span = max - min;
+    const pad = span > 0 ? span * 0.06 : Math.max(Math.abs(max) * 0.06, 1);
     return [min - pad, max + pad] as [number, number];
   }, [comboData, entryLevel]);
 
@@ -161,8 +212,7 @@ export function PayoffUnderlyingChart({
       </div>
 
       <ChartStage
-        className={compact ? undefined : "h-[min(52vh,420px)] min-h-[280px]"}
-        height={compact ? "chart-stage-compact" : "chart-stage"}
+        height={compact ? "chart-stage-compact" : "h-[min(52vh,420px)] min-h-[280px]"}
       >
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
@@ -170,11 +220,11 @@ export function PayoffUnderlyingChart({
             margin={{ top: 20, right: 58, left: 58, bottom: 40 }}
           >
             <defs>
-              <linearGradient id="payoffGradient" x1="0" x2="0" y1="0" y2="1">
+              <linearGradient id={payoffGradientId} x1="0" x2="0" y1="0" y2="1">
                 <stop offset="0%" stopColor={chartTheme.payoff} stopOpacity={0.55} />
                 <stop offset="100%" stopColor={chartTheme.payoff} stopOpacity={0.02} />
               </linearGradient>
-              <linearGradient id="underlyingStroke" x1="0" x2="1" y1="0" y2="0">
+              <linearGradient id={underlyingStrokeId} x1="0" x2="1" y1="0" y2="0">
                 <stop offset="0%" stopColor={chartTheme.underlying} stopOpacity={0.75} />
                 <stop offset="100%" stopColor={chartTheme.payoff} />
               </linearGradient>
@@ -239,15 +289,15 @@ export function PayoffUnderlyingChart({
               isAnimationActive={false}
             />
             <ReferenceLine stroke={chartTheme.cursorStroke} strokeDasharray="4 4" x={zInput} yAxisId="payoff" />
-            {kinkPoints.map((z) => (
+            {kinkDots.map((dot) => (
               <ReferenceDot
-                key={z}
+                key={dot.z}
                 fill={chartTheme.payoff}
                 r={6}
                 stroke={chartTheme.dotStroke}
                 strokeWidth={2}
-                x={z}
-                y={evaluatePayoffFormula(formula, z)}
+                x={dot.z}
+                y={dot.y}
                 yAxisId="payoff"
               />
             ))}
@@ -255,7 +305,7 @@ export function PayoffUnderlyingChart({
               {...chartAnim}
               activeDot={{ fill: chartTheme.payoff, r: 6, stroke: chartTheme.dotStroke, strokeWidth: 2 }}
               dataKey="payoff"
-              fill="url(#payoffGradient)"
+              fill={`url(#${payoffGradientId})`}
               name="Product return"
               stroke={chartTheme.payoff}
               strokeWidth={2.5}
@@ -268,7 +318,7 @@ export function PayoffUnderlyingChart({
               dataKey="underlyingLevel"
               dot={false}
               name="Underlying level"
-              stroke="url(#underlyingStroke)"
+              stroke={`url(#${underlyingStrokeId})`}
               strokeWidth={2.5}
               type="monotone"
               yAxisId="underlying"
@@ -323,3 +373,6 @@ export function PayoffUnderlyingChart({
     </ChartPanel>
   );
 }
+
+/** Memoised — desk clock and market-sync re-renders must not redraw the plot. */
+export const PayoffUnderlyingChart = memo(PayoffUnderlyingChartImpl);

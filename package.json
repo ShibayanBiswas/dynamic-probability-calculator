@@ -49,6 +49,7 @@
     "verify:probability": "npx tsx scripts/verify-probability-parity.ts",
     "verify:series-floor": "npx tsx scripts/verify-series-floor-2001.ts",
     "verify:nsp-excel": "npx tsx scripts/verify-nsp-excel-parity.ts",
+    "audit:initial-kpis": "npx tsx scripts/audit-initial-probability-kpis.ts",
     "bench:probability": "npx tsx scripts/bench-probability.ts",
     "verify:probability-desk": "npm run typecheck && npm run verify:series-floor && npm run verify:probability && npm run verify:nsp-excel && npm run verify:exports && npm run verify:effective-target && npm run verify:obs-settlement && npm run verify:filter-parity && npm run verify:obs-due && npm run bench:probability",
     "verify:703-obs": "npx tsx scripts/verify-703-obs-blank-lock.ts",

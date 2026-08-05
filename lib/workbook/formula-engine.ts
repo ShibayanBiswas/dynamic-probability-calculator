@@ -136,13 +136,32 @@ function replaceFunctions(expression: string) {
   return output;
 }
 
-function compileFormula(formula: string) {
+type CompiledFormula = (z: number, math: typeof Math) => number;
+
+/**
+ * Compiled formulas are cached — kink scans and scenario tables evaluate the same
+ * formula hundreds of times per render, and `new Function` per call stalls the desk.
+ */
+const compiledFormulaCache = new Map<string, CompiledFormula>();
+const COMPILED_FORMULA_CACHE_LIMIT = 256;
+
+function compileFormula(formula: string): CompiledFormula {
+  const cached = compiledFormulaCache.get(formula);
+  if (cached) return cached;
+
   const normalized = normalizeFormula(formula);
   const withIf = parseAllIfs(normalized);
   const withAndOr = replaceAndOrCalls(withIf);
   const withFunctions = replaceFunctions(withAndOr);
   const source = `"use strict"; return ${withFunctions};`;
-  return new Function("z", "Math", source) as (z: number, math: typeof Math) => number;
+  const compiled = new Function("z", "Math", source) as CompiledFormula;
+
+  if (compiledFormulaCache.size >= COMPILED_FORMULA_CACHE_LIMIT) {
+    const oldest = compiledFormulaCache.keys().next().value;
+    if (oldest !== undefined) compiledFormulaCache.delete(oldest);
+  }
+  compiledFormulaCache.set(formula, compiled);
+  return compiled;
 }
 
 export function evaluatePayoffFormula(formula: string, z: number) {

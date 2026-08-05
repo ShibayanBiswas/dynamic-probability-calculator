@@ -102,7 +102,8 @@ assert(lastObsDate === "2020-01-01", `initial last path final obs = allotment, g
 
 /**
  * Current with one passed obs (2024-01-02) and one remaining (2027-01-15).
- * Schedule must drop the passed slot; hurdle uses Effective Target.
+ * Observation Schedule keeps both slots; pathSchedule / probability drop the passed one
+ * and hurdle with Effective Target.
  */
 const currentProduct = {
   ...product,
@@ -127,8 +128,18 @@ const current = runProbabilityBacktest({
   includePaths: true,
 });
 
-assert(current.schedule.length === 1, "current schedule keeps only remaining positive-day obs");
-assert(current.schedule[0]?.daysFromBase! > 0, "remaining days positive");
+const currentPresent = current.schedule.filter((s) => s.date);
+assert(currentPresent.length === 2, "current Observation Schedule keeps all present Average slots");
+assert(
+  currentPresent.some((s) => s.daysFromBase <= 0),
+  "passed slot retained on Observation Schedule with non-positive days",
+);
+assert(current.pathSchedule.length === 1, "current pathSchedule keeps only remaining positive-day obs");
+assert(current.pathSchedule[0]?.daysFromBase! > 0, "remaining days positive");
+assert(
+  current.paths[0]?.observationDates.length === current.pathSchedule.length,
+  "path row observation columns align with pathSchedule",
+);
 assert(current.includedCount > 0, "current included paths");
 assert(current.paths[0]?.adjustedStartLevel == null, "current has no adjusted start");
 assert(current.effectiveTargetLevel != null && current.effectiveTargetLevel > 0, "current sets Effective Target");
@@ -181,7 +192,8 @@ const allForwardRun = runProbabilityBacktest({
   niftyLevel: 24200,
   includePaths: false,
 });
-assert(allForwardRun.schedule.length === 2, "two remaining slots");
+assert(allForwardRun.schedule.filter((s) => s.date).length === 2, "two schedule slots on Observation Schedule");
+assert(allForwardRun.pathSchedule.length === 2, "two remaining path slots");
 assert(
   Math.abs((allForwardRun.effectiveTargetLevel ?? NaN) - 13700) < 1e-9,
   "no passed → Effective Target = Target",
@@ -239,5 +251,6 @@ console.log({
   currentIncluded: current.includedCount,
   currentET: current.effectiveTargetLevel,
   currentScheduleLen: current.schedule.length,
+  currentPathScheduleLen: current.pathSchedule.length,
   lastIndex: initial.lastIndexDate,
 });

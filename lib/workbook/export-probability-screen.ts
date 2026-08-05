@@ -267,7 +267,8 @@ function writePathsSheet(
     headerRow = addExcelSection(sheet, headerRow, "Historical Path Backtest", 1, 10);
   }
 
-  const presentIdx = result.schedule.map((s, i) => (s.date ? i : -1)).filter((i) => i >= 0);
+  const pathSlots = result.pathSchedule ?? result.schedule;
+  const presentIdx = pathSlots.map((s, i) => (s.date ? i : -1)).filter((i) => i >= 0);
   const headers = [
     "Start",
     "Underlying Closing Level",

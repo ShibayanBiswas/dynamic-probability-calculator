@@ -182,9 +182,14 @@ function PathBacktestTable({
   const [pathFilter, setPathFilter] = useState<PathViewFilter>("included");
   const [exportingPaths, setExportingPaths] = useState(false);
   const paths = result?.paths ?? [];
-  const presentIndexes = result
-    ? result.schedule.map((s, i) => (s.date ? i : -1)).filter((i) => i >= 0)
-    : [];
+  // Path columns follow pathSchedule (Current = remaining only); Observation Schedule uses full schedule.
+  const columnSchedule =
+    result == null
+      ? []
+      : result.pathSchedule != null
+        ? result.pathSchedule
+        : result.schedule;
+  const presentIndexes = columnSchedule.map((s, i) => (s.date ? i : -1)).filter((i) => i >= 0);
   const displayPaths = paths.filter((p) => {
     if (pathFilter === "included") return p.pathIncluded;
     if (pathFilter === "excluded") return !p.pathIncluded;
@@ -420,7 +425,10 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
   const [initialResult, setInitialResult] = useState<ProbabilityRunResult | null>(null);
   const [currentResult, setCurrentResult] = useState<ProbabilityRunResult | null>(null);
   const [pathsUnlocked, setPathsUnlocked] = useState(false);
-  const abortRef = useRef<AbortController | null>(null);
+  // Headline and path runs abort independently — a live-mark refresh must never kill
+  // an in-flight path load, or the load bar would hang with no run behind it.
+  const headlineAbortRef = useRef<AbortController | null>(null);
+  const pathsAbortRef = useRef<AbortController | null>(null);
   const { exporting: exportingScreen, runExport: runScreenExport, warmExport: warmScreenExport } =
     useScreenExport();
 
@@ -442,7 +450,12 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
     [product, asOf],
   );
 
-  const valuationParsed = parseExcelishDate(selection.valuationDate) ?? asOf;
+  // Must stay memoised — a fresh Date each render re-creates `runProbability` and
+  // restarts the headline + path runs on every paint.
+  const valuationParsed = useMemo(
+    () => parseExcelishDate(selection.valuationDate) ?? asOf,
+    [selection.valuationDate, asOf],
+  );
   const checkingDate = useMemo(
     () => (product ? getProbabilityCheckingDate(product, valuationParsed) : valuationParsed),
     [product, valuationParsed],
@@ -481,6 +494,7 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
         return;
       }
 
+      const abortRef = includePaths ? pathsAbortRef : headlineAbortRef;
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
@@ -538,8 +552,10 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
           setCurrentResult(null);
         }
       } finally {
-        if (!controller.signal.aborted) {
-          if (includePaths) setLoadingPaths(false);
+        // Clear the bar unless a newer path run has already taken over.
+        if (includePaths && pathsAbortRef.current === controller) {
+          pathsAbortRef.current = null;
+          setLoadingPaths(false);
         }
       }
     },
@@ -562,7 +578,7 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
     }, 120);
     return () => {
       window.clearTimeout(timer);
-      abortRef.current?.abort();
+      headlineAbortRef.current?.abort();
     };
   }, [runProbability]);
 
@@ -572,6 +588,14 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
     if (surface === "summary") return;
     void runProbability(true);
   }, [pathsUnlocked, surface, runProbability]);
+
+  useEffect(
+    () => () => {
+      pathsAbortRef.current?.abort();
+      pathsAbortRef.current = null;
+    },
+    [],
+  );
 
   const activeResult = surface === "current" ? currentResult : initialResult;
   const startNoun = product ? phasePerformanceStartLabel(product) : "Allotment";
