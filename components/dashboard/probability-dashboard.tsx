@@ -62,6 +62,7 @@ import {
 import {
   daysLeftToLastObservation,
   requiredUnderlying,
+  requiredUnderlyingFromHurdleLevel,
   targetUnderlying,
   type ProbabilityRunResult,
 } from "@/lib/probability/engine";
@@ -239,29 +240,47 @@ function PathBacktestTable({
                     {" "}
                     · series opens <span className="font-semibold text-stone-700">{seriesStart}</span>
                   </>
-                ) : null}{" "}
-                through the latest trading session
+                ) : null}
+                . Last included path ends so its final observation lands on the product{" "}
+                <span className="font-semibold text-stone-700">Actual Start</span>
+                {product ? (
+                  <>
+                    {" "}
+                    · <span className="font-semibold text-stone-700">{phasePerformanceStartLabel(product)}</span>
+                  </>
+                ) : null}
+                {result.lastIndexDate ? (
+                  <>
+                    {" "}
+                    · series through <span className="font-semibold text-stone-700">{result.lastIndexDate}</span>
+                  </>
+                ) : null}
+                . Scroll horizontally for every column.
               </>
             ) : (
               <>
-                Daily paths from available index history
-                {seriesStart ? (
+                Remaining observations only — passed dates are excluded. Hurdle uses{" "}
+                <span className="font-semibold text-stone-700">Effective Target</span> when fixings
+                have settled
+                {result.effectiveTargetLevel != null && result.effectiveTargetLevel > 0 ? (
                   <>
                     {" "}
-                    · series opens <span className="font-semibold text-stone-700">{seriesStart}</span>
+                    ·{" "}
+                    <span className="font-semibold text-stone-700">
+                      {formatNumber(result.effectiveTargetLevel, 2)}
+                    </span>
                   </>
-                ) : null}{" "}
-                through the latest trading session
+                ) : null}
+                . Last included path final observation lands on the latest trading session
+                {result.lastIndexDate ? (
+                  <>
+                    {" "}
+                    · as of <span className="font-semibold text-stone-700">{result.lastIndexDate}</span>
+                  </>
+                ) : null}
+                . Scroll horizontally for every column.
               </>
             )}
-            {result.lastIndexDate ? (
-              <>
-                {" "}
-                · as of <span className="font-semibold text-stone-700">{result.lastIndexDate}</span>
-              </>
-            ) : null}
-            . Last included path final observation lands on that as-of date. Scroll horizontally for
-            every column.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -581,7 +600,14 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
 
   const tgt = product ? targetUnderlying(product) : null;
   const req = product
-    ? requiredUnderlying(product, effectiveNiftyLevel, effectiveSensexLevel)
+    ? currentResult?.effectiveTargetLevel != null && currentResult.effectiveTargetLevel > 0
+      ? requiredUnderlyingFromHurdleLevel(
+          product,
+          currentResult.effectiveTargetLevel,
+          effectiveNiftyLevel,
+          effectiveSensexLevel,
+        )
+      : requiredUnderlying(product, effectiveNiftyLevel, effectiveSensexLevel)
     : null;
   const daysLeftObs = product ? daysLeftToLastObservation(product, checkingDate) : null;
 

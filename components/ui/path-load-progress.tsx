@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 /**
- * Inline path-load progress — Gift AIF Backtester ProgressModal bar language,
- * without the modal overlay (desk stays interactive).
+ * Inline path-load progress — Gift AIF Backtester bar language,
+ * slow and steady pace (no modal overlay).
  */
 export function PathLoadProgress({
   active,
@@ -15,17 +15,21 @@ export function PathLoadProgress({
   label?: string;
 }) {
   const reduce = useReducedMotion();
-  const [progress, setProgress] = useState(3);
+  const [progress, setProgress] = useState(1.5);
 
   useEffect(() => {
     if (!active) return;
-    const started = Date.now();
+    setProgress(1.5);
+    // Gift-style cadence: ~200–280ms ticks, slow climb that asymptotes near 90%.
     const id = window.setInterval(() => {
-      const elapsedSec = (Date.now() - started) / 1000;
-      // Asymptote toward ~92% until the server responds, then parent unmounts this.
-      const next = Math.min(92, 3 + 89 * (1 - Math.exp(-elapsedSec / 1.15)));
-      setProgress(next);
-    }, 80);
+      setProgress((prev) => {
+        const room = 90 - prev;
+        if (room <= 0.05) return prev;
+        // Slow and steady — larger steps early, then crawl toward 90%.
+        const step = Math.max(0.12, room * 0.018);
+        return Math.min(90, prev + step);
+      });
+    }, 220);
     return () => window.clearInterval(id);
   }, [active]);
 
@@ -48,7 +52,7 @@ export function PathLoadProgress({
             className="h-full rounded-full bg-gradient-to-r from-[var(--ar-maroon)] to-[var(--ar-gold)]"
             initial={false}
             animate={{ width: `${pct}%` }}
-            transition={reduce ? { duration: 0 } : { ease: "easeOut", duration: 0.28 }}
+            transition={reduce ? { duration: 0 } : { ease: "linear", duration: 0.22 }}
           />
         </div>
         <div className="mt-2 flex items-center justify-between text-sm">

@@ -96,8 +96,9 @@ Desk: last bar of merged series (Mongo overlay + Gift CSV) — usually **newer**
 | Days base | `Probability!$D$16` (allotment) | Phase start (`getWorkingAllotmentDate`) |
 | Start Level | `CEILING.MATH(close×1.01,100)` (Nifty) / `×1.006` (Sensex) | Same |
 | Performance | `Avg / StartLevel − 1` | Same |
-| Path frontier | `Probability!$D$16 ≥ MAX(obs dates)` (allotment cutoff) | Latest index bar (same as Current) |
-| MAX slots | Often Avg 1–6 only in one MAX | All **present** slots |
+| Path frontier | `Probability!$D$16 ≥ MAX(obs dates)` (allotment cutoff) | Actual Start ≥ MAX(projected obs) — same NSP rule; Phase 2 uses Trade |
+| Current schedule | All Average slots with Days from checking date | **Remaining only** — drop slots with `days ≤ 0`; hurdle = Effective Target |
+| MAX slots | Often Avg 1–6 only in one MAX | All **present** slots (Initial) / remaining positive-day slots (Current) |
 
 ---
 
@@ -118,7 +119,8 @@ Desk: last bar of merged series (Mongo overlay + Gift CSV) — usually **newer**
 | Topic | Excel | Desk |
 |-------|-------|------|
 | Initial days base | Often allotment cell `D16` | Actual Start by Rollover Phase (Phase 2 = Trade) |
-| Initial path frontier | Allotment cutoff / sometimes Avg 1–6 MAX | Latest merged series bar (same as Current) |
+| Initial path frontier | Allotment cutoff / sometimes Avg 1–6 MAX | Actual Start cutoff (Allotment or Trade by phase) |
+| Current % Required | Master Target / today | Effective Target / today when fixings have settled |
 | Path history floor | nifty may start ~2000-12-31 | Hard lock **2001-01-01** |
 | Headers | Excel jargon / parentheses | Layman English, no `()` |
 | Mark for % Required | Manual today cells | Desk mark 15:30 IST rule |

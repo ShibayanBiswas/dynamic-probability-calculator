@@ -31,12 +31,11 @@ const moduleIcons: Record<string, typeof Database> = {
   "primary-dashboard": LayoutDashboard,
   "primary-valuation": Sparkles,
   "primary-payoff": LineChart,
-  "initial-probability": Sparkles,
-  "current-probability": LineChart,
   "analytics-lab": BarChart3,
   "portfolio-analytics": BarChart3,
 };
 
+/** Per-kind colours so Active Pipeline cards never clone the module-rail accent above. */
 const kindColorMap: Record<
   LogicNodeKind,
   { border: string; bg: string; text: string; textDark: string; ring: string; iconBg: string }
@@ -94,27 +93,21 @@ const arrowByKind: Record<LogicNodeKind, string> = {
 function FlowNode({
   node,
   index,
-  total,
   active,
-  inboundLabel,
   onClick,
 }: {
   node: LogicNode;
   index: number;
-  total: number;
   active?: boolean;
-  inboundLabel?: string;
   onClick?: () => void;
 }) {
   const Icon = kindIcons[node.kind];
   const colors = kindColorMap[node.kind];
-  const metrics = node.metrics ?? [];
-  const tags = node.tags ?? [];
 
   return (
     <motion.button
       className={cn(
-        "logic-node group relative flex h-full min-h-[220px] w-full flex-col overflow-hidden rounded-xl border p-4 text-left shadow-sm transition-all duration-200",
+        "logic-node group relative w-full overflow-hidden rounded-xl border p-3.5 text-left shadow-sm transition-all duration-200",
         `logic-node--${node.kind}`,
         colors.border,
         colors.bg,
@@ -123,7 +116,7 @@ function FlowNode({
       )}
       initial={{ opacity: 0, y: 14, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      whileHover={{ y: -4, scale: 1.015 }}
+      whileHover={{ y: -4, scale: 1.02 }}
       whileTap={{ scale: 0.985 }}
       transition={{ delay: index * 0.06, duration: 0.35, ease: "easeOut" }}
       type="button"
@@ -135,71 +128,23 @@ function FlowNode({
         animate={{ opacity: [0.35, 0.65, 0.35], scale: [1, 1.15, 1] }}
         transition={{ duration: 3.4, repeat: Infinity, ease: "easeInOut", delay: index * 0.12 }}
       />
-      <div className="relative z-[1] flex min-w-0 flex-1 flex-col gap-3">
-        <div className="flex items-start gap-3">
-          <motion.div
-            className={cn("rounded-xl p-2.5", colors.iconBg)}
-            animate={{ rotate: [0, -6, 6, 0] }}
-            transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: index * 0.18 }}
-          >
-            <Icon className={cn("h-4 w-4", colors.text, colors.textDark)} />
-          </motion.div>
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <p className={cn("text-[10px] font-bold uppercase tracking-[0.22em]", colors.text, colors.textDark)}>
-                {node.kind}
-              </p>
-              <span className="rounded-full border border-stone-300/70 bg-white/70 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-stone-600 dark:border-stone-600 dark:bg-stone-900/50 dark:text-stone-300">
-                Stage {index + 1}/{total}
-              </span>
-              {active ? (
-                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">
-                  <CheckCircle2 className="h-3 w-3" />
-                  Live stage
-                </span>
-              ) : null}
-            </div>
-            <p className="mt-1.5 font-serif text-base font-bold leading-snug text-ink dark:text-stone-100 md:text-lg">
-              {node.label}
-            </p>
-            {inboundLabel ? (
-              <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-stone-500">
-                via {inboundLabel}
-              </p>
-            ) : null}
-          </div>
-        </div>
-
-        <p className="text-xs leading-relaxed text-stone-700 dark:text-stone-300 md:text-[13px]">
-          {node.description}
-        </p>
-        {node.detail ? (
-          <p className="text-[11px] leading-relaxed text-stone-500 dark:text-stone-400">{node.detail}</p>
-        ) : null}
-
-        {tags.length > 0 ? (
-          <div className="flex flex-wrap gap-1">
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full border border-gold/25 bg-gold/5 px-2 py-0.5 text-[10px] font-medium text-gold-dark dark:text-gold"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        ) : null}
-
-        <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-1">
-          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/35 bg-emerald-500/10 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">
-            <CheckCircle2 className="h-3 w-3" />
-            Connected
-          </span>
-          {metrics.map((m) => (
-            <span key={m.label} className="logic-module-metric">
-              <span className="logic-module-metric__label">{m.label}:</span> {m.value}
-            </span>
-          ))}
+      <div className="relative z-[1] flex items-start gap-3">
+        <motion.div
+          className={cn("rounded-xl p-2", colors.iconBg)}
+          animate={{ rotate: [0, -6, 6, 0] }}
+          transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: index * 0.18 }}
+        >
+          <Icon className={cn("h-4 w-4", colors.text, colors.textDark)} />
+        </motion.div>
+        <div className="min-w-0 flex-1">
+          <p className={cn("text-[10px] font-bold uppercase tracking-[0.25em]", colors.text, colors.textDark)}>
+            {node.kind}
+          </p>
+          <p className="mt-1 font-semibold text-ink dark:text-stone-100">{node.label}</p>
+          <p className="mt-1 text-xs leading-5 text-stone-600 dark:text-stone-400">{node.description}</p>
+          {node.detail ? (
+            <p className="mt-1 text-[11px] leading-4 text-stone-500 dark:text-stone-500">{node.detail}</p>
+          ) : null}
         </div>
       </div>
     </motion.button>
@@ -233,10 +178,6 @@ export function LogicFlowDiagram({
   horizontal?: boolean;
 }) {
   const ordered = orderNodes(module.nodes, module.flows);
-  const inboundById = new Map<string, string>();
-  for (const flow of module.flows) {
-    if (!inboundById.has(flow.to) && flow.label) inboundById.set(flow.to, flow.label);
-  }
 
   if (horizontal) {
     return (
@@ -244,18 +185,12 @@ export function LogicFlowDiagram({
         <div className="flex min-w-min snap-x snap-mandatory items-stretch gap-2">
           {ordered.map((node, index) => {
             return (
-              <div key={node.id} className="flex min-w-[320px] max-w-[460px] snap-start items-stretch gap-2">
-                {index > 0 ? (
-                  <div className="flex items-center">
-                    <FlowArrow toKind={node.kind} />
-                  </div>
-                ) : null}
+              <div key={node.id} className="flex min-w-[300px] max-w-[440px] snap-start items-center gap-2">
+                {index > 0 ? <FlowArrow toKind={node.kind} /> : null}
                 <FlowNode
                   active={activeNodeId === node.id}
                   index={index}
-                  inboundLabel={inboundById.get(node.id)}
                   node={node}
-                  total={ordered.length}
                   onClick={onNodeSelect ? () => onNodeSelect(node) : undefined}
                 />
               </div>
@@ -275,9 +210,7 @@ export function LogicFlowDiagram({
             <FlowNode
               active={activeNodeId === node.id}
               index={index}
-              inboundLabel={inboundById.get(node.id)}
               node={node}
-              total={ordered.length}
               onClick={onNodeSelect ? () => onNodeSelect(node) : undefined}
             />
           </div>

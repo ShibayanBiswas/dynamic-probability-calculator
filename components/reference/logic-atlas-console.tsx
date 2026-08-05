@@ -241,19 +241,6 @@ export function LogicAtlasConsole() {
                 <p className="mt-2 max-w-3xl text-sm leading-relaxed text-stone-500 dark:text-stone-400">
                   {selected.purpose}
                 </p>
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {selected.metrics.map((m) => (
-                    <span key={m.label} className="logic-module-metric">
-                      <span className="logic-module-metric__label">{m.label}:</span> {m.value}
-                    </span>
-                  ))}
-                  <span className="logic-module-metric">
-                    <span className="logic-module-metric__label">Stages:</span> {selected.nodes.length}
-                  </span>
-                  <span className="logic-module-metric">
-                    <span className="logic-module-metric__label">Flows:</span> {selected.flows.length}
-                  </span>
-                </div>
               </div>
               <motion.span
                 className={cn(
@@ -303,83 +290,39 @@ export function LogicAtlasConsole() {
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.25 }}
                   >
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <span className="status-badge status-badge-perpetual">{activeNode.kind}</span>
-                      <span className="rounded-full border border-stone-300/70 bg-white/70 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-stone-600 dark:border-stone-600 dark:bg-stone-900/50 dark:text-stone-300">
-                        Pipeline stage
-                      </span>
-                      {(activeNode.tags ?? []).map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded-full border border-gold/25 bg-gold/5 px-2 py-0.5 text-[10px] font-medium text-gold-dark dark:text-gold"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                    <span className="status-badge status-badge-perpetual">{activeNode.kind}</span>
                     <p className="text-sm leading-relaxed text-stone-700 dark:text-stone-300">
                       {activeNode.description}
                     </p>
                     {activeNode.detail ? (
-                      <p className="rounded-lg border border-stone-200/80 bg-white/60 p-3 text-[13px] leading-relaxed text-stone-600 dark:border-stone-700 dark:bg-stone-900/40 dark:text-stone-300">
-                        {activeNode.detail}
-                      </p>
+                      <p className="mt-2 text-sm leading-6 text-stone-500 dark:text-stone-400">{activeNode.detail}</p>
                     ) : null}
-                    {(activeNode.metrics ?? []).length > 0 ? (
-                      <div className="flex flex-wrap gap-1.5">
-                        {(activeNode.metrics ?? []).map((m) => (
-                          <span key={m.label} className="logic-module-metric">
-                            <span className="logic-module-metric__label">{m.label}:</span> {m.value}
-                          </span>
-                        ))}
-                      </div>
-                    ) : null}
-                    <p className="text-[11px] text-stone-500 dark:text-stone-400">
-                      Click another pipeline stage to compare, or clear selection by choosing a module card above.
-                    </p>
                   </motion.div>
                 ) : (
-                  <motion.div
+                  <motion.ul
                     key={`insights-${selected.id}`}
-                    className="mt-3 space-y-3"
+                    className="intel-insight-list"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
-                    <p className="text-sm leading-relaxed text-stone-600 dark:text-stone-400">{selected.purpose}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {selected.metrics.map((m) => (
-                        <span key={m.label} className="logic-module-metric">
-                          <span className="logic-module-metric__label">{m.label}:</span> {m.value}
-                        </span>
-                      ))}
-                      <span className="logic-module-metric">
-                        <span className="logic-module-metric__label">Stages:</span> {selected.nodes.length}
-                      </span>
-                    </div>
-                    <ul className="intel-insight-list">
-                      {selected.insights.map((insight, i) => (
-                        <motion.li
-                          key={i}
-                          initial={{ opacity: 0, x: -8 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.05, duration: 0.25 }}
-                        >
-                          {insight}
-                        </motion.li>
-                      ))}
-                    </ul>
-                  </motion.div>
+                    {selected.insights.map((insight, i) => (
+                      <motion.li
+                        key={i}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05, duration: 0.25 }}
+                      >
+                        {insight}
+                      </motion.li>
+                    ))}
+                  </motion.ul>
                 )}
               </AnimatePresence>
             </Panel>
 
             <Panel className={cn("intel-panel !p-4 md:!p-5", `intel-panel--${panelAccent}`)} glow="cyan">
               <SectionTitle icon={LineChart}>Module Outputs</SectionTitle>
-              <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                Deliverables produced when this pipeline finishes — {selected.outputs.length} surfaces for{" "}
-                {selected.title}.
-              </p>
               <ul className="mt-3 space-y-2">
                 {selected.outputs.map((output, i) => (
                   <motion.li
@@ -390,31 +333,15 @@ export function LogicAtlasConsole() {
                     transition={{ delay: i * 0.04, duration: 0.25 }}
                     whileHover={{ x: 4, scale: 1.01 }}
                   >
-                    <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full border border-current/20 text-[10px] font-bold tabular-nums opacity-70">
-                      {i + 1}
-                    </span>
                     {output}
                   </motion.li>
                 ))}
               </ul>
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                <span className="logic-module-metric">
-                  <span className="logic-module-metric__label">Accent:</span> {selected.accent}
-                </span>
-                <span className="logic-module-metric">
-                  <span className="logic-module-metric__label">Flows:</span> {selected.flows.length}
-                </span>
-                {pipelineOk ? (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/35 bg-emerald-500/10 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">
-                    <CheckCircle2 className="h-3 w-3" />
-                    Graph connected
-                  </span>
-                ) : (
-                  <p className="text-xs text-amber-900/90 dark:text-amber-200/90">
-                    Orphaned: {disconnected.map((n) => n.label).join(", ")}
-                  </p>
-                )}
-              </div>
+              {!pipelineOk ? (
+                <p className="mt-4 text-xs text-amber-900/90 dark:text-amber-200/90">
+                  Orphaned: {disconnected.map((n) => n.label).join(", ")}
+                </p>
+              ) : null}
             </Panel>
           </div>
         </HorizontalBand>
@@ -444,25 +371,14 @@ export function LogicAtlasConsole() {
                           backgroundColor: categoryNeon[row.category],
                         }}
                       />
-                      <p className="font-serif text-lg font-bold text-ink">{row.category}</p>
-                      <span className="rounded-full border border-emerald-400/35 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">
-                        Connected
-                      </span>
+                      <p className="font-bold text-ink">{row.category}</p>
                     </div>
                     <p className="intel-category-label mt-3">Data lane</p>
-                    <p className="text-sm leading-relaxed text-stone-700 dark:text-stone-300">{row.dataLane}</p>
-                    <p className="intel-category-label mt-3">Probability routing</p>
-                    <p className="text-sm leading-relaxed text-stone-700 dark:text-stone-300">{row.valuationPath}</p>
-                    <p className="intel-category-label mt-3">Effective Target routing</p>
-                    <p className="text-sm leading-relaxed text-stone-700 dark:text-stone-300">{row.payoffPath}</p>
-                    <p className="intel-category-label mt-3">Support layers</p>
-                    <div className="flex flex-wrap gap-1">
-                      {row.supportLayers.map((layer) => (
-                        <span key={layer} className="logic-module-metric">
-                          {layer}
-                        </span>
-                      ))}
-                    </div>
+                    <p className="text-sm leading-snug text-stone-700 dark:text-stone-300">{row.dataLane}</p>
+                    <p className="intel-category-label mt-2">Initial Probability</p>
+                    <p className="text-sm leading-snug text-stone-700 dark:text-stone-300">{row.valuationPath}</p>
+                    <p className="intel-category-label mt-2">Current Probability</p>
+                    <p className="text-sm leading-snug text-stone-700 dark:text-stone-300">{row.payoffPath}</p>
                     <div className="mt-auto flex flex-wrap gap-1 pt-3">
                       {row.keySignals.map((signal) => (
                         <span

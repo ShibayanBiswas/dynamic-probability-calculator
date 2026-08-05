@@ -1,6 +1,11 @@
 import { differenceInCalendarDays, startOfDay } from "date-fns";
 
-import { getWorkingAllotmentDate, getProductObservationSlotDates } from "@/lib/product-dates";
+import { isObservationFixingSettled } from "@/lib/observation-settlement";
+import {
+  getProductObservationDates,
+  getProductObservationSlotDates,
+  getWorkingAllotmentDate,
+} from "@/lib/product-dates";
 import { getProbabilityEntryLevel, getTargetLevel, isSensexLinked } from "@/lib/product-utils";
 import type { ProductRecord } from "@/lib/types";
 import { toLocalDateKey } from "@/lib/workbook/dates";
@@ -40,6 +45,8 @@ export type ProbabilityRunResult = {
   successCount: number;
   probability: number | null;
   threshold: number | null;
+  /** Absolute hurdle level used for Current when remaining obs only — Effective Target. */
+  effectiveTargetLevel?: number | null;
   lastIndexDate: string | null;
   paths: PathRow[];
 };
@@ -80,6 +87,63 @@ export function buildObservationSchedule(
   });
 }
 
+/**
+ * Current Probability — only remaining observations with a positive day count
+ * from the checking date. Passed / same-day slots are excluded from the path table.
+ */
+export function buildCurrentRemainingSchedule(
+  product: ProductRecord,
+  checkingDate: Date,
+): ObservationSchedule[] {
+  return buildObservationSchedule(product, checkingDate).filter(
+    (slot) => slot.date != null && slot.daysFromBase > 0,
+  );
+}
+
+/**
+ * Effective Target for remaining forward observations, using path-series closes
+ * for settled past fixings when available.
+ *
+ * Same formula as lifecycle {@link computeObservationScheduleMetrics}:
+ * ET = (Total × Target − Σ passed levels) / Remaining
+ * where passed = settlement-settled obs (15:30 IST same-day rule).
+ *
+ * Path tables still drop non-positive day offsets; the hurdle uses this ET so
+ * avg(remaining path slots) ≥ ET ⇔ full-schedule average ≥ Target.
+ */
+export function computeCurrentEffectiveTargetLevel(args: {
+  product: ProductRecord;
+  checkingDate: Date;
+  series: IndexBar[];
+  underlying: UnderlyingKind;
+  targetLevel: number;
+}): number | null {
+  const { product, checkingDate, series, underlying, targetLevel } = args;
+  if (!(targetLevel > 0)) return null;
+
+  const schedule = getProductObservationDates(product);
+  const total = schedule.length;
+  if (total <= 0) return null;
+
+  const passedDates = schedule.filter((d) => isObservationFixingSettled(d, checkingDate));
+  const remaining = total - passedDates.length;
+  if (remaining <= 0) return null;
+
+  // No fixings settled yet → Effective Target collapses to master Target.
+  if (passedDates.length === 0) return targetLevel;
+
+  let sumPassed = 0;
+  for (const d of passedDates) {
+    const bar = lookupPriorBar(series, barTimeFromDateKey(toLocalDateKey(d)));
+    if (!bar) return null;
+    const lvl = closeAt(bar, underlying);
+    if (!(lvl > 0)) return null;
+    sumPassed += lvl;
+  }
+
+  return (total * targetLevel - sumPassed) / remaining;
+}
+
 /** Binary search: last bar with time <= targetTime. */
 export function lookupPriorBar(series: IndexBar[], targetTime: number): IndexBar | null {
   if (series.length === 0) return null;
@@ -97,8 +161,12 @@ export function lookupPriorBar(series: IndexBar[], targetTime: number): IndexBar
   return hi >= 0 ? series[hi]! : null;
 }
 
-function addCalendarDaysMs(startTime: number, days: number): number {
-  return startTime + days * 86_400_000;
+/** Calendar-stable date key arithmetic — matches Excel date + days. */
+function addDaysToDateKey(dateKey: string, days: number): string {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  const dt = new Date(Date.UTC(y!, m! - 1, d!, 12, 0, 0));
+  dt.setUTCDate(dt.getUTCDate() + days);
+  return toLocalDateKey(dt);
 }
 
 function barTimeFromDateKey(dateKey: string): number {
@@ -135,21 +203,34 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
   const target = getTargetLevel(product);
 
   const baseDate = mode === "initial" ? (phaseStart ?? valuationDate) : valuationDate;
-  const schedule = buildObservationSchedule(product, baseDate);
+
+  // Initial: full Average 1–7 schedule from Actual Start.
+  // Current: only remaining slots with daysFromBase > 0 (passed obs dropped).
+  const fullSchedule = buildObservationSchedule(product, baseDate);
+  const schedule =
+    mode === "current"
+      ? fullSchedule.filter((slot) => slot.date != null && slot.daysFromBase > 0)
+      : fullSchedule;
   const presentSlotCount = schedule.filter((slot) => slot.date != null).length;
 
   const lastBar = series.length > 0 ? series[series.length - 1]! : null;
   const lastIndexDate = lastBar?.date ?? null;
   const lastIndexTime = lastBar?.time ?? 0;
 
+  // Initial frontier = Actual Start (Allotment or Trade by phase) — NSP Initial Prob D16 rule,
+  // phase-aware via getWorkingAllotmentDate. Last Yes path’s last obs lands on that date.
+  const initialFrontierTime = phaseStart
+    ? barTimeFromDateKey(toLocalDateKey(phaseStart))
+    : lastIndexTime;
+
+  let effectiveTargetLevel: number | null = null;
   let threshold: number | null = null;
   if (mode === "initial") {
     if (entry != null && entry > 0 && target != null && Number.isFinite(target)) {
       threshold = target / entry - 1;
     }
-  } else if (target != null && Number.isFinite(target)) {
-    const explicitLevel =
-      underlying === "sensex" ? args.sensexLevel : args.niftyLevel;
+  } else if (target != null && Number.isFinite(target) && presentSlotCount > 0) {
+    const explicitLevel = underlying === "sensex" ? args.sensexLevel : args.niftyLevel;
     let todayLevel =
       explicitLevel != null && Number.isFinite(explicitLevel) && explicitLevel > 0
         ? explicitLevel
@@ -158,8 +239,18 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
       const valBar = lookupPriorBar(series, barTimeFromDateKey(toLocalDateKey(valuationDate)));
       if (valBar) todayLevel = closeAt(valBar, underlying);
     }
-    if (todayLevel != null && todayLevel > 0) {
-      threshold = target / todayLevel - 1;
+
+    effectiveTargetLevel = computeCurrentEffectiveTargetLevel({
+      product,
+      checkingDate: valuationDate,
+      series,
+      underlying,
+      targetLevel: target,
+    });
+    const hurdleLevel = effectiveTargetLevel ?? target;
+
+    if (todayLevel != null && todayLevel > 0 && hurdleLevel != null && hurdleLevel > 0) {
+      threshold = hurdleLevel / todayLevel - 1;
     }
   }
 
@@ -169,6 +260,9 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
   let successCount = 0;
   let stillEligible = true;
 
+  // Frontier clock: Initial → Actual Start; Current → latest series bar (today / prev session).
+  const frontierTime = mode === "initial" ? initialFrontierTime : lastIndexTime;
+
   for (let i = 0; i < series.length; i++) {
     const startBar = series[i]!;
     const close = closeAt(startBar, underlying);
@@ -177,31 +271,35 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
     const observationDates: (string | null)[] = [];
     const observationLevels: (number | null)[] = [];
     let maxObsTime = -Infinity;
+    let maxProjectedDateKey: string | null = null;
     let levelSum = 0;
     let levelCount = 0;
 
     for (const slot of schedule) {
-      // Excel: IF(date cell blank → days 0 → skip slot)
       if (!slot.date) {
         observationDates.push(null);
         observationLevels.push(null);
         continue;
       }
 
-      const obsTime = addCalendarDaysMs(startBar.time, slot.daysFromBase);
+      const projectedKey = addDaysToDateKey(startBar.date, slot.daysFromBase);
+      const obsTime = barTimeFromDateKey(projectedKey);
       if (obsTime > maxObsTime) maxObsTime = obsTime;
+      if (!maxProjectedDateKey || projectedKey > maxProjectedDateKey) {
+        maxProjectedDateKey = projectedKey;
+      }
 
       const obsBar = lookupPriorBar(series, obsTime);
       if (obsBar) {
-        // Show the trading session used for the level (nearest previous trading day),
-        // not a weekend/holiday calendar projection.
-        observationDates.push(obsBar.date);
+        // Initial: show Excel-style projected calendar dates so the last path’s
+        // final observation lands on Actual Start. Current: show trading session used.
+        observationDates.push(mode === "initial" ? projectedKey : obsBar.date);
         const lvl = closeAt(obsBar, underlying);
         observationLevels.push(lvl);
         levelSum += lvl;
         levelCount += 1;
       } else {
-        observationDates.push(toLocalDateKey(new Date(obsTime)));
+        observationDates.push(projectedKey);
         observationLevels.push(null);
       }
     }
@@ -217,22 +315,34 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
       }
     }
 
+    // Initial: NSP Path Taken — Actual Start >= MAX(projected obs dates).
+    // Current: series last bar >= MAX(projected obs times).
+    const initialFrontierKey = phaseStart ? toLocalDateKey(phaseStart) : null;
     let pathIncluded = false;
     if (!stillEligible || presentSlotCount === 0 || maxObsTime === -Infinity) {
       pathIncluded = false;
-      if (
-        stillEligible &&
-        (presentSlotCount === 0 || maxObsTime === -Infinity || lastIndexTime < maxObsTime)
-      ) {
+      if (stillEligible && (presentSlotCount === 0 || maxObsTime === -Infinity)) {
+        stillEligible = false;
+      } else if (stillEligible && mode === "initial" && initialFrontierKey && maxProjectedDateKey) {
+        if (initialFrontierKey < maxProjectedDateKey) stillEligible = false;
+      } else if (stillEligible && mode === "current" && frontierTime < maxObsTime) {
         stillEligible = false;
       }
-    } else if (lastIndexTime >= maxObsTime && fullCoverage) {
+    } else if (mode === "initial") {
+      if (initialFrontierKey && maxProjectedDateKey && initialFrontierKey >= maxProjectedDateKey && fullCoverage) {
+        pathIncluded = true;
+      } else if (initialFrontierKey && maxProjectedDateKey && initialFrontierKey < maxProjectedDateKey) {
+        pathIncluded = false;
+        stillEligible = false;
+      } else {
+        pathIncluded = false;
+      }
+    } else if (frontierTime >= maxObsTime && fullCoverage) {
       pathIncluded = true;
-    } else if (lastIndexTime < maxObsTime) {
+    } else if (frontierTime < maxObsTime) {
       pathIncluded = false;
       stillEligible = false;
     } else {
-      // Frontier reached but this path is missing one or more prior closes — exclude path, keep scanning.
       pathIncluded = false;
     }
 
@@ -244,9 +354,6 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
     }
 
     if (includePaths) {
-      // Stop at the trading-day frontier so the last emitted path is the last Yes —
-      // its final observation lands on (or just before) the latest index session.
-      // Trailing Path-Taken-No rows with future dates are not useful on the desk.
       if (!stillEligible && !pathIncluded) {
         break;
       }
@@ -274,6 +381,7 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
     probability:
       includedCount > 0 && thresholdReady ? successCount / includedCount : null,
     threshold,
+    effectiveTargetLevel: mode === "current" ? effectiveTargetLevel : null,
     lastIndexDate,
     paths: includePaths ? paths : [],
   };
@@ -290,7 +398,6 @@ export function daysLeftToLastObservation(product: ProductRecord, checkingDate: 
 /**
  * Target Underlying — Excel “Target %”.
  * Required underlying performance vs initial entry: `Target Level / Entry − 1`.
- * Same hurdle the Initial Probability path engine uses as its success threshold.
  */
 export function targetUnderlying(product: ProductRecord): number | null {
   const entry = getProbabilityEntryLevel(product);
@@ -305,9 +412,8 @@ export function targetPercent(product: ProductRecord): number | null {
 }
 
 /**
- * Required Underlying — Excel “% Required”.
- * Remaining underlying move vs today’s mark: `Target Level / todayLevel − 1`.
- * Same hurdle the Current Probability path engine uses as its success threshold.
+ * Required Underlying — Excel “% Required” using master Target vs today’s mark.
+ * When Current paths use Effective Target, prefer {@link requiredUnderlyingFromHurdleLevel}.
  */
 export function requiredUnderlying(
   product: ProductRecord,
@@ -316,10 +422,21 @@ export function requiredUnderlying(
 ): number | null {
   const target = getTargetLevel(product);
   if (target == null || !Number.isFinite(target)) return null;
+  return requiredUnderlyingFromHurdleLevel(product, target, niftyLevel, sensexLevel);
+}
+
+/** % Required from an absolute hurdle level (Target or Effective Target) vs today mark. */
+export function requiredUnderlyingFromHurdleLevel(
+  product: ProductRecord,
+  hurdleLevel: number,
+  niftyLevel: number | undefined,
+  sensexLevel: number | undefined,
+): number | null {
+  if (!(hurdleLevel > 0) || !Number.isFinite(hurdleLevel)) return null;
   const underlying = resolveUnderlyingKind(product) ?? "nifty";
   const level = underlying === "sensex" ? sensexLevel : niftyLevel;
   if (level == null || level <= 0 || !Number.isFinite(level)) return null;
-  return target / level - 1;
+  return hurdleLevel / level - 1;
 }
 
 /** @deprecated Use {@link requiredUnderlying} — same formula. */

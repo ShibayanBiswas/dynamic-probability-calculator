@@ -102,6 +102,7 @@ function surfaceKpis(input: ProbabilityScreenExportInput): Array<[string, string
       return [
         ["Current Probability", pct(input.current?.probability)],
         ["Required Underlying", pct(input.requiredPercent)],
+        ["Effective Target", num(input.current?.effectiveTargetLevel)],
         ["Paths Taken", num(input.current?.includedCount, 0)],
         ["Successful Paths", num(input.current?.successCount, 0)],
         ["Days Left", num(input.daysLeft, 0)],
@@ -404,6 +405,7 @@ export async function downloadProbabilityScreenExcel(input: ProbabilityScreenExp
     meta.push(
       ["Paths Taken · Current", num(input.current?.includedCount, 0)],
       ["Successful Paths · Current", num(input.current?.successCount, 0)],
+      ["Effective Target · Current", num(input.current?.effectiveTargetLevel)],
       ["Index As Of · Current", input.current?.lastIndexDate ?? "—"],
     );
   }
@@ -749,6 +751,7 @@ export async function downloadProbabilityScreenPdf(input: ProbabilityScreenExpor
     deskRows.push(
       ["Paths Taken · Current", num(input.current?.includedCount, 0)],
       ["Successful Paths · Current", num(input.current?.successCount, 0)],
+      ["Effective Target · Current", num(input.current?.effectiveTargetLevel)],
       ["Index As Of · Current", input.current?.lastIndexDate ?? "—"],
     );
   }

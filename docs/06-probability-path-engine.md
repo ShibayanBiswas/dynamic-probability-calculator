@@ -16,10 +16,10 @@ Deep product-type audit: [16-product-type-probability-logic.md](16-product-type-
 
 ## Modes
 
-| Mode | Schedule base | Start Level | Performance ÷ | Threshold |
-|------|---------------|-------------|----------------|-----------|
-| `initial` | Actual Start (`getWorkingAllotmentDate`) | Yes — ceiling | Start Level | `target/entry − 1` |
-| `current` | Checking / valuation date | No (`null`) | Path start close | `target/todayLevel − 1` |
+| Mode | Schedule base | Start Level | Performance ÷ | Threshold | Path frontier |
+|------|---------------|-------------|----------------|-----------|--------------|
+| `initial` | Actual Start (`getWorkingAllotmentDate`) | Yes — ceiling | Start Level | `target/entry − 1` | Actual Start ≥ MAX(projected obs) |
+| `current` | Checking date; **remaining slots only** (`days > 0`) | No (`null`) | Path start close | `EffectiveTarget/todayLevel − 1` | Latest series bar ≥ MAX(projected obs) |
 
 ### Actual Start by phase
 
@@ -66,7 +66,8 @@ Earliest path start = first day where **both** legs exist after fill.
 
 - **Target Underlying (Initial):** `target / entry − 1`  
   Entry = `getProbabilityEntryLevel` (Actual Entry / Entry / Initial / Initial Fixing only — **no Target fallback**).  
-- **Required Underlying (Current):** `target / todayLevel − 1`  
+- **Required Underlying (Current):** `effectiveTarget / todayLevel − 1`  
+  Effective Target matches lifecycle: `(Total×Target − Σpassed levels) / Remaining` when fixings have settled; else master Target.  
   `todayLevel` = request `niftyLevel`/`sensexLevel` (desk mark), else series close on checking date.  
 
 Probability = `successCount / includedCount` when threshold ready; otherwise not ready.

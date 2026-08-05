@@ -6,8 +6,10 @@
 import {
   buildIndexSeries,
   ceilingStartLevel,
+  computeCurrentEffectiveTargetLevel,
   lookupPriorBar,
   requiredUnderlying,
+  requiredUnderlyingFromHurdleLevel,
   runProbabilityBacktest,
   targetUnderlying,
 } from "../lib/probability/engine";
@@ -18,6 +20,13 @@ function assert(cond: unknown, msg: string): asserts cond {
 }
 
 const series = buildIndexSeries([
+  { date: "2010-01-04", nifty: 5200, sensex: 17000 },
+  { date: "2012-01-03", nifty: 4800, sensex: 16000 },
+  { date: "2013-06-25", nifty: 5750, sensex: 18800 },
+  { date: "2013-06-26", nifty: 5800, sensex: 19000 },
+  { date: "2015-01-02", nifty: 8000, sensex: 26000 },
+  { date: "2016-01-04", nifty: 7500, sensex: 24000 },
+  { date: "2018-01-02", nifty: 10500, sensex: 34000 },
   { date: "2020-01-01", nifty: 12000, sensex: 40000 },
   { date: "2020-01-02", nifty: 12100, sensex: 40100 },
   { date: "2020-01-03", nifty: 12200, sensex: 40200 },
@@ -36,6 +45,7 @@ assert(prior?.date === "2020-01-02", "prior bar exact");
 const prior2 = lookupPriorBar(series, Date.UTC(2020, 0, 4, 12));
 assert(prior2?.date === "2020-01-03", "prior bar approximate");
 
+/** Initial: allotment 2020-01-01; two obs after allotment — frontier = Actual Start. */
 const product = {
   rowId: "test",
   category: "Primary",
@@ -86,29 +96,110 @@ assert(
   lastIncluded!.observationLevels.filter((l) => l != null).length === 2,
   "last included covers both Average slots",
 );
+// Last included path’s final observation lands on Actual Start (allotment).
+const lastObsDate = lastIncluded!.observationDates.filter(Boolean).at(-1);
+assert(lastObsDate === "2020-01-01", `initial last path final obs = allotment, got ${lastObsDate}`);
+
+/**
+ * Current with one passed obs (2024-01-02) and one remaining (2027-01-15).
+ * Schedule must drop the passed slot; hurdle uses Effective Target.
+ */
+const currentProduct = {
+  ...product,
+  raw: {
+    ...product.raw,
+    "Average 1": "2024-01-02",
+    "Avg. 2": "2027-01-15",
+  },
+} as unknown as ProductRecord;
+
+const currentSeries = buildIndexSeries([
+  ...series.map((b) => ({ date: b.date, nifty: b.nifty, sensex: b.sensex })),
+  { date: "2027-01-15", nifty: 25000, sensex: 80000 },
+]);
 
 const current = runProbabilityBacktest({
-  product,
+  product: currentProduct,
   mode: "current",
   valuationDate: new Date("2026-07-09"),
-  series,
+  series: currentSeries,
   niftyLevel: 24200,
   includePaths: true,
 });
 
+assert(current.schedule.length === 1, "current schedule keeps only remaining positive-day obs");
+assert(current.schedule[0]?.daysFromBase! > 0, "remaining days positive");
 assert(current.includedCount > 0, "current included paths");
 assert(current.paths[0]?.adjustedStartLevel == null, "current has no adjusted start");
-assert(Math.abs((current.threshold ?? NaN) - (13700 / 24200 - 1)) < 1e-12, "current threshold uses desk nifty");
+assert(current.effectiveTargetLevel != null && current.effectiveTargetLevel > 0, "current sets Effective Target");
+
+const et = computeCurrentEffectiveTargetLevel({
+  product: currentProduct,
+  checkingDate: new Date("2026-07-09"),
+  series: currentSeries,
+  underlying: "nifty",
+  targetLevel: 13700,
+});
+assert(et != null, "ET computable");
+assert(Math.abs((current.effectiveTargetLevel ?? NaN) - et!) < 1e-9, "engine ET matches helper");
+assert(
+  Math.abs((current.threshold ?? NaN) - (et! / 24200 - 1)) < 1e-12,
+  "current threshold uses Effective Target / today",
+);
+assert(
+  Math.abs((requiredUnderlyingFromHurdleLevel(currentProduct, et!, 24200, undefined) ?? NaN) - (et! / 24200 - 1)) <
+    1e-12,
+  "requiredUnderlyingFromHurdleLevel matches",
+);
+
+const currentLast = [...current.paths].reverse().find((p) => p.pathIncluded);
+assert(currentLast, "current last included");
+const currentLastObs = currentLast!.observationDates.filter(Boolean).at(-1);
+assert(
+  currentLastObs === "2027-01-15" || currentLastObs === current.lastIndexDate,
+  `current last path final obs near frontier, got ${currentLastObs}`,
+);
+
+/** All remaining — no passed — ET equals Target. */
+const allForward = {
+  ...product,
+  raw: {
+    ...product.raw,
+    "Average 1": "2027-01-15",
+    "Avg. 2": "2027-06-15",
+  },
+} as unknown as ProductRecord;
+const forwardSeries = buildIndexSeries([
+  ...currentSeries.map((b) => ({ date: b.date, nifty: b.nifty, sensex: b.sensex })),
+  { date: "2027-06-15", nifty: 25500, sensex: 81000 },
+]);
+const allForwardRun = runProbabilityBacktest({
+  product: allForward,
+  mode: "current",
+  valuationDate: new Date("2026-07-09"),
+  series: forwardSeries,
+  niftyLevel: 24200,
+  includePaths: false,
+});
+assert(allForwardRun.schedule.length === 2, "two remaining slots");
+assert(
+  Math.abs((allForwardRun.effectiveTargetLevel ?? NaN) - 13700) < 1e-9,
+  "no passed → Effective Target = Target",
+);
+assert(
+  Math.abs((allForwardRun.threshold ?? NaN) - (13700 / 24200 - 1)) < 1e-12,
+  "no passed → threshold = Target/today",
+);
 
 const currentFallback = runProbabilityBacktest({
-  product,
+  product: allForward,
   mode: "current",
-  valuationDate: new Date("2024-01-02"),
-  series,
+  valuationDate: new Date("2026-07-09"),
+  series: forwardSeries,
   includePaths: false,
 });
 assert(
-  Math.abs((currentFallback.threshold ?? NaN) - (13700 / 21000 - 1)) < 1e-12,
+  Math.abs((currentFallback.threshold ?? NaN) - (13700 / 24200 - 1)) < 1e-12,
   "current without explicit level uses valuation-date prior close",
 );
 
@@ -127,9 +218,7 @@ const noThreshold = runProbabilityBacktest({
 assert(noThreshold.probability == null, "missing entry → null probability (no false 0% threshold)");
 assert(noThreshold.threshold == null, "missing entry → null threshold");
 
-const sparseSeries = buildIndexSeries([
-  { date: "2026-07-09", nifty: 24200, sensex: 77500 },
-]);
+const sparseSeries = buildIndexSeries([{ date: "2026-07-09", nifty: 24200, sensex: 77500 }]);
 const sparse = runProbabilityBacktest({
   product,
   mode: "initial",
@@ -145,8 +234,10 @@ console.log("verify-probability-parity: OK");
 console.log({
   initialProb: initial.probability,
   initialIncluded: initial.includedCount,
+  initialLastObs: lastObsDate,
   currentProb: current.probability,
   currentIncluded: current.includedCount,
+  currentET: current.effectiveTargetLevel,
+  currentScheduleLen: current.schedule.length,
   lastIndex: initial.lastIndexDate,
-  currentFallbackThreshold: currentFallback.threshold,
 });
