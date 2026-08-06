@@ -69,7 +69,14 @@ Settlement: past calendar days settled; **same day** settles only after **15:30 
 
 ### Desk Target Underlying override
 
-On Probability / Initial / Current inputs, **Target Underlying** is editable (percent points). Working Target Level \(T = E \times (1 + \text{Target Underlying})\). Effective Target stays a **read-only** display when ≥1 fixing has settled; it still recalculates from the working \(T\). Schedule / frontier / ceiling formulas are otherwise unchanged.
+On Probability / Initial / Current inputs, **Target Underlying** is editable (percent points).
+
+| Case | Meaning of the % | Working Target Level |
+|------|------------------|----------------------|
+| Initial / Summary / Current with 0 passed | Target ÷ Entry − 1 | \(T = E \times (1 + \text{pct})\) |
+| Current with ≥1 settled fixing | **Effective Target ÷ Entry − 1** (default) | Back-solve \(T = (\text{ET}\times R + \Sigma P)/N\) so ET = \(E\times(1+\text{pct})\) |
+
+Effective Target stays a **read-only** display when ≥1 fixing has settled. Schedule / frontier / ceiling formulas are otherwise unchanged. Excel `Probability!D22` stays Target÷Entry−1 — the ET÷Entry default is a desk UX rule for Current Prob.
 
 ## Phase impact cheat sheet
 

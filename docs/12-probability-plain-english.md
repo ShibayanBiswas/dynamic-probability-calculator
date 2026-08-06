@@ -73,6 +73,7 @@ Default filter is **All**. Rows after the Yes frontier stay Path Taken = No so *
 
 - **Initial success:** average path performance beats **Target Level ÷ Entry Level − 1**.  
 - **Current success:** average of **remaining** observation levels beats **Effective Target ÷ today’s mark − 1** (Effective Target = master Target when nothing has settled yet).  
+- **Current Target Underlying (display / default):** with settled fixings this is **Effective Target ÷ Entry − 1** (not the original Target %). Example: Entry 17,400 and ET 20,087.65 → about **15.4%**, while master Target Underlying stays **33%** on Initial.  
 - **Probability:** successful included paths ÷ all included paths.
 
 Entry comes from Actual Entry / Entry / Initial / Initial Fixing fields — never from Target.

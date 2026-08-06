@@ -2,7 +2,7 @@
 
 All desk reference docs live in **`docs/`**. This index is the single entry point for debugging, onboarding, Excel/Mongo parity, product-type logic, and cloud deploy.
 
-**Last documentation sweep:** 2026-08-06 (search-priority lifecycle Prob warm + editable Target Underlying input + gated Excel downloads + Observation 1–7 / Effective Target / Vercel smoothness).
+**Last documentation sweep:** 2026-08-06 (wind-up audit — Current TU = ET÷Entry−1 when fixings settled; Path-Taken-No Excluded; KPI horizontal scroll; Logic Atlas + Excel parity docs).
 
 ## Document map
 
@@ -32,9 +32,11 @@ npm run dev                         # http://localhost:3001
 .\start-dashboard.ps1 -Stop
 
 npm run typecheck
-npm run verify:probability-desk     # full desk gate
+npm run verify:probability-desk     # full desk gate (includes windup:final)
+npm run windup:final                # Accelerator 689 + Current ET÷Entry Target Underlying
 npm run verify:probability
 npm run verify:nsp-excel
+npm run verify:target-underlying
 npm run verify:phase-logic
 npm run verify:rollover-phase
 npm run bench:probability
@@ -44,6 +46,7 @@ npm run verify:obs-settlement
 npm run verify:filter-parity
 npm run verify:obs-due
 npm run verify:series-floor
+npm run verify:seamlessness
 
 npm run bake                        # master xlsx → seed + public copy
 npm run verify:mongo

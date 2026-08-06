@@ -121,8 +121,11 @@ Desk: last bar of merged series (Mongo overlay + Gift CSV) — usually **newer**
 | Initial days base | Often allotment cell `D16` | Actual Start by Rollover Phase (Phase 2 = Trade) |
 | Initial path frontier | Allotment cutoff / sometimes Avg 1–6 MAX | Actual Start cutoff (Allotment or Trade by phase) |
 | Current % Required | Master Target / today | Effective Target / today when fixings have settled |
+| Current path average | All Average slots with levels | **Remaining slots only** (`days > 0`); passed = ALREADY PASSED |
+| Current Target Underlying display | `D22` = Target÷Entry−1 always | With settled fixings: **ET÷Entry−1** (default + KPI); edits back-solve Target Level |
 | Current path offsets | Always `obs − checking date` (D34) | Same when series ≥ checking date; if series lags the desk clock, remaining path offsets use the latest series session so the last Yes final obs lands on that session |
 | Path history floor | nifty may start ~2000-12-31 | Hard lock **2001-01-01** |
+| Path-Taken-No tail | Full nifty history often includes Nos | Desk keeps Nos past Yes frontier for **Excluded** filter |
 | Headers | Excel jargon / parentheses | Layman English (**Observation 1–7** / Observation Date–Level), no `()` |
 | Mark for % Required | Manual today cells | Desk mark 15:30 IST rule |
 

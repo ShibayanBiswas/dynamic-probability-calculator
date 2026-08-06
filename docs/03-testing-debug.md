@@ -16,9 +16,12 @@ Runs (`package.json` → `verify:probability-desk`):
 | NSP Excel parity | `verify:nsp-excel` |
 | Column / export registry | `verify:exports` |
 | Effective Target | `verify:effective-target` |
+| Target Underlying override | `verify:target-underlying` |
 | Obs settlement 15:30 IST | `verify:obs-settlement` |
 | Lifecycle filter pools | `verify:filter-parity` |
 | Obs-due nesting | `verify:obs-due` |
+| Edge cases (689 + ET) | `audit:probability-edges` |
+| Final wind-up (689 dates/ET/TU) | `windup:final` |
 | Timing | `bench:probability` |
 
 Also run after phase / Actual Start changes:

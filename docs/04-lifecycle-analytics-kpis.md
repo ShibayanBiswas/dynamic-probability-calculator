@@ -117,13 +117,21 @@ On Probability / Initial / Current input panels:
 |-------|-----------|------------|
 | **Target Level** | No | 0 observation fixings settled — `Entry × (1 + Target Underlying)` |
 | **Effective Target** | No | ≥1 observation fixings settled — remaining-hurdle formula from working Target Level |
-| **Target Underlying** | **Yes** (always) | Percent points (36.0 = 36%); drives working Target Level and recalculates Initial + Current |
+| **Target Underlying** | **Yes** (always) | Percent points (36.0 = 36%) |
 
-**Current Probability KPI band** also shows a **Target Underlying** card (alongside Required Underlying) so the edited percent is visible in the output strip.
+**Defaults**
 
-Prior schedule / frontier / ceiling logic is unchanged — only the absolute Target Level fed into those formulas can be overridden via Target Underlying.
+| Surface | Settled fixings | Default Target Underlying |
+|---------|-----------------|---------------------------|
+| Initial / Summary | any | Master `Target ÷ Entry − 1` |
+| Current | 0 | Master `Target ÷ Entry − 1` |
+| Current | ≥1 | **`Effective Target ÷ Entry − 1`** (e.g. 689 → ~15.4% not 33%) |
 
-Verify: `npm run verify:target-underlying`
+On Current with settled fixings, edits are interpreted as desired ET vs Entry and **back-solve** Target Level so Effective Target tracks `Entry × (1 + pct)`. Probability at the default seed matches the master-Target run (back-solve recovers master \(T\)).
+
+**Current Probability KPI band** also shows a **Target Underlying** card (alongside Required Underlying). 5+ KPI tiles use a visible horizontal scrollbar.
+
+Verify: `npm run verify:target-underlying` · `npm run windup:final`
 
 ## Logic Atlas lifecycle claims
 

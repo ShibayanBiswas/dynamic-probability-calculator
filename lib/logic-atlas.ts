@@ -275,7 +275,7 @@ export const logicModules: LogicModule[] = [
 
         description:
 
-          "Initial mode tests Target Underlying (Target ÷ Entry − 1). Current mode tests Required Underlying as Effective Target ÷ today’s mark − 1 when fixings have settled, else master Target ÷ mark − 1.",
+          "Initial mode tests Target Underlying (Target ÷ Entry − 1). Current Required Underlying uses Effective Target ÷ today’s mark − 1 when fixings have settled, else Target ÷ mark − 1. On Current Prob with settled fixings, the editable Target Underlying defaults to Effective Target ÷ Entry − 1 (edits back-solve Target Level).",
 
       },
 
@@ -631,7 +631,7 @@ export const logicModules: LogicModule[] = [
     subtitle: "Daily historical paths from the valuation date",
     accent: "green",
     purpose:
-      "Day offsets are measured from the checking date for every observation slot. Passed fixings stay visible as ALREADY PASSED placeholders and are left out of the path average. The hurdle uses Effective Target versus today’s mark. Success compares path performance to that percent required.",
+      "Day offsets are measured from the checking date for every observation slot. Passed fixings stay visible as ALREADY PASSED placeholders and are left out of the path average. The hurdle uses Effective Target versus today’s mark. On Current Prob with settled fixings, Target Underlying defaults to Effective Target ÷ Entry − 1 (desk display / edit seed); Excel Probability!D22 remains Target ÷ Entry − 1. Success compares path performance to percent required.",
     stageCount: 5,
     metrics: [
       { label: "Frequency", value: "Daily" },
@@ -651,7 +651,7 @@ export const logicModules: LogicModule[] = [
         label: "Daily Path Starts",
         kind: "process",
         description:
-          "Every index trading day becomes a path start — last included path ends so its final observation lands on the latest trading session (Excel checking-date offsets when the series is current).",
+          "Every index trading day becomes a path start — last Yes path ends so its final observation lands on the latest trading session. Path-Taken-No rows past the Yes frontier stay for the Excluded filter.",
       },
       {
         id: "cp-levels",
@@ -664,14 +664,14 @@ export const logicModules: LogicModule[] = [
         label: "Underlying Performance",
         kind: "engine",
         description:
-          "Average observation level divided by path start close, minus one — hurdle uses Effective Target when past fixings exist, else master Target.",
+          "Average of remaining observation levels divided by path start close, minus one — hurdle uses Effective Target when past fixings exist, else master Target.",
       },
       {
         id: "cp-prob",
         label: "Current Probability",
         kind: "output",
         description:
-          "Share of included paths that clear percent required — Effective Target = (N × Target − Σ passed levels) ÷ remaining.",
+          "Share of included paths that clear percent required — Effective Target = (N × Target − Σ passed levels) ÷ remaining. Desk Target Underlying with settled fixings = ET ÷ Entry − 1.",
       },
     ],
     flows: [
@@ -683,9 +683,10 @@ export const logicModules: LogicModule[] = [
     insights: [
       "Percent required compares Effective Target to the selected-date Nifty or Sensex level.",
       "Passed observation slots stay on the schedule and path table as ALREADY PASSED; only remaining slots feed the average.",
-      "Caching keys on ISIN, mode, valuation date, underlying, latest index date, and desk Nifty/Sensex marks.",
+      "With settled fixings, Target Underlying defaults to Effective Target ÷ Entry − 1; edits back-solve Target Level so Effective Target tracks Entry × (1 + pct). Initial / zero-passed stay at Target ÷ Entry − 1.",
+      "Caching keys on ISIN, mode, valuation date, underlying, latest index date, desk marks, and optional Target Level override.",
     ],
-    outputs: ["Current probability", "Path table", "Effective Target", "Percent required"],
+    outputs: ["Current probability", "Path table", "Effective Target", "Percent required", "Target Underlying"],
   },
 ];
 

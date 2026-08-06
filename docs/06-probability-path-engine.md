@@ -70,14 +70,18 @@ Earliest path start = first day where **both** legs exist after fill.
 4. Require all present slots filled for inclusion eligibility.  
 5. Average + performance vs mode divisor.  
 6. Compare to threshold when ready.  
-7. Include while series covers max simulated obs time; **stop emitting** when the next path would need future bars (`!stillEligible && !pathIncluded`).  
-8. Keep Path-Taken-No rows past the Yes frontier (Excluded filter); probability still uses Yes only. Last Yes final obs = Actual Start / latest session.
+7. Include while series covers max simulated obs time.  
+8. Keep Path-Taken-No rows past the Yes frontier (Excluded filter); probability still uses Yes only. Last Yes final obs = Actual Start / latest session. Headline mode (`includePaths: false`) may stop early once the Yes window closes.
 
 ## Thresholds
 
-- **Target Underlying (Initial):** `target / entry − 1`  
+- **Target Underlying (Initial / Summary / Current with 0 passed):** `target / entry − 1`  
   Entry = `getProbabilityEntryLevel` (Actual Entry / Entry / Initial / Initial Fixing only — **no Target fallback**).  
   Desk may override absolute `target` via editable Target Underlying % → `Entry × (1 + pct)`.  
+- **Target Underlying (Current with ≥1 settled fixing):** desk default / KPI seed = `EffectiveTarget / entry − 1`  
+  Edits interpret the percent as desired ET vs Entry and **back-solve** Target Level  
+  `T = (ET × Remaining + Σpassed) / N` so Effective Target tracks `Entry × (1 + pct)`.  
+  Excel `Probability!D22` remains master Target÷Entry−1 — intentional desk UX.  
 - **Required Underlying (Current):** `effectiveTarget / todayLevel − 1`  
   Effective Target matches lifecycle: `(Total×Target − Σpassed levels) / Remaining` when fixings have settled; else working Target.  
   `todayLevel` = request `niftyLevel`/`sensexLevel` (desk mark), else series close on checking date.  

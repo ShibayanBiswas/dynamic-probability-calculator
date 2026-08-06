@@ -67,15 +67,17 @@ Deep logic audit: [16-product-type-probability-logic.md](16-product-type-probabi
 
 1. **Initial day base / frontier** = Actual Start by Rollover Phase (Phase 2 = Trade Date), matching NSP Initial Prob `D16` with phase awareness — not a hard-coded allotment-only cell.  
 2. **Current remaining + Effective Target** — Excel Backtesting still averages every Average offset (including past) and hurdles with master Target / today; this desk averages remaining slots only and hurdles with Effective Target when fixings have settled.  
-3. **Current path offsets** — Excel checking-date offsets when the series is current; if the series lags the desk clock, remaining offsets snap from the latest series session so the last Yes final obs lands there.  
-4. **Path history floor** = hard lock **2001-01-01** (Excel nifty may open ~2000-12-31).  
-5. Headers use Observation 1–7 / Observation Date–Level layman English instead of Excel “Average” / “To be taken”.
+3. **Current Target Underlying (settled fixings)** — desk defaults / KPI seed = **Effective Target ÷ Entry − 1**; Excel `Probability!D22` stays Target÷Entry−1. Edits back-solve Target Level. Probability at default matches master-Target math.  
+4. **Current path offsets** — Excel checking-date offsets when the series is current; if the series lags the desk clock, remaining offsets snap from the latest series session so the last Yes final obs lands there.  
+5. **Path history floor** = hard lock **2001-01-01** (Excel nifty may open ~2000-12-31).  
+6. Headers use Observation 1–7 / Observation Date–Level layman English instead of Excel “Average” / “To be taken”.  
+7. Path-Taken-No rows past the Yes frontier are kept for the Excluded filter (probability still uses Yes only).
 
 ## F. Layout / desk UX (follow-ups)
 
 | Requirement | Status | Where |
 |-------------|--------|-------|
-| KPI cards full horizontal width like Primary SP | **PASS** | Primary `KpiBand` motion + dense fill grid restored |
+| KPI cards full horizontal width like Primary SP | **PASS** | `KpiBand` — 5+ tiles single-row scroll with visible scrollbar |
 | Desk tab = Initial + Current Probability only | **PASS** | `components/dashboard/desk-hub.tsx` |
 | Probability / Initial / Current = Primary Valuation spine | **PASS** | Filter → Interface/Product List → Inputs → Report as-of → Reveal + downloads in footer |
 | Summary Reveal: Specs → Results (H-scroll) → Payoff → Obs | **PASS** | `past-final-observation-panels.tsx` |
@@ -91,15 +93,26 @@ Deep logic audit: [16-product-type-probability-logic.md](16-product-type-probabi
 | Primary-grade Excel/PDF | **PASS** | `export-probability-screen.ts` |
 | Lifecycle Excel gated on full-book probs | **PASS** | `use-lazy-portfolio-probabilities` + lifecycle list |
 | Lifecycle search prioritizes Prob warm | **PASS** | `priorityProducts` → batch size 8 first |
-| Editable Target Underlying on inputs | **PASS** | `targetUnderlyingPct` → `targetLevel` API override; ET read-only |
-| Target Underlying KPI on Current tab | **PASS** | Current `kpiItems` + Excel export surface KPIs |
+| Editable Target Underlying on inputs | **PASS** | Current+passed defaults ET÷Entry−1; else Target÷Entry−1; ET read-only |
+| Target Underlying KPI on Current tab | **PASS** | Current `kpiItems` + horizontal scroll KPI band |
 | Vercel harden (CDN seed, includePaths, maxDuration) | **PASS** | bootstrap + `api/probability/run` |
 | Docs cover product-type logic | **PASS** | docs 01–16, especially 12 + 16 |
+| Final wind-up audit (689 + ET TU) | **PASS** | `npm run windup:final` |
+
+## Wind-up verdict (2026-08-06)
+
+**YES — you can wind up this project** for Primary Probability desk delivery, provided the intentional Excel deltas above are accepted as product rules (not defects).
+
+Evidence gate: `npm run verify:probability-desk` (includes `windup:final`) + `npm run verify:seamlessness` + NSP Excel formula parity (`verify:nsp-excel`) + full-book Effective Target (`verify:effective-target` 2134/2134).
+
+Known accepted deltas vs a stale NSP workbook: ~0.1–0.3 pp Current Prob when the desk series frontier is newer than the workbook nifty sheet; Current remaining+ET hurdle vs Excel all-slot+master-Target Backtesting; desk Current TU = ET÷Entry−1 when fixings settled.
 
 ## Verify commands
 
 ```powershell
 npm run verify:probability-desk
+npm run windup:final
+npm run verify:seamlessness
 npm run verify:phase-logic
 npm run verify:rollover-phase
 ```

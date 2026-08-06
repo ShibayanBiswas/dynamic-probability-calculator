@@ -100,7 +100,7 @@ Almost nothing about phase. Current always:
 
 Phase still matters indirectly because **only live-book products** appear in pickers, and live-book uses phase end + last-observation settlement.
 
-**Intentional desk override vs raw NSP Backtesting:** Excel Backtesting still projects every Average offset (including negative) into `AVERAGEIF` and hurdles with master Target / today (`Probability!D33`). This desk averages remaining slots only and hurdles with Effective Target when fixings have settled — per product ops rules.
+**Intentional desk override vs raw NSP Backtesting:** Excel Backtesting still projects every Average offset (including negative) into `AVERAGEIF` and hurdles with master Target / today (`Probability!D33`). This desk averages remaining slots only and hurdles with Effective Target when fixings have settled — per product ops rules. With settled fixings, desk **Target Underlying** defaults to **Effective Target ÷ Entry − 1** (Excel `D22` stays Target÷Entry−1).
 
 ---
 
