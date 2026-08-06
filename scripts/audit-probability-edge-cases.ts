@@ -277,7 +277,7 @@ function main() {
       seriesEnd: series.at(-1)?.date,
       cases: [
         "689 initial+current+ET+placeholders",
-        "all-remaining ET=Target",
+        "all-remaining ET blank",
         "all-passed ET null",
         "phase2 start",
         "ceiling",
