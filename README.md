@@ -31,7 +31,7 @@ Effective Target on the lifecycle table is the same remaining-hurdle average for
 
 - Schedule **above** Product Specs on Probability summary; no path table on summary  
 - Inline path-load progress on Initial/Current (no modal)  
-- Path frontier trimmed; last Yes = Actual Start (Initial) / latest series session (Current); default filter **All**  
+- Path Yes frontier kept; last Yes = Actual Start (Initial) / latest series session (Current); Path-Taken-No past frontier for Excluded; default filter **All**  
 - Current: full Observation schedule + ALREADY PASSED placeholders; remaining-only average + Effective Target hurdle  
 - Lifecycle columns: **Observation 1–7**, **Initial Level**, **As of Today's Date**, Trade / Allotment / Actual Start / POED / Rollover Phase / Maturity / Rollover / Effective Target  
 - **Portfolio by Lifecycle** downloads (**Export view** / **Full workbook**) wait until every product Initial/Current Prob is calculated, then export  

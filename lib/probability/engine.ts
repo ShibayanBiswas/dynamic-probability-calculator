@@ -401,12 +401,9 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
     }
 
     if (includePaths) {
-      // Stop at the frontier — do not append Path-Taken-No rows past it.
-      // Last path in the table is the last Yes: final obs = Actual Start (Initial)
-      // or the latest series session (Current).
-      if (!stillEligible && !pathIncluded) {
-        break;
-      }
+      // Emit Yes and No rows (Excel Path Taken). Probability still uses Yes only.
+      // Caption / filters use last Yes for Actual Start / latest-session reconciliation —
+      // do not stop at the frontier or Excluded stays empty and looks broken.
       paths.push({
         pathStartDate: startBar.date,
         underlyingClosingLevel: close,
@@ -418,6 +415,7 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
         pathIncluded,
       });
     } else if (!stillEligible) {
+      // Headline / portfolio warm — stop once the Yes window is closed (no path payload).
       break;
     }
   }

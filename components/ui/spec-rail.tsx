@@ -53,6 +53,7 @@ function SpecRailCardBody({
 export function useUniformSpecCardSize(cards: SpecRailCard[]) {
   const measureRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<{ width?: number; height?: number }>({});
+  const [measureDone, setMeasureDone] = useState(false);
 
   const cardKey = useMemo(
     () => cards.map((c) => `${c.label}\0${c.value}`).join("\n"),
@@ -60,11 +61,20 @@ export function useUniformSpecCardSize(cards: SpecRailCard[]) {
   );
 
   useLayoutEffect(() => {
-    const root = measureRef.current;
-    if (!root || cards.length === 0) {
+    setMeasureDone(false);
+  }, [cardKey]);
+
+  useLayoutEffect(() => {
+    if (cards.length === 0) {
       setSize({});
+      setMeasureDone(true);
       return;
     }
+    // After sizing, MeasureLayer unmounts — keep prior size; do not clear.
+    if (measureDone) return;
+
+    const root = measureRef.current;
+    if (!root) return;
 
     const els = root.querySelectorAll<HTMLElement>("[data-spec-card]");
     let maxW = 0;
@@ -83,16 +93,20 @@ export function useUniformSpecCardSize(cards: SpecRailCard[]) {
       const height = maxH > 0 ? Math.ceil(maxH) + 8 : undefined;
       requestAnimationFrame(() => {
         setSize({ width, height });
+        setMeasureDone(true);
       });
+    } else {
+      setMeasureDone(true);
     }
-  }, [cardKey, cards.length]);
+  }, [cardKey, cards.length, measureDone]);
 
+  // Off-DOM measure layer — unmount after sizing so Select-All / copy cannot duplicate specs.
   const MeasureLayer =
-    cards.length > 0 ? (
+    !measureDone && cards.length > 0 ? (
       <div
         ref={measureRef}
         aria-hidden
-        className="pointer-events-none fixed -left-[10000px] top-0 flex gap-2 opacity-0"
+        className="pointer-events-none fixed -left-[10000px] top-0 flex gap-2 opacity-0 select-none"
       >
         {cards.map((card) => (
           <SpecRailCardBody key={`measure-${card.label}`} card={card} />

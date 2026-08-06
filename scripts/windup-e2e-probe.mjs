@@ -86,9 +86,13 @@ async function logicProbe() {
         const included = paths.filter((x) => x.pathIncluded).length;
         const excluded = paths.filter((x) => !x.pathIncluded).length;
         ok(included + excluded === paths.length, `${p.isin} path partition ${included}+${excluded}=${paths.length}`);
-        // Frontier rule: last row must be Yes when paths present
-        const last = paths[paths.length - 1];
-        ok(last?.pathIncluded === true, `${p.isin} last path is Yes (frontier trim)`);
+        const lastYes = [...paths].reverse().find((x) => x.pathIncluded);
+        ok(!!lastYes, `${p.isin} has at least one Path Taken = Yes`);
+        if (excluded === 0) {
+          ok(lastYes?.pathIncluded === true, `${p.isin} all-Yes when series ends at frontier`);
+        } else {
+          ok(paths[paths.length - 1]?.pathIncluded === false, `${p.isin} trailing rows are Path Taken = No`);
+        }
       }
       if (current.effectiveTargetLevel == null || Number.isFinite(current.effectiveTargetLevel)) {
         etShapeOk += 1;
@@ -133,7 +137,11 @@ async function logicProbe() {
     const included = paths.filter((x) => x.pathIncluded).length;
     const excluded = paths.filter((x) => !x.pathIncluded).length;
     ok(included + excluded === livePaths, `live path partition ${included}+${excluded}`);
-    ok(paths[paths.length - 1]?.pathIncluded === true, "live last path is Yes");
+    const lastYes = [...paths].reverse().find((x) => x.pathIncluded);
+    ok(!!lastYes, "live has Path Taken = Yes");
+    if (excluded > 0) {
+      ok(paths[paths.length - 1]?.pathIncluded === false, "live trailing paths are No past frontier");
+    }
   }
 
   // Batch warm integrity

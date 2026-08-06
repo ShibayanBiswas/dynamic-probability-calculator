@@ -89,6 +89,9 @@ async function apiSmoke() {
   notes.push(`Current paths included=${includedC} excluded=${excludedC}`);
   ok(includedI + excludedI === initialPaths.length || initialPaths.length === 0, "Initial include+exclude covers table");
   ok(includedC + excludedC === currentPaths.length || currentPaths.length === 0, "Current include+exclude covers table");
+  if (isin === "INE093JA77O9" && initialPaths.length > 0) {
+    ok(excludedI > 0, `689 Initial Excluded rows ${excludedI} (not empty)`);
+  }
 
   // Batch warm (portfolio lifecycle download path)
   const batchIsins = [isin];

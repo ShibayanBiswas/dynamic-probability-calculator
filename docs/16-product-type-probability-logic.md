@@ -96,7 +96,7 @@ Almost nothing about phase. Current always:
 5. Performance = average of **remaining** obs levels ÷ path close − 1.  
 6. Success if performance ≥ **Effective Target ÷ today mark − 1** (falls back to master Target ÷ today when nothing has settled yet).  
 7. Today mark = desk mark (prev session before 15:30 IST, today after close), else series close on the checking date.  
-8. Path frontier = latest series trading bar ≥ MAX(projected **remaining** obs dates). Path-Taken-No rows past the frontier are omitted so the last table row is the last Yes (final obs on/near the latest series session). Default filter is **All**.
+8. Path frontier = latest series trading bar ≥ MAX(projected **remaining** obs dates). Path-Taken-No rows past the Yes frontier are kept for the **Excluded** filter; the last Yes final obs lands on/near the latest series session. Default filter is **All**. Probability uses Yes only.
 
 Phase still matters indirectly because **only live-book products** appear in pickers, and live-book uses phase end + last-observation settlement.
 
@@ -169,7 +169,7 @@ There is **no** Expiring 3M / 1M tab on this desk.
 
 - Probability summary: **Observation Schedule above Product Specs**; no path table on summary.  
 - Initial / Current: inline **PathLoadProgress** bar (no modal).  
-- Path table default filter **Included**; trailing Path-Taken-No rows trimmed at frontier.  
+- Path table default filter **All**; Path-Taken-No rows kept past Yes frontier for Excluded.  
 - Lifecycle columns include **Initial Level** (renamed from Actual Entry Level), **As of Today's Date**, Trade / Allotment / Actual Start / POED / Rollover Phase / Maturity / Rollover.  
 - Desk mark for prices: prev trading day until **15:30 IST**, then today.  
 - Excel / PDF: Primary SP–style gold masthead, KPI tiles, disclaimer.  

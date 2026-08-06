@@ -81,7 +81,7 @@ ProbabilityDashboard
 
 | File | Role |
 |------|------|
-| `lib/probability/engine.ts` | Schedule, ceiling, paths, threshold, inclusion, frontier trim |
+| `lib/probability/engine.ts` | Schedule, ceiling, paths, threshold, inclusion, Yes frontier + Path-Taken-No |
 | `lib/probability/index-series.ts` | `SERIES_FLOOR = 2001-01-01`, merge/fill |
 | `lib/probability/as-of.ts` | Past-final clamp + JSON date hydrate |
 | `lib/probability/cache.ts` | Result LRU (isin, mode, date, levels, indexMax, bookRevision) |

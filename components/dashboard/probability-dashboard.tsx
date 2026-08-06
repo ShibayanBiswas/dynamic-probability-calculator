@@ -386,7 +386,7 @@ function PathBacktestTable({
           {rowCount === 0 ? (
             <p className="px-2 py-6 text-sm text-stone-500">
               {pathFilter === "excluded"
-                ? "No excluded rows — Path-Taken-No rows past the frontier are omitted so the last path ends on Actual Start (Initial) or the latest trading session (Current)."
+                ? "No excluded rows for this run — every historical path is still Path Taken = Yes through the latest series bar."
                 : "No paths match this filter."}
             </p>
           ) : null}
@@ -446,10 +446,10 @@ function PathBacktestTable({
         {result.lastIndexDate ? ` · As of ${result.lastIndexDate}` : ""}
         {lastIncludedFinalObs ? ` · Last included final obs ${lastIncludedFinalObs}` : ""}
         {paths.some((p) => !p.pathIncluded)
-          ? " · Path-Taken-No rows past the frontier are omitted so the last path ends on Actual Start / latest session"
+          ? " · Path-Taken-No rows continue past the Yes frontier (Excluded filter)"
           : isInitial
-            ? " · Last path final observation lands on Actual Start"
-            : " · Last path final observation lands on the latest trading session"}
+            ? " · Last included final observation lands on Actual Start"
+            : " · Last included final observation lands on the latest trading session"}
       </p>
     </Panel>
   );

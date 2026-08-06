@@ -83,7 +83,7 @@ Deep logic audit: [16-product-type-probability-logic.md](16-product-type-probabi
 | Path backtest full columns with horizontal scroll | **PASS** | `PathBacktestTable` |
 | Schedule above specs on Probability summary | **PASS** | `probability-dashboard.tsx` |
 | Inline path load progress (no modal) | **PASS** | `PathLoadProgress` |
-| Path frontier trim / All-paths default | **PASS** | `engine.ts` + path table filter |
+| Path Yes frontier + Excluded Nos | **PASS** | `engine.ts` + path table filter |
 | Desk mark 15:30 IST | **PASS** | `desk-mark-as-of.ts` |
 | Lifecycle Initial Level + as-of + phase dates | **PASS** | `portfolio-lifecycle-columns.ts` |
 | Observation 1–7 desk labels | **PASS** | `PORTFOLIO_OBS_COLUMN_LABELS` (master Average keys unchanged) |

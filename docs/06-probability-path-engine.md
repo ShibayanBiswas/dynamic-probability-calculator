@@ -24,9 +24,10 @@ Deep product-type audit: [16-product-type-probability-logic.md](16-product-type-
 Path rows carry one column per full-schedule slot. Current renders already-passed slots as
 `ALREADY PASSED` / `—` placeholders (`observationDates[i] = observationLevels[i] = null`) — they are
 excluded from the average, frontier and probability, but keep their column position. Default path
-filter is **All**. Path-Taken-No rows past the frontier are omitted so the **last path** in the
-table is the last Yes: final observation = **Actual Start** (Initial) or **latest series session**
-(Current). Current path day offsets follow Excel (`obs − checking date`) when the series is
+filter is **All**. Path-Taken-No rows past the Yes frontier are **kept** so the
+**Excluded** filter shows post-frontier history. Probability and Included counts still
+use Path Taken = Yes only. The **last Yes** final observation = **Actual Start**
+(Initial) or **latest series session** (Current). Current path day offsets follow Excel (`obs − checking date`) when the series is
 current; if the series lags the desk clock, remaining path offsets are measured from the latest
 series session so that final obs lands on it. The Observation Schedule card always shows days
 from the valuation date.
@@ -70,7 +71,7 @@ Earliest path start = first day where **both** legs exist after fill.
 5. Average + performance vs mode divisor.  
 6. Compare to threshold when ready.  
 7. Include while series covers max simulated obs time; **stop emitting** when the next path would need future bars (`!stillEligible && !pathIncluded`).  
-8. Trim Path-Taken-No rows past the frontier — last table row is the last Yes (Actual Start / latest session).
+8. Keep Path-Taken-No rows past the Yes frontier (Excluded filter); probability still uses Yes only. Last Yes final obs = Actual Start / latest session.
 
 ## Thresholds
 

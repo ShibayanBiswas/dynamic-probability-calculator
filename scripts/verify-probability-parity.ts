@@ -96,13 +96,16 @@ assert(
   lastIncluded!.observationLevels.filter((l) => l != null).length === 2,
   "last included covers both Average slots",
 );
-// Last path in the table is the last Yes — final observation lands on Actual Start (allotment).
+// Last Yes final observation lands on Actual Start (allotment); later rows are Path Taken = No.
 const lastObsDate = lastIncluded!.observationDates.filter(Boolean).at(-1);
-assert(lastObsDate === "2020-01-01", `initial last path final obs = allotment, got ${lastObsDate}`);
-assert(initial.paths.at(-1)?.pathIncluded, "initial path table ends on last Yes (no trailing No)");
+assert(lastObsDate === "2020-01-01", `initial last Yes final obs = allotment, got ${lastObsDate}`);
 assert(
-  initial.paths.at(-1)!.observationDates.filter(Boolean).at(-1) === "2020-01-01",
-  "initial table last row final obs = allotment",
+  initial.paths.some((p) => !p.pathIncluded),
+  "initial path table includes Path-Taken-No rows past the Yes frontier",
+);
+assert(
+  lastIncluded!.observationDates.filter(Boolean).at(-1) === "2020-01-01",
+  "initial last Yes final obs = allotment",
 );
 
 /**
@@ -167,16 +170,18 @@ assert(
   ) < 1e-9,
   "average uses remaining slots only",
 );
+const currentLastYes = [...current.paths].reverse().find((p) => p.pathIncluded);
+assert(currentLastYes, "current has at least one Path Taken = Yes");
 assert(
-  current.paths.length > 0 && current.paths.every((p) => p.pathIncluded),
-  "path payload stops at frontier — last path is Path Taken = Yes",
+  current.paths.length > 0 && current.paths.some((p) => !p.pathIncluded),
+  "current path payload includes Path-Taken-No rows past the Yes frontier",
 );
-const tableLastObs = current.paths.at(-1)!.observationDates.filter(Boolean).at(-1);
+const tableLastObs = currentLastYes!.observationDates.filter(Boolean).at(-1);
 assert(
   tableLastObs != null &&
     current.lastIndexDate != null &&
     tableLastObs <= current.lastIndexDate,
-  `current last path final obs ≤ latest series session, got ${tableLastObs} vs ${current.lastIndexDate}`,
+  `current last Yes final obs ≤ latest series session, got ${tableLastObs} vs ${current.lastIndexDate}`,
 );
 assert(current.includedCount > 0, "current included paths");
 assert(current.paths[0]?.adjustedStartLevel == null, "current has no adjusted start");
@@ -201,14 +206,14 @@ assert(
   "requiredUnderlyingFromHurdleLevel matches",
 );
 
-const currentLast = current.paths.at(-1);
-assert(currentLast?.pathIncluded, "current last path is Yes");
+const currentLast = [...current.paths].reverse().find((p) => p.pathIncluded);
+assert(currentLast?.pathIncluded, "current last Yes path exists");
 const currentLastObs = currentLast!.observationDates.filter(Boolean).at(-1);
 assert(
   currentLastObs != null &&
     current.lastIndexDate != null &&
     currentLastObs <= current.lastIndexDate,
-  `current last path final obs ≤ latest series session, got ${currentLastObs}`,
+  `current last Yes final obs ≤ latest series session, got ${currentLastObs}`,
 );
 
 /** All remaining — no passed — ET equals Target. */

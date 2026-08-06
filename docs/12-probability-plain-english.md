@@ -64,7 +64,7 @@ Each row = “pretend the path started on this historical trading day.”
 | Underlying Performance | Average vs Start Level (Initial) or vs raw close (Current) |
 | Path Taken | Yes only while history still covers the full observation set used for the average |
 
-Default filter is **All**. The table stops at the frontier — you should not see a long tail of future Path-Taken-No rows.
+Default filter is **All**. Rows after the Yes frontier stay Path Taken = No so **Excluded** is not empty when history continues past Actual Start / the latest session.
 
 - **Initial:** last Yes path’s final observation lands on **Actual Start**.  
 - **Current:** last Yes path’s final observation lands on the **latest trading bar in the loaded series** (Excel checking-date offsets when the series is current; lag snap when the series trails the desk clock).
