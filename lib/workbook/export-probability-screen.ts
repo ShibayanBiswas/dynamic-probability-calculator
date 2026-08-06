@@ -101,6 +101,7 @@ function surfaceKpis(input: ProbabilityScreenExportInput): Array<[string, string
     case "current":
       return [
         ["Current Probability", pct(input.current?.probability)],
+        ["Target Underlying", pct(input.targetPercent)],
         ["Required Underlying", pct(input.requiredPercent)],
         ["Effective Target", num(input.current?.effectiveTargetLevel)],
         ["Paths Taken", num(input.current?.includedCount, 0)],

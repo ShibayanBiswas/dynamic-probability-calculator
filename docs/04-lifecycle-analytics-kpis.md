@@ -119,7 +119,11 @@ On Probability / Initial / Current input panels:
 | **Effective Target** | No | ≥1 observation fixings settled — remaining-hurdle formula from working Target Level |
 | **Target Underlying** | **Yes** (always) | Percent points (36.0 = 36%); drives working Target Level and recalculates Initial + Current |
 
+**Current Probability KPI band** also shows a **Target Underlying** card (alongside Required Underlying) so the edited percent is visible in the output strip.
+
 Prior schedule / frontier / ceiling logic is unchanged — only the absolute Target Level fed into those formulas can be overridden via Target Underlying.
+
+Verify: `npm run verify:target-underlying`
 
 ## Logic Atlas lifecycle claims
 

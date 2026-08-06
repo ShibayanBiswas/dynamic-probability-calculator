@@ -67,6 +67,7 @@ import {
   type ProbabilityRunResult,
 } from "@/lib/probability/engine";
 import {
+  formatTargetUnderlyingPercentInput,
   parseTargetUnderlyingPercentInput,
   workingTargetLevel,
 } from "@/lib/probability/target-override";
@@ -547,6 +548,23 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
     lifecycle,
   ]);
 
+  // Seed Target Underlying from master when the selected product changes (not on remount edits).
+  const seededTargetProductRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!product) {
+      seededTargetProductRef.current = null;
+      return;
+    }
+    if (seededTargetProductRef.current === product.rowId) return;
+    seededTargetProductRef.current = product.rowId;
+    selection.setField(
+      "targetUnderlyingPct",
+      formatTargetUnderlyingPercentInput(targetUnderlying(product)),
+    );
+    // Only re-seed on product identity — never on Target Underlying edits.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.rowId]);
+
   const targetUnderlyingFraction = useMemo(
     () => parseTargetUnderlyingPercentInput(selection.targetUnderlyingPct),
     [selection.targetUnderlyingPct],
@@ -717,11 +735,19 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
       : product
         ? targetUnderlying(product)
         : null;
+  const reqHurdleLevel =
+    currentResult?.effectiveTargetLevel != null && currentResult.effectiveTargetLevel > 0
+      ? currentResult.effectiveTargetLevel
+      : overrideTargetLevel != null && overrideTargetLevel > 0
+        ? overrideTargetLevel
+        : product
+          ? getTargetLevel(product)
+          : null;
   const req = product
-    ? currentResult?.effectiveTargetLevel != null && currentResult.effectiveTargetLevel > 0
+    ? reqHurdleLevel != null && reqHurdleLevel > 0
       ? requiredUnderlyingFromHurdleLevel(
           product,
-          currentResult.effectiveTargetLevel,
+          reqHurdleLevel,
           effectiveNiftyLevel,
           effectiveSensexLevel,
         )
@@ -740,14 +766,21 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
       ];
     }
     const r = activeResult;
+    if (surface === "current") {
+      return [
+        { label: "Probability", value: formatPct(r?.probability) },
+        { label: "Paths Taken", value: r ? formatNumber(r.includedCount, 0) : "—" },
+        { label: "Successful Paths", value: r ? formatNumber(r.successCount, 0) : "—" },
+        { label: "Target Underlying", value: formatPct(tgt) },
+        { label: "Required Underlying", value: formatPct(req) },
+        { label: "Latest Index Date", value: r?.lastIndexDate ? formatDisplayDate(r.lastIndexDate) : "—" },
+      ];
+    }
     return [
       { label: "Probability", value: formatPct(r?.probability) },
       { label: "Paths Taken", value: r ? formatNumber(r.includedCount, 0) : "—" },
       { label: "Successful Paths", value: r ? formatNumber(r.successCount, 0) : "—" },
-      {
-        label: surface === "initial" ? "Target Underlying" : "Required Underlying",
-        value: formatPct(surface === "initial" ? tgt : req),
-      },
+      { label: "Target Underlying", value: formatPct(tgt) },
       { label: "Latest Index Date", value: r?.lastIndexDate ? formatDisplayDate(r.lastIndexDate) : "—" },
     ];
   }, [surface, initialResult, currentResult, activeResult, tgt, req, daysLeftObs]);
@@ -1014,7 +1047,10 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
                   setPathsUnlocked(true);
                 }}
               >
-                <KpiBand accents={["cyan", "green", "purple", "amber", "rose"]} items={kpiItems} />
+                <KpiBand
+                  accents={["cyan", "green", "purple", "amber", "rose"]}
+                  items={kpiItems}
+                />
 
                 <HorizontalBand className="mt-4">
                   <ScheduleCard

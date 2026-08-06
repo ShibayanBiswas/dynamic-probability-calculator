@@ -47,9 +47,7 @@ import {
   computeObservationScheduleMetrics,
   formatEffectiveTargetCell,
 } from "@/lib/portfolio-observation-metrics";
-import { targetUnderlying } from "@/lib/probability/engine";
 import {
-  formatTargetUnderlyingPercentInput,
   parseTargetUnderlyingPercentInput,
   workingTargetLevel,
 } from "@/lib/probability/target-override";
@@ -641,17 +639,6 @@ function ProbabilityTargetFields({
 }) {
   const selection = useProductSelection();
   const checkingDate = parseExcelishDate(valuationDate) ?? asOf;
-
-  useEffect(() => {
-    if (!product) return;
-    if (selection.targetUnderlyingPct.trim()) return;
-    selection.setField(
-      "targetUnderlyingPct",
-      formatTargetUnderlyingPercentInput(targetUnderlying(product)),
-    );
-    // Seed blank slots when product identity changes; do not clobber edits.
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional product.rowId gate
-  }, [product?.rowId]);
 
   const fraction = parseTargetUnderlyingPercentInput(selection.targetUnderlyingPct);
   const level = product ? workingTargetLevel(product, fraction) : null;

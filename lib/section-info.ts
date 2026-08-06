@@ -50,7 +50,7 @@ export const SECTION_INFO: Record<string, InfoBlurb> = {
   },
   "pay-output": {
     title: "Reading the current-probability output",
-    body: "Current Probability shows the share of included daily paths that clear Required Underlying.\nPath tables list simulated observation levels and success flags.\nRequired Underlying and Days Left to Last Observation frame the remaining hurdle.\nColumns match the Excel Current Prob sheet for desk reconciliation.\nThe table is used for exact numbers and the summary panel for the headline probability.",
+    body: "Current Probability shows the share of included daily paths that clear Required Underlying.\nKPI cards include Target Underlying (editable on the input panel) and Required Underlying from the Effective Target or Target Level hurdle.\nPath tables list simulated observation levels and success flags.\nRequired Underlying and Days Left to Last Observation frame the remaining hurdle.\nColumns match the Excel Current Prob / Backtesting sheet for desk reconciliation.",
   },
   "an-lifecycle": {
     title: "Lifecycle universe",

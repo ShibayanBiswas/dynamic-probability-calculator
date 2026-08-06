@@ -92,6 +92,7 @@ Deep logic audit: [16-product-type-probability-logic.md](16-product-type-probabi
 | Lifecycle Excel gated on full-book probs | **PASS** | `use-lazy-portfolio-probabilities` + lifecycle list |
 | Lifecycle search prioritizes Prob warm | **PASS** | `priorityProducts` → batch size 8 first |
 | Editable Target Underlying on inputs | **PASS** | `targetUnderlyingPct` → `targetLevel` API override; ET read-only |
+| Target Underlying KPI on Current tab | **PASS** | Current `kpiItems` + Excel export surface KPIs |
 | Vercel harden (CDN seed, includePaths, maxDuration) | **PASS** | bootstrap + `api/probability/run` |
 | Docs cover product-type logic | **PASS** | docs 01–16, especially 12 + 16 |
 

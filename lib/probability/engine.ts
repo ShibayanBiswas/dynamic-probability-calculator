@@ -286,7 +286,8 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
     });
     const hurdleLevel = effectiveTargetLevel ?? target;
 
-    if (todayLevel != null && todayLevel > 0 && hurdleLevel != null && hurdleLevel > 0) {
+    // Excel % Required uses ET/today − 1 even when ET is ≤ 0 (hot path after strong fixings).
+    if (todayLevel != null && todayLevel > 0 && hurdleLevel != null && Number.isFinite(hurdleLevel)) {
       threshold = hurdleLevel / todayLevel - 1;
     }
   }
@@ -482,7 +483,7 @@ export function requiredUnderlyingFromHurdleLevel(
   niftyLevel: number | undefined,
   sensexLevel: number | undefined,
 ): number | null {
-  if (!(hurdleLevel > 0) || !Number.isFinite(hurdleLevel)) return null;
+  if (!Number.isFinite(hurdleLevel)) return null;
   const underlying = resolveUnderlyingKind(product) ?? "nifty";
   const level = underlying === "sensex" ? sensexLevel : niftyLevel;
   if (level == null || level <= 0 || !Number.isFinite(level)) return null;
