@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.join(__dirname),
   },
+  // Local Playwright / 127.0.0.1 probes hit HMR otherwise.
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts", "date-fns", "framer-motion"],
   },

@@ -710,7 +710,7 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
         label: surface === "initial" ? "Target Underlying" : "Required Underlying",
         value: formatPct(surface === "initial" ? tgt : req),
       },
-      { label: "Latest Index Date", value: r?.lastIndexDate ?? "—" },
+      { label: "Latest Index Date", value: r?.lastIndexDate ? formatDisplayDate(r.lastIndexDate) : "—" },
     ];
   }, [surface, initialResult, currentResult, activeResult, tgt, req, daysLeftObs]);
 

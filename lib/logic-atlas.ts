@@ -359,7 +359,7 @@ export const logicModules: LogicModule[] = [
 
     purpose:
 
-      "Observation levels, counts, and Effective Target are derived from the master Average 1–7 schedule and bundled index history. No debenture count or price mark is required.",
+      "Observation levels, counts, and Effective Target are derived from the master observation schedule (Average 1–7 workbook fields) and bundled index history. No debenture count or price mark is required.",
 
     stageCount: 5,
 
