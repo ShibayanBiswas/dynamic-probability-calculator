@@ -207,7 +207,7 @@ export const logicModules: LogicModule[] = [
 
     purpose:
 
-      "Initial and Current probability are computed from daily historical index paths. Rollover Phase sets the start date across Blank, Phase 1, Phase 2, and Ten Years. Observation offsets and Effective Target frame the remaining hurdle without debenture pricing.",
+      "Initial and Current probability are computed from daily historical index paths. Rollover Phase tenure sets the start date. Observation offsets and Effective Target frame the remaining hurdle without debenture pricing.",
 
     stageCount: 6,
 

@@ -116,9 +116,8 @@ export function LogicAtlasConsole() {
           <p className="intel-hero-kicker relative z-10">Anand Rathi Wealth · Desk Intelligence</p>
           <h1 className="intel-hero-title relative z-10">Intel · Logic Atlas</h1>
           <p className="intel-hero-sub relative z-10">
-            Canonical map of how the NEW PRIMARY desk book flows from master data through probability engines,
-            observation schedules, Effective Target, and portfolio analytics. Rollover Phase sets Blank, Phase 1,
-            Phase 2, and Ten Years start and end dates for every live product.
+            Canonical map of how the NEW PRIMARY desk book flows from master data through probability, initial probability,
+            current probability, and analytics — Rollover Phase tenure, observation schedules, and Effective Target.
           </p>
           <div className="intel-hero-meta relative z-10">
             <motion.span
