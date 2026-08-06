@@ -22,8 +22,8 @@ Expired products and names whose **last observation has already settled** are **
 | 10 Years | Allotment (else Trade) | Rollover if present, else Maturity |
 
 Initial uses a Start Level cushion (Nifty ×1.01 / Sensex ×1.006, ceiling to 100) vs Target÷Entry.  
-Current uses raw closes vs Target÷desk mark (15:30 IST rule).  
-Effective Target on the lifecycle table is a separate remaining-hurdle average.
+Current uses remaining observation averages vs Effective Target÷desk mark when fixings have settled (else Target÷mark; 15:30 IST rule).  
+Effective Target on the lifecycle table is the same remaining-hurdle average formula.
 
 **Read:** [docs/12-probability-plain-english.md](docs/12-probability-plain-english.md) · **Deep audit:** [docs/16-product-type-probability-logic.md](docs/16-product-type-probability-logic.md)
 
@@ -31,8 +31,9 @@ Effective Target on the lifecycle table is a separate remaining-hurdle average.
 
 - Schedule **above** Product Specs on Probability summary; no path table on summary  
 - Inline path-load progress on Initial/Current (no modal)  
-- Path frontier trimmed to latest series trading bar; default filter Included  
-- Lifecycle columns: **Initial Level**, **As of Today's Date**, Trade / Allotment / Actual Start / POED / Rollover Phase / Maturity / Rollover  
+- Path frontier trimmed; last Yes = Actual Start (Initial) / latest series session (Current); default filter **All**  
+- Current: full Observation schedule + ALREADY PASSED placeholders; remaining-only average + Effective Target hurdle  
+- Lifecycle columns: **Observation 1–7**, **Initial Level**, **As of Today's Date**, Trade / Allotment / Actual Start / POED / Rollover Phase / Maturity / Rollover / Effective Target  
 - Primary-grade Excel/PDF exports  
 - Logic Atlas Active pipeline cards with detail, metrics, tags  
 - Vercel: Node 20, CDN master seed preferred, `includePaths` opt-in, capped probability API duration  

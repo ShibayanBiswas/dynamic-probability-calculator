@@ -66,6 +66,7 @@ Key fields in `lib/portfolio-lifecycle-columns.ts` include:
 
 - Identity / issuer / underlying / notional  
 - **Initial Level** (formerly “Actual Entry Level”)  
+- **Observation 1–7** date columns (master Average fields; desk label Observation)  
 - Target Level, Effective Target, Observation Levels 1–7  
 - Total / Passed / Remaining Obs  
 - Initial Probability, Current Probability  

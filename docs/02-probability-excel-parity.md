@@ -97,7 +97,7 @@ Desk: last bar of merged series (Mongo overlay + Gift CSV) — usually **newer**
 | Start Level | `CEILING.MATH(close×1.01,100)` (Nifty) / `×1.006` (Sensex) | Same |
 | Performance | `Avg / StartLevel − 1` | Same |
 | Path frontier | `Probability!$D$16 ≥ MAX(obs dates)` (allotment cutoff) | Actual Start ≥ MAX(projected obs) — same NSP rule; Phase 2 uses Trade |
-| Current schedule | All Average slots with Days from checking date | **Observation Schedule:** all present Average slots + Remaining/Already passed status. **Path backtest:** same columns; passed cells = `ALREADY PASSED` / `—`. **Average + probability:** remaining only (`days > 0`) with Effective Target. Default path filter = **All**. Path table stops at the frontier (last Yes) — final obs = Actual Start (Initial) or latest series session (Current). |
+| Current schedule | All Average slots with Days from checking date | **Observation Schedule:** all present Observation slots + Remaining/Already passed status. **Path backtest:** same columns; passed cells = `ALREADY PASSED` / `—`. **Average + probability:** remaining only (`days > 0`) with Effective Target. Default path filter = **All**. Path table stops at the frontier (last Yes) — final obs = Actual Start (Initial) or latest series session (Current). Desk headers say **Observation 1–7**, not Average. |
 | MAX slots | Often Avg 1–6 only in one MAX | All **present** slots (Initial) / remaining positive-day slots (Current) |
 
 ---
@@ -123,7 +123,7 @@ Desk: last bar of merged series (Mongo overlay + Gift CSV) — usually **newer**
 | Current % Required | Master Target / today | Effective Target / today when fixings have settled |
 | Current path offsets | Always `obs − checking date` (D34) | Same when series ≥ checking date; if series lags the desk clock, remaining path offsets use the latest series session so the last Yes final obs lands on that session |
 | Path history floor | nifty may start ~2000-12-31 | Hard lock **2001-01-01** |
-| Headers | Excel jargon / parentheses | Layman English, no `()` |
+| Headers | Excel jargon / parentheses | Layman English (**Observation 1–7** / Observation Date–Level), no `()` |
 | Mark for % Required | Manual today cells | Desk mark 15:30 IST rule |
 
 Small pp deltas vs a stale NSP workbook are expected when the desk series frontier is newer.

@@ -44,7 +44,7 @@ from the valuation date.
 buildObservationSchedule(product, baseDate)
 ```
 
-Each Average 1…7 slot: blank → skipped; else `daysFromBase = differenceInCalendarDays(obsDate, base)`.
+Each Observation 1…7 master slot: blank → skipped; else `daysFromBase = differenceInCalendarDays(obsDate, base)`. Desk tables label these **Observation**, not Average.
 
 **Offsets are calendar days.** Trading-day snap to prior close happens later inside each path row via `lookupPriorBar`, not when offsets are built.
 

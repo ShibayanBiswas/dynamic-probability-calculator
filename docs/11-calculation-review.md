@@ -37,15 +37,20 @@ Included = all present slots resolved **and** series covers the last simulated o
 | Step | Formula / rule |
 |------|----------------|
 | Base date | Checking date (valuation date, or locked to final obs if already settled) |
-| Day offset \(d_i\) | `calendarDays(Average_i, checkingDate)` for **all present** slots |
+| Day offset \(d_i\) | `calendarDays(Observation_i, checkingDate)` for **all present** slots (schedule card) |
+| Path average slots | Only remaining (`daysFromBase > 0`); passed → `ALREADY PASSED` / `—` placeholders |
 | Path start close \(C\) | Series close on path day |
 | Start Level | **None** |
+| Avg level \(A\) | Mean of **remaining** obs levels only |
+| Hurdle level | Effective Target when fixings settled, else master Target \(T\) |
 | Performance | \(A / C - 1\) |
-| Hurdle | \(T / M - 1\) (Required Underlying / % Required) |
+| Hurdle % | \(\text{hurdle} / M - 1\) (Required Underlying) |
 | Mark \(M\) | Request levels (desk mark) else series on checking date |
+| Path offsets | Excel `obs − checking` when series ≥ checking date; else remaining offsets from latest series session |
+| Frontier | Latest series bar ≥ MAX(projected remaining obs); last Yes final obs lands on that session |
 | Success / Probability | Same structure as Initial |
 
-## Effective Target (lifecycle, not path)
+## Effective Target (lifecycle + Current hurdle)
 
 \[
 ET = \frac{N \cdot T - \sum_{passed} L_j}{N - P}
@@ -53,10 +58,10 @@ ET = \frac{N \cdot T - \sum_{passed} L_j}{N - P}
 
 | Symbol | Meaning |
 |--------|---------|
-| \(N\) | Total present Average dates |
+| \(N\) | Total present observation dates |
 | \(P\) | Passed / settled count |
 | \(T\) | Target Level |
-| \(L_j\) | Level on settled Average date (bundled history / custom) |
+| \(L_j\) | Level on settled observation date (path series for Current; bundled history on lifecycle) |
 
 Null when \(T\) missing, remaining ≤ 0, or any passed level missing.
 
@@ -78,15 +83,16 @@ Suppose Target = 22,000 and Entry = 20,000:
 - Initial hurdle = 22,000/20,000 − 1 = **10%**.  
 - A path with Start Level 20,200 and average obs 22,500 → performance ≈ 11.4% → **success**.
 
-If today’s mark is 21,000:
+If today’s mark is 21,000 and no fixings have settled yet:
 
 - Current hurdle = 22,000/21,000 − 1 ≈ **4.76%**.  
-- Same average vs raw path closes is judged against that lower/higher bar depending on the mark.
+- Same average vs raw path closes is judged against that bar.
 
 If 3 of 6 obs have printed at 21,000, 21,500, 22,000 and Target is 22,000:
 
 - Sum passed = 64,500; Total×Target = 132,000; Remaining = 3  
-- ET = (132,000 − 64,500) / 3 = **22,500** remaining average needed.
+- ET = (132,000 − 64,500) / 3 = **22,500** remaining average needed.  
+- Current % Required then uses **22,500 ÷ today’s mark − 1**, and path averages use the three remaining slots only.
 
 ## Regression gates
 

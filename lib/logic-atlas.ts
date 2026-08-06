@@ -259,7 +259,7 @@ export const logicModules: LogicModule[] = [
 
         description:
 
-          "Average 1–7 dates become day offsets from phase start for Initial Probability, or from the valuation date for Current Probability.",
+          "Observation 1–7 dates (master Average fields) become day offsets from phase start for Initial Probability, or from the valuation date for Current Probability.",
 
       },
 
@@ -675,7 +675,7 @@ export const logicModules: LogicModule[] = [
     ],
     insights: [
       "Percent required compares Effective Target to the selected-date Nifty or Sensex level.",
-      "Passed Average slots stay on the schedule and path table as ALREADY PASSED; only remaining slots feed the average.",
+      "Passed observation slots stay on the schedule and path table as ALREADY PASSED; only remaining slots feed the average.",
       "Caching keys on ISIN, mode, valuation date, underlying, and latest index date.",
     ],
     outputs: ["Current probability", "Path table", "Effective Target", "Percent required"],
@@ -787,7 +787,7 @@ export function getComputationPrimitives(
     },
     {
       name: "Observation Level Lookup",
-      role: "Prior closes are resolved on Average 1–7 observation dates",
+      role: "Prior closes are resolved on Observation 1–7 dates (master Average schedule)",
       count: count((p) => /Z/i.test(p.formulaText ?? "")),
       category: "lookup",
     },

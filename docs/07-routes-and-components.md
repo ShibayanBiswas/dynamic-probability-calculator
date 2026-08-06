@@ -29,7 +29,7 @@ Nav: `lib/navigation.ts`. Redirects: `next.config.ts` + stub pages.
 3. `ExcelInputPanel` mode=`probability` (search, valuation date, auto levels — **no debentures**)  
 4. KPI band  
 5. **Summary:** Observation Schedule → Product Specs → Initial/Current results  
-6. **Initial/Current:** `PathLoadProgress` → Schedule → PathBacktestTable (Included default)  
+6. **Initial/Current:** `PathLoadProgress` → Schedule → PathBacktestTable (All-paths default)  
 7. Past-final panels when applicable  
 8. Download Excel / PDF (Primary-grade)  
 

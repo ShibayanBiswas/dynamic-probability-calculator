@@ -51,7 +51,9 @@ for (const p of all) {
 const ongoing = filterProductsByLifecycle(all, "ongoing", asOf);
 const expired = filterProductsByLifecycle(all, "expired", asOf);
 lifecycleOk = ongoing.length + expired.length;
-assert(ongoing.length > 0 && expired.length > 0, "lifecycle buckets empty");
+// Probability desk never surfaces phase-expired names — filter always returns [].
+assert(ongoing.length > 0, "ongoing lifecycle bucket empty");
+assert(expired.length === 0, "expired filter must stay empty on this desk");
 
 // Sample labels
 const samples = (["blank", "phase1", "phase2", "tenYear"] as const).map((k) => {

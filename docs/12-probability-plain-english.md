@@ -15,7 +15,7 @@ Two different “cameras”:
 
 A third number on the lifecycle table is **not** a path probability:
 
-3. **Effective Target** — “what average do the **remaining** observations still need?” after some Average dates have already printed.
+3. **Effective Target** — “what average do the **remaining** observations still need?” after some observation dates have already printed.
 
 ## Product type in one table (Rollover Phase)
 
@@ -28,7 +28,7 @@ Think of Rollover Phase as the deal’s **calendar personality**. It changes the
 | Phase 2 | **Trade Date** | Maturity |
 | 10 Years | Allotment (else Trade) | Rollover date if present; otherwise Maturity |
 
-**Phase 2 is the one Ops feel most:** Initial day counts run from Trade Date, so the same Average dates produce different day offsets than a Blank deal.
+**Phase 2 is the one Ops feel most:** Initial day counts run from Trade Date, so the same observation dates produce different day offsets than a Blank deal.
 
 ## How to use the screens
 
@@ -44,11 +44,11 @@ Until **15:30 IST** (NSE cash close), the desk still treats the useful mark as t
 
 ## Reading the schedule
 
-- **Dates** = Average 1–7 from the master (blank slots skipped).  
-- **Days on Initial** = calendar days from **Actual Start** (phase table above) to each Average date.  
-- **Days on Current** = calendar days from the **checking date** to each Average date (past dates can show 0 or negative days).
+- **Dates** = Observation 1–7 from the master Average / Avg. fields (blank slots skipped). Desk tables label them **Observation**, not Average.  
+- **Days on Initial** = calendar days from **Actual Start** (phase table above) to each observation date.  
+- **Days on Current** = calendar days from the **checking date** to each observation date (past dates can show 0 or negative days and are marked Already passed).
 
-Holiday handling for **levels** happens later on each path: the engine snaps to the nearest **prior trading close**. The day-count itself stays calendar-based from the stored Average date.
+Holiday handling for **levels** happens later on each path: the engine snaps to the nearest **prior trading close**. The day-count itself stays calendar-based from the stored observation date.
 
 ## Reading the path table
 
@@ -59,19 +59,20 @@ Each row = “pretend the path started on this historical trading day.”
 | Start | Historical path-start date |
 | Underlying Closing Level | Index close that day |
 | Start Level | **Initial only** — close × 1.01 (Nifty) or × 1.006 (Sensex), rounded up to next 100 |
-| Average Date / Level | Where each checkpoint would have landed on that path |
-| Average Underlying Level | Mean of those levels |
+| Observation Date / Level | Where each checkpoint would have landed on that path (Current: passed slots show ALREADY PASSED / —) |
+| Average Underlying Level | Mean of the levels that still feed the average |
 | Underlying Performance | Average vs Start Level (Initial) or vs raw close (Current) |
-| Path Taken | Yes only while history still covers the full observation set |
+| Path Taken | Yes only while history still covers the full observation set used for the average |
 
-Default filter is **Included**. The table stops at the frontier — you should not see a long tail of future Path-Taken-No rows.
+Default filter is **All**. The table stops at the frontier — you should not see a long tail of future Path-Taken-No rows.
 
-The last Yes path is built so its final observation lands on the **latest trading bar in the loaded series** (often today after close/sync; sometimes the previous session).
+- **Initial:** last Yes path’s final observation lands on **Actual Start**.  
+- **Current:** last Yes path’s final observation lands on the **latest trading bar in the loaded series** (Excel checking-date offsets when the series is current; lag snap when the series trails the desk clock).
 
 ## Success rules (plain words)
 
 - **Initial success:** average path performance beats **Target Level ÷ Entry Level − 1**.  
-- **Current success:** average path performance beats **Target Level ÷ today’s mark − 1**.  
+- **Current success:** average of **remaining** observation levels beats **Effective Target ÷ today’s mark − 1** (Effective Target = master Target when nothing has settled yet).  
 - **Probability:** successful included paths ÷ all included paths.
 
 Entry comes from Actual Entry / Entry / Initial / Initial Fixing fields — never from Target.

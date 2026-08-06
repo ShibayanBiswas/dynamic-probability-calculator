@@ -1,6 +1,6 @@
 # 15 — Requirements fulfillment board
 
-Five-pass checklist against the inception prompt. Status as of **2026-08-04**.
+Five-pass checklist against the inception prompt. Status as of **2026-08-06**.
 
 Deep logic audit: [16-product-type-probability-logic.md](16-product-type-probability-logic.md).
 
@@ -31,10 +31,10 @@ Deep logic audit: [16-product-type-probability-logic.md](16-product-type-probabi
 
 | Requirement | Status | Where |
 |-------------|--------|-------|
-| Average / Dates / Days table | **PASS** | `ScheduleCard` |
+| Observation / Dates / Days table | **PASS** | `ScheduleCard` (desk labels Observation 1–N) |
 | Days from actual phase start | **PASS** | `getWorkingAllotmentDate` |
 | Backtest layman headers, no `()` | **PASS** | `PathBacktestTable` |
-| Daily paths; last path last obs ≈ latest trading day | **PASS** | `lib/probability/engine.ts` |
+| Daily paths; last Yes final obs = Actual Start | **PASS** | `lib/probability/engine.ts` Initial frontier |
 | Nifty/Sensex Mongo; caching | **PASS** | API series + LRU cache |
 | Ceiling Nifty 1.01 / Sensex 1.006 | **PASS** | `ceilingStartLevel` |
 
@@ -43,9 +43,12 @@ Deep logic audit: [16-product-type-probability-logic.md](16-product-type-probabi
 | Requirement | Status | Where |
 |-------------|--------|-------|
 | Days from valuation date | **PASS** | Current mode base date |
+| Full schedule + ALREADY PASSED for settled slots | **PASS** | `schedule` + path placeholders |
+| Remaining-only average + Effective Target hurdle | **PASS** | `pathSchedule` + `computeCurrentEffectiveTargetLevel` |
 | No Start Level column | **PASS** | `showAdjustedStart={false}` |
-| Same frontier rule | **PASS** | Shared inclusion loop |
-| Layman headers, no `()` | **PASS** | Same path table |
+| Frontier = latest series session; last Yes ends there | **PASS** | Shared inclusion loop + lag snap |
+| Default path filter = All | **PASS** | `PathBacktestTable` |
+| Layman headers Observation Date/Level, no `()` | **PASS** | Same path table |
 
 ## E. DATA sheet & cross-cutting
 
@@ -61,9 +64,11 @@ Deep logic audit: [16-product-type-probability-logic.md](16-product-type-probabi
 
 ## Intentional deltas vs NSP Excel (not bugs)
 
-1. **Initial day base** = phase start (Phase 2 Trade Date), not hard-coded allotment cell.  
-2. **Path frontier** = latest trading day for **both** Initial and Current (prompt override of Excel Initial allotment cutoff / Avg1–6-only MAX).  
-3. Headers use layman English instead of Excel “To be taken” / “Start Level (1%)”.
+1. **Initial day base / frontier** = Actual Start by Rollover Phase (Phase 2 = Trade Date), matching NSP Initial Prob `D16` with phase awareness — not a hard-coded allotment-only cell.  
+2. **Current remaining + Effective Target** — Excel Backtesting still averages every Average offset (including past) and hurdles with master Target / today; this desk averages remaining slots only and hurdles with Effective Target when fixings have settled.  
+3. **Current path offsets** — Excel checking-date offsets when the series is current; if the series lags the desk clock, remaining offsets snap from the latest series session so the last Yes final obs lands there.  
+4. **Path history floor** = hard lock **2001-01-01** (Excel nifty may open ~2000-12-31).  
+5. Headers use Observation 1–7 / Observation Date–Level layman English instead of Excel “Average” / “To be taken”.
 
 ## F. Layout / desk UX (follow-ups)
 
@@ -77,7 +82,7 @@ Deep logic audit: [16-product-type-probability-logic.md](16-product-type-probabi
 | Path backtest full columns with horizontal scroll | **PASS** | `PathBacktestTable` |
 | Schedule above specs on Probability summary | **PASS** | `probability-dashboard.tsx` |
 | Inline path load progress (no modal) | **PASS** | `PathLoadProgress` |
-| Path frontier trim / Included default | **PASS** | `engine.ts` + path table filter |
+| Path frontier trim / All-paths default | **PASS** | `engine.ts` + path table filter |
 | Desk mark 15:30 IST | **PASS** | `desk-mark-as-of.ts` |
 | Lifecycle Initial Level + as-of + phase dates | **PASS** | `portfolio-lifecycle-columns.ts` |
 | Primary-grade Excel/PDF | **PASS** | `export-probability-screen.ts` |

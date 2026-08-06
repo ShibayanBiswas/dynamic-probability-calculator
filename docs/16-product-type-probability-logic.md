@@ -25,7 +25,7 @@ When the same ISIN appears more than once in the merged master, **Phase 2 beats 
 
 ## 2. Layman picture (one sentence per mode)
 
-Imagine the product has several **checkpoint dates** (Average 1–7). At each checkpoint the index prints a level. The coupon story usually cares about the **average** of those levels versus a hurdle.
+Imagine the product has several **checkpoint dates** (master Average 1–7; desk tables label them **Observation 1–7**). At each checkpoint the index prints a level. The coupon story usually cares about the **average** of those levels versus a hurdle.
 
 - **Initial Probability** asks: *If this deal had started on every trading day since 2001, with the real spacing of checkpoints from the deal’s start, and a slightly padded start level, how often would the average have beaten Target versus Entry?*
 - **Current Probability** asks: *Using the spacing from today’s checking date to those same checkpoints, with no start cushion, how often would history have beaten Target versus today’s index mark?*
