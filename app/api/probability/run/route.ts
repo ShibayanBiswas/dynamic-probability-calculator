@@ -156,6 +156,8 @@ function runModesForProduct(args: {
   sensexLevel?: number;
   includePaths: boolean;
   bookRevision?: string;
+  /** Absolute Target Level from editable Target Underlying % (single-product runs). */
+  targetLevel?: number;
 }): {
   initial?: ProbabilityRunResult;
   current?: ProbabilityRunResult;
@@ -173,6 +175,10 @@ function runModesForProduct(args: {
   // After final obs, drop live levels so Current uses the checking-date close from history.
   const niftyLevel = asOfLastObservation ? undefined : args.niftyLevel;
   const sensexLevel = asOfLastObservation ? undefined : args.sensexLevel;
+  const targetLevel =
+    args.targetLevel != null && Number.isFinite(args.targetLevel) && args.targetLevel > 0
+      ? args.targetLevel
+      : undefined;
 
   const results: { initial?: ProbabilityRunResult; current?: ProbabilityRunResult } = {};
   for (const m of args.modes) {
@@ -186,6 +192,7 @@ function runModesForProduct(args: {
       bookRevision: args.bookRevision,
       niftyLevel,
       sensexLevel,
+      targetLevel,
     });
     let result = getCachedProbability(key);
     if (!result) {
@@ -197,6 +204,7 @@ function runModesForProduct(args: {
         niftyLevel,
         sensexLevel,
         includePaths: args.includePaths,
+        targetLevel,
       });
       setCachedProbability(key, result);
     }
@@ -219,6 +227,8 @@ export async function POST(request: Request) {
       valuationDate?: string;
       niftyLevel?: number;
       sensexLevel?: number;
+      /** Absolute Target Level override from Target Underlying % (single-ISIN runs). */
+      targetLevel?: number;
       includePaths?: boolean;
       invalidate?: boolean;
       bookRevision?: string;
@@ -354,6 +364,10 @@ export async function POST(request: Request) {
       sensexLevel: body.sensexLevel,
       includePaths,
       bookRevision: body.bookRevision,
+      targetLevel:
+        typeof body.targetLevel === "number" && Number.isFinite(body.targetLevel) && body.targetLevel > 0
+          ? body.targetLevel
+          : undefined,
     });
 
     return NextResponse.json({

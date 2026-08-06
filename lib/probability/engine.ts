@@ -211,6 +211,12 @@ export type RunProbabilityArgs = {
   niftyLevel?: number;
   sensexLevel?: number;
   includePaths?: boolean;
+  /**
+   * Optional absolute Target Level override from editable Target Underlying %.
+   * When set, Initial threshold and Current Effective Target use this level
+   * instead of the master Target Level — prior schedule / frontier logic unchanged.
+   */
+  targetLevel?: number;
 };
 
 export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRunResult {
@@ -218,7 +224,11 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
   const underlying = resolveUnderlyingKind(product) ?? "nifty";
   const phaseStart = getWorkingAllotmentDate(product, valuationDate);
   const entry = getProbabilityEntryLevel(product);
-  const target = getTargetLevel(product);
+  const masterTarget = getTargetLevel(product);
+  const target =
+    args.targetLevel != null && Number.isFinite(args.targetLevel) && args.targetLevel > 0
+      ? args.targetLevel
+      : masterTarget;
 
   const baseDate = mode === "initial" ? (phaseStart ?? valuationDate) : valuationDate;
 

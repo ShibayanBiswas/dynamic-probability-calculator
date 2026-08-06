@@ -67,6 +67,10 @@ import {
   type ProbabilityRunResult,
 } from "@/lib/probability/engine";
 import {
+  parseTargetUnderlyingPercentInput,
+  workingTargetLevel,
+} from "@/lib/probability/target-override";
+import {
   resolveHistoricalNiftyLevel,
   resolveHistoricalSensexLevel,
 } from "@/lib/expired-mark";
@@ -539,8 +543,18 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
     selection.valuationDate,
     selection.niftyLevel,
     selection.sensexLevel,
+    selection.targetUnderlyingPct,
     lifecycle,
   ]);
+
+  const targetUnderlyingFraction = useMemo(
+    () => parseTargetUnderlyingPercentInput(selection.targetUnderlyingPct),
+    [selection.targetUnderlyingPct],
+  );
+  const overrideTargetLevel = useMemo(
+    () => (product ? workingTargetLevel(product, targetUnderlyingFraction) : null),
+    [product, targetUnderlyingFraction],
+  );
 
   const runProbability = useCallback(
     async (includePaths: boolean) => {
@@ -575,6 +589,10 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
               valuationDate: formatDeskDate(checkingDate),
               niftyLevel: pastFinalObservation ? undefined : niftyLevel,
               sensexLevel: pastFinalObservation ? undefined : sensexLevel,
+              targetLevel:
+                overrideTargetLevel != null && overrideTargetLevel > 0
+                  ? overrideTargetLevel
+                  : undefined,
               includePaths,
               bookRevision: `${dataset.workbookName}:${dataset.loadedAt}`,
             }),
@@ -636,6 +654,7 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
       pastFinalObservation,
       niftyLevel,
       sensexLevel,
+      overrideTargetLevel,
       dataset.workbookName,
       dataset.loadedAt,
     ],
@@ -692,7 +711,12 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
     [surface],
   );
 
-  const tgt = product ? targetUnderlying(product) : null;
+  const tgt =
+    targetUnderlyingFraction != null && Number.isFinite(targetUnderlyingFraction)
+      ? targetUnderlyingFraction
+      : product
+        ? targetUnderlying(product)
+        : null;
   const req = product
     ? currentResult?.effectiveTargetLevel != null && currentResult.effectiveTargetLevel > 0
       ? requiredUnderlyingFromHurdleLevel(
@@ -758,7 +782,10 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
       },
       { label: "Tenor", value: formatNumber(getProductTenorDays(product) ?? 0, 0) },
       { label: "Initial Entry Level", value: formatLevel(getIndexEntryLevelRaw(product)) },
-      { label: "Target Level", value: formatLevel(getTargetLevel(product)) },
+      {
+        label: "Target Level",
+        value: formatLevel(overrideTargetLevel ?? getTargetLevel(product)),
+      },
       { label: "Series", value: product.series ?? rawField(product, "Product Series") ?? "—" },
       { label: "Coupon", value: getCouponLabel(product) ?? "—" },
       {
@@ -786,6 +813,7 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
     pastFinalObservation,
     indexLabel,
     indexLevel,
+    overrideTargetLevel,
   ]);
 
   const exportPayload = useMemo(() => {

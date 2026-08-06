@@ -63,10 +63,12 @@ export type ObservationScheduleMetrics = {
  *
  * Uses unique scheduled observation dates (same schedule as barrier / obs-due logic).
  * Requires Target Level and a historical level for every passed observation.
+ * Optional `targetLevel` overrides the master Target Level (desk Target Underlying edits).
  */
 export function computeObservationScheduleMetrics(
   product: ProductRecord,
   asOf: Date,
+  options?: { targetLevel?: number | null },
 ): ObservationScheduleMetrics {
   const schedule = getProductObservationDates(product);
   const total = schedule.length;
@@ -75,7 +77,11 @@ export function computeObservationScheduleMetrics(
   const passed = passedDates.length;
   const remaining = Math.max(0, total - passed);
 
-  const target = getTargetLevel(product);
+  const override = options?.targetLevel;
+  const target =
+    override != null && Number.isFinite(override) && override > 0
+      ? override
+      : getTargetLevel(product);
   if (target == null || !(target > 0) || remaining <= 0 || total <= 0) {
     return { total, passed, remaining, effectiveTarget: null };
   }

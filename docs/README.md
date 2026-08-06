@@ -2,7 +2,7 @@
 
 All desk reference docs live in **`docs/`**. This index is the single entry point for debugging, onboarding, Excel/Mongo parity, product-type logic, and cloud deploy.
 
-**Last documentation sweep:** 2026-08-06 (full-book lifecycle probability warm + gated Excel downloads + Observation 1–7 / Effective Target / Vercel smoothness).
+**Last documentation sweep:** 2026-08-06 (search-priority lifecycle Prob warm + editable Target Underlying input + gated Excel downloads + Observation 1–7 / Effective Target / Vercel smoothness).
 
 ## Document map
 

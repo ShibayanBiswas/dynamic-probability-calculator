@@ -35,6 +35,8 @@ Effective Target on the lifecycle table is the same remaining-hurdle average for
 - Current: full Observation schedule + ALREADY PASSED placeholders; remaining-only average + Effective Target hurdle  
 - Lifecycle columns: **Observation 1–7**, **Initial Level**, **As of Today's Date**, Trade / Allotment / Actual Start / POED / Rollover Phase / Maturity / Rollover / Effective Target  
 - **Portfolio by Lifecycle** downloads (**Export view** / **Full workbook**) wait until every product Initial/Current Prob is calculated, then export  
+- Lifecycle **search** prioritizes probability warm-up so searched rows fill Initial/Current Prob quickly on Vercel  
+- Probability inputs: editable **Target Underlying %**; read-only **Target Level** (no settled obs) or **Effective Target** (≥1 settled)  
 - Primary-grade Excel/PDF exports  
 - Logic Atlas Active pipeline cards with detail, metrics, tags  
 - Vercel: Node 20, CDN master seed preferred, `includePaths` opt-in, capped probability API duration, full-book slim warm batches 

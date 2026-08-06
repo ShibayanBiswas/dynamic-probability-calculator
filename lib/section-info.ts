@@ -29,7 +29,7 @@ export const SECTION_INFO: Record<string, InfoBlurb> = {
   },
   "val-output": {
     title: "Reading the output sheet",
-    body: "Initial Probability backtests from phase start. Current Probability backtests from the valuation date.\nTarget Underlying is Target Level versus entry. Required Underlying uses Effective Target versus today’s mark when fixings have settled, else Target versus today’s mark.\nDays Left to Last Observation and index levels contextualise the run.\nEffective Target also appears on Product Specifications and the lifecycle register.\nFigures update whenever valuation date or market levels change.",
+    body: "Initial Probability backtests from phase start. Current Probability backtests from the valuation date.\nTarget Underlying is editable on the input panel (defaults to Target÷Entry−1). Target Level / Effective Target shown above it are read-only.\nWith no settled fixings, Target Level = Entry×(1+Target Underlying). With one or more settled fixings, Effective Target is shown and stays read-only while Target Underlying remains editable.\nRequired Underlying uses Effective Target versus today’s mark when fixings have settled, else Target versus today’s mark.\nFigures update whenever valuation date, market levels, or Target Underlying change.",
   },
   "val-products": {
     title: "About the product list",

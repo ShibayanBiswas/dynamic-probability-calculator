@@ -67,6 +67,10 @@ Null when \(T\) missing, remaining ≤ 0, or any passed level missing.
 
 Settlement: past calendar days settled; **same day** settles only after **15:30 IST**.
 
+### Desk Target Underlying override
+
+On Probability / Initial / Current inputs, **Target Underlying** is editable (percent points). Working Target Level \(T = E \times (1 + \text{Target Underlying})\). Effective Target stays a **read-only** display when ≥1 fixing has settled; it still recalculates from the working \(T\). Schedule / frontier / ceiling formulas are otherwise unchanged.
+
 ## Phase impact cheat sheet
 
 | Phase | Changes Initial base? | Changes Current formula? | Changes Effective Target formula? | Changes live-book end date? |

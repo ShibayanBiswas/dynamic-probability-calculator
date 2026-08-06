@@ -43,6 +43,8 @@ export function getValuationInputFields() {
     { key: "valuationDate", label: "Valuation Date", type: "date" as const, highlight: true },
     { key: "niftyLevel", label: "Val. Date Nifty Level", type: "number" as const, highlight: true },
     { key: "sensexLevel", label: "Val. Date Sensex Level", type: "number" as const, highlight: true },
+    { key: "targetLevelDisplay", label: "Target Level", type: "targetLevelDisplay" as const, highlight: false },
+    { key: "targetUnderlyingPct", label: "Target Underlying", type: "targetUnderlying" as const, highlight: true },
     { key: "debentures", label: "No. of Debentures", type: "number" as const, highlight: true },
   ];
 }
@@ -74,6 +76,14 @@ export const INPUT_FIELD_HINTS: Record<string, InfoBlurb> = {
   sensexLevel: {
     title: "Valuation Date Sensex Level",
     body: "Closing Sensex level on the valuation date.\nAuto-filled from Yahoo Finance (^BSESN) when available.\nUsed when the product underlying is Sensex.\nDoes not overwrite the Nifty field — each index stays separate.\nMirrors Working sheet C1 for Sensex-linked rows.",
+  },
+  targetLevelDisplay: {
+    title: "Target Level / Effective Target",
+    body: "Read-only absolute hurdle for the selected product.\nWhen no observation fixings have settled, shows Target Level (Final Level Target) from Entry × (1 + Target Underlying).\nWhen one or more observation dates have settled, shows Effective Target for the remaining schedule.\nEffective Target is never typed directly — edit Target Underlying instead.\nMatches the Probability / Initial Prob / Backtesting desk maths.",
+  },
+  targetUnderlyingPct: {
+    title: "Target Underlying",
+    body: "Editable performance hurdle as a percent (e.g. 36.0 means 36%).\nDefaults from master Target Level ÷ Entry Level − 1.\nChanging it updates Target Level = Entry × (1 + pct) and recalculates Initial and Current Probability.\nWhen observations have settled, Effective Target still follows from that Target Level and remains read-only.\nAlways editable — for zero or one-or-more passed observations.",
   },
   debentures: {
     title: "No. of Debentures",

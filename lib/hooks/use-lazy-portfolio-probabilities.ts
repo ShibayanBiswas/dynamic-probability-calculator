@@ -18,8 +18,11 @@ import {
 } from "@/lib/probability/portfolio-prob-store";
 import type { ProductRecord } from "@/lib/types";
 
+/** Background full-book batches — keep under Vercel function budget. */
 const BATCH_SIZE = 20;
-const BETWEEN_BATCH_MS = 40;
+/** Search / visible priority batches — smaller = faster first paint for filtered rows. */
+const PRIORITY_BATCH_SIZE = 8;
+const BETWEEN_BATCH_MS = 28;
 /** Per-batch ceiling — keep under Vercel function budget with headroom. */
 const BATCH_FETCH_TIMEOUT_MS = 45_000;
 
@@ -39,14 +42,39 @@ type WarmOpts = {
   sensexLevel?: number;
   bookRevision: string;
   markAsOfLabel: string;
+  /** Static priority list (optional). */
+  priorityIsins?: string[];
+  /** Live priority reader — consulted each batch so search jumps ahead without aborting. */
+  getPriorityIsins?: () => string[];
   signal?: AbortSignal;
   onProgress?: (warmed: number, total: number) => void;
 };
+
+function resolvePriority(opts: WarmOpts): string[] {
+  const live = opts.getPriorityIsins?.() ?? [];
+  if (live.length > 0) return live;
+  return opts.priorityIsins ?? [];
+}
+
+function orderMissingQueue(missing: string[], priorityIsins: string[]): string[] {
+  if (!priorityIsins.length) return missing;
+  const pri = new Set(priorityIsins.filter(Boolean));
+  if (pri.size === 0) return missing;
+  const first: string[] = [];
+  const rest: string[] = [];
+  for (const isin of missing) {
+    if (pri.has(isin)) first.push(isin);
+    else rest.push(isin);
+  }
+  return [...first, ...rest];
+}
 
 /**
  * Fetch summary Initial/Current probs for missing ISINs (shared series load per batch).
  * Marks every requested ISIN in the store — even when the API returns null / failure —
  * so download gates never wait forever.
+ *
+ * Re-orders the queue each batch so newly prioritized (searched) ISINs jump ahead.
  */
 export async function ensurePortfolioProbabilities(
   isins: string[],
@@ -56,18 +84,25 @@ export async function ensurePortfolioProbabilities(
   const total = unique.length;
   if (total === 0) return;
 
-  let queue = missingPortfolioProbabilityIsins(unique);
   opts.onProgress?.(countWarmedPortfolioProbabilities(unique).warmed, total);
 
-  while (queue.length > 0) {
+  while (true) {
     if (opts.signal?.aborted) throw new DOMException("Aborted", "AbortError");
     if (typeof document !== "undefined" && document.visibilityState === "hidden") {
       await new Promise((r) => setTimeout(r, 400));
       continue;
     }
 
-    const batch = queue.slice(0, BATCH_SIZE);
-    queue = queue.slice(BATCH_SIZE);
+    const missing = missingPortfolioProbabilityIsins(unique);
+    if (missing.length === 0) break;
+
+    const priority = resolvePriority(opts);
+    const prioritySet = new Set(priority);
+    const queue = orderMissingQueue(missing, priority);
+    const hasPriority = queue.some((isin) => prioritySet.has(isin));
+    const batchSize = hasPriority ? PRIORITY_BATCH_SIZE : BATCH_SIZE;
+    const batch = queue.slice(0, batchSize);
+
     const controller = new AbortController();
     const onAbort = () => controller.abort();
     opts.signal?.addEventListener("abort", onAbort);
@@ -107,7 +142,6 @@ export async function ensurePortfolioProbabilities(
             opts.markAsOfLabel,
           );
         } else {
-          // Attempted — unlock downloads with em-dash cells rather than hanging.
           setProbabilityPair(isin, null, null, opts.markAsOfLabel);
         }
       }
@@ -122,7 +156,7 @@ export async function ensurePortfolioProbabilities(
     }
 
     opts.onProgress?.(countWarmedPortfolioProbabilities(unique).warmed, total);
-    if (queue.length > 0) {
+    if (missingPortfolioProbabilityIsins(unique).length > 0) {
       await new Promise((r) => setTimeout(r, BETWEEN_BATCH_MS));
     }
   }
@@ -135,10 +169,13 @@ function collectIsins(products: ProductRecord[]): string[] {
 }
 
 /**
- * Lazily fills Initial/Current Prob for the full lifecycle pool (not just the search slice).
- * Exposes warm progress + ensureWarmed() so Export / Full workbook wait until every ISIN is ready.
+ * Lazily fills Initial/Current Prob for the full lifecycle book.
+ * Pass `priorityProducts` (e.g. search hits) so those ISINs warm first on Vercel.
  */
-export function useLazyPortfolioProbabilities(products: ProductRecord[]) {
+export function useLazyPortfolioProbabilities(
+  products: ProductRecord[],
+  options?: { priorityProducts?: ProductRecord[] },
+) {
   useSyncExternalStore(subscribeProbabilityStore, getProbabilityStoreSnapshot, () => 0);
   const selection = useProductSelection();
   const { dataset } = useDataset();
@@ -152,17 +189,27 @@ export function useLazyPortfolioProbabilities(products: ProductRecord[]) {
     selection.marketLevels?.valuationDate?.trim() ||
     resolveMarkDateFallback().markDateLabel;
 
-  // Stabilize the ISIN set so identical books do not restart warm cycles on parent re-renders.
   const isinsKey = useMemo(() => collectIsins(products).join("\0"), [products]);
   const isins = useMemo(
     () => (isinsKey ? isinsKey.split("\0") : []),
     [isinsKey],
   );
+  const priorityIsinsKey = useMemo(
+    () => collectIsins(options?.priorityProducts ?? []).join("\0"),
+    [options?.priorityProducts],
+  );
+  const priorityIsins = useMemo(
+    () => (priorityIsinsKey ? priorityIsinsKey.split("\0") : []),
+    [priorityIsinsKey],
+  );
+  const priorityRef = useRef(priorityIsins);
+  priorityRef.current = priorityIsins;
+
   const { warmed, total } = countWarmedPortfolioProbabilities(isins);
   const ready = arePortfolioProbabilitiesReady(isins);
 
-  const warmOpts = useMemo(
-    (): Omit<WarmOpts, "signal" | "onProgress"> => ({
+  const warmBase = useMemo(
+    (): Omit<WarmOpts, "signal" | "onProgress" | "priorityIsins" | "getPriorityIsins"> => ({
       valuationDate,
       niftyLevel,
       sensexLevel,
@@ -172,6 +219,7 @@ export function useLazyPortfolioProbabilities(products: ProductRecord[]) {
     [valuationDate, niftyLevel, sensexLevel, bookRevision, markAsOfLabel],
   );
 
+  // Full-book warm — priority list is read live each batch (search does not abort this pass).
   useEffect(() => {
     const runKey = `${bookRevision}|${valuationDate}|${niftyLevel ?? ""}|${sensexLevel ?? ""}|${markAsOfLabel}`;
     const generation = generationRef.current + 1;
@@ -190,11 +238,12 @@ export function useLazyPortfolioProbabilities(products: ProductRecord[]) {
     const controller = new AbortController();
     setWarming(true);
     void ensurePortfolioProbabilities(isins, {
-      ...warmOpts,
+      ...warmBase,
+      getPriorityIsins: () => priorityRef.current,
       signal: controller.signal,
     })
       .catch(() => {
-        /* aborted / network — UI keeps progress */
+        /* aborted / network */
       })
       .finally(() => {
         if (generationRef.current === generation) setWarming(false);
@@ -203,7 +252,22 @@ export function useLazyPortfolioProbabilities(products: ProductRecord[]) {
     return () => {
       controller.abort();
     };
-  }, [isins, warmOpts, bookRevision, valuationDate, niftyLevel, sensexLevel, markAsOfLabel]);
+  }, [isins, warmBase, bookRevision, valuationDate, niftyLevel, sensexLevel, markAsOfLabel]);
+
+  // Fast lane: when the user searches, warm those ISINs immediately in a small batch.
+  useEffect(() => {
+    if (priorityIsins.length === 0) return;
+    if (arePortfolioProbabilitiesReady(priorityIsins)) return;
+    const controller = new AbortController();
+    void ensurePortfolioProbabilities(priorityIsins, {
+      ...warmBase,
+      priorityIsins,
+      signal: controller.signal,
+    }).catch(() => {
+      /* aborted */
+    });
+    return () => controller.abort();
+  }, [priorityIsins, warmBase]);
 
   const ensureWarmed = useCallback(
     async (targetProducts?: ProductRecord[]) => {
@@ -211,12 +275,15 @@ export function useLazyPortfolioProbabilities(products: ProductRecord[]) {
       if (arePortfolioProbabilitiesReady(targetIsins)) return;
       setWarming(true);
       try {
-        await ensurePortfolioProbabilities(targetIsins, warmOpts);
+        await ensurePortfolioProbabilities(targetIsins, {
+          ...warmBase,
+          priorityIsins: targetIsins,
+        });
       } finally {
         setWarming(false);
       }
     },
-    [products, warmOpts],
+    [products, warmBase],
   );
 
   const progress: PortfolioProbWarmProgress = {

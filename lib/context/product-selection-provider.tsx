@@ -37,6 +37,8 @@ import { resolveProduct, getDebenturePrice, getIndexEntryLevel, inferDebentureCo
 import { getProductSelectBlockerAlert } from "@/lib/product-data-guards";
 import { deskAlert } from "@/lib/desk-alert";
 import { useDataset } from "@/lib/context/dataset-provider";
+import { targetUnderlying } from "@/lib/probability/engine";
+import { formatTargetUnderlyingPercentInput } from "@/lib/probability/target-override";
 import type { ProductCategory, ProductRecord } from "@/lib/types";
 
 const STORAGE_KEY = "sp-dashboard-product-selection-v3";
@@ -55,6 +57,11 @@ export interface ProductSelectionState {
   debentures: string;
   purchaseDate: string;
   pricePerDebenture: string;
+  /**
+   * Target Underlying as percent points for the probability desk (e.g. "36.0" = 36%).
+   * Drives working Target Level = Entry × (1 + pct/100). Not persisted across sessions.
+   */
+  targetUnderlyingPct: string;
 }
 
 const DEFAULT_STATE: ProductSelectionState = {
@@ -68,6 +75,7 @@ const DEFAULT_STATE: ProductSelectionState = {
   debentures: DESK_DEFAULTS.debentures,
   purchaseDate: "",
   pricePerDebenture: "",
+  targetUnderlyingPct: "",
 };
 
 function loadCachedSelection(): ProductSelectionState {
@@ -463,6 +471,7 @@ export function ProductSelectionProvider({ children }: { children: ReactNode }) 
             // Always from master — Payoff shows Initial Price / Debenture as read-only.
             pricePerDebenture: String(price),
             debentures: String(inferDebentureCount(product)),
+            targetUnderlyingPct: formatTargetUnderlyingPercentInput(targetUnderlying(product)),
           };
         });
       },

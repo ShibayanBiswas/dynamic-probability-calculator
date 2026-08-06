@@ -43,6 +43,16 @@ import { lookupCustomUnderlyingMetaOnOrBefore, resolveCustomUnderlyingLevel } fr
 import { resolveCustomUnderlyingSpec } from "@/lib/underlying-benchmark";
 import { formatDeskDate } from "@/lib/market-data";
 import { formatDisplayDate, isDeskToday, parseExcelishDate } from "@/lib/workbook/dates";
+import {
+  computeObservationScheduleMetrics,
+  formatEffectiveTargetCell,
+} from "@/lib/portfolio-observation-metrics";
+import { targetUnderlying } from "@/lib/probability/engine";
+import {
+  formatTargetUnderlyingPercentInput,
+  parseTargetUnderlyingPercentInput,
+  workingTargetLevel,
+} from "@/lib/probability/target-override";
 import type { ProductCategory, ProductRecord } from "@/lib/types";
 import { cn, formatNumber } from "@/lib/utils";
 
@@ -362,6 +372,18 @@ export function ExcelInputPanel({
                   </FieldRow>
                 );
               }
+              if (field.type === "targetLevelDisplay" || field.type === "targetUnderlying") {
+                if (mode !== "probability") return null;
+                return (
+                  <ProbabilityTargetFields
+                    key={field.key}
+                    fieldKey={field.key}
+                    product={product}
+                    asOf={asOf}
+                    valuationDate={selection.valuationDate}
+                  />
+                );
+              }
               const stateKey = field.key as keyof typeof selection;
               if (!(stateKey in selection)) return null;
               const stored = String(selection[stateKey] ?? "");
@@ -597,5 +619,86 @@ export function DisclaimerBox({ children, className }: { children: ReactNode; cl
       <span className="desk-disclaimer-label">Disclaimer · </span>
       {children}
     </div>
+  );
+}
+
+/**
+ * Probability desk absolute hurdle + editable Target Underlying %.
+ * — 0 settled obs → read-only Target Level (from Entry × (1 + Target Underlying))
+ * — ≥1 settled obs → read-only Effective Target (derived; not typed)
+ * Target Underlying stays editable in both cases and drives dynamic recalculation.
+ */
+function ProbabilityTargetFields({
+  fieldKey,
+  product,
+  asOf,
+  valuationDate,
+}: {
+  fieldKey: string;
+  product: ProductRecord | undefined;
+  asOf: Date;
+  valuationDate: string;
+}) {
+  const selection = useProductSelection();
+  const checkingDate = parseExcelishDate(valuationDate) ?? asOf;
+
+  useEffect(() => {
+    if (!product) return;
+    if (selection.targetUnderlyingPct.trim()) return;
+    selection.setField(
+      "targetUnderlyingPct",
+      formatTargetUnderlyingPercentInput(targetUnderlying(product)),
+    );
+    // Seed blank slots when product identity changes; do not clobber edits.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional product.rowId gate
+  }, [product?.rowId]);
+
+  const fraction = parseTargetUnderlyingPercentInput(selection.targetUnderlyingPct);
+  const level = product ? workingTargetLevel(product, fraction) : null;
+  const metrics = product
+    ? computeObservationScheduleMetrics(product, checkingDate, { targetLevel: level })
+    : null;
+  const showEffectiveTarget = (metrics?.passed ?? 0) >= 1;
+
+  if (fieldKey === "targetLevelDisplay") {
+    const label = showEffectiveTarget ? "Effective Target" : "Target Level";
+    const value = showEffectiveTarget
+      ? formatEffectiveTargetCell(metrics?.effectiveTarget ?? null)
+      : level != null && Number.isFinite(level)
+        ? formatNumber(level)
+        : "—";
+    return (
+      <FieldRow label={label}>
+        <Input
+          readOnly
+          className="font-semibold text-ink"
+          value={value}
+          title={
+            showEffectiveTarget
+              ? "Read-only Effective Target — edit Target Underlying to recalculate"
+              : "Read-only Target Level — edit Target Underlying to recalculate"
+          }
+        />
+      </FieldRow>
+    );
+  }
+
+  return (
+    <FieldRow label="Target Underlying">
+      <div className="relative">
+        <Input
+          className="input-glow pr-8 font-semibold text-ink"
+          type="number"
+          step="0.1"
+          inputMode="decimal"
+          value={selection.targetUnderlyingPct}
+          onChange={(e) => selection.setField("targetUnderlyingPct", e.target.value)}
+          title="Editable in all cases — percent points (36.0 = 36%)"
+        />
+        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-stone-500">
+          %
+        </span>
+      </div>
+    </FieldRow>
   );
 }

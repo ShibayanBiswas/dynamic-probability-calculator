@@ -76,8 +76,9 @@ Earliest path start = first day where **both** legs exist after fill.
 
 - **Target Underlying (Initial):** `target / entry − 1`  
   Entry = `getProbabilityEntryLevel` (Actual Entry / Entry / Initial / Initial Fixing only — **no Target fallback**).  
+  Desk may override absolute `target` via editable Target Underlying % → `Entry × (1 + pct)`.  
 - **Required Underlying (Current):** `effectiveTarget / todayLevel − 1`  
-  Effective Target matches lifecycle: `(Total×Target − Σpassed levels) / Remaining` when fixings have settled; else master Target.  
+  Effective Target matches lifecycle: `(Total×Target − Σpassed levels) / Remaining` when fixings have settled; else working Target.  
   `todayLevel` = request `niftyLevel`/`sensexLevel` (desk mark), else series close on checking date.  
 
 Probability = `successCount / includedCount` when threshold ready; otherwise not ready.
@@ -110,6 +111,7 @@ Content-Type: application/json
   "valuationDate": "DD-MM-YYYY",
   "niftyLevel": 24500,
   "sensexLevel": 80000,
+  "targetLevel": 29393,
   "includePaths": true,
   "bookRevision": "workbook:loadedAt",
   "invalidate": false
@@ -119,6 +121,7 @@ Content-Type: application/json
 Notes:
 
 - On Vercel, prefer `includePaths` only when the UI needs the table (summary can skip).  
+- Optional `targetLevel` (single-ISIN) overrides master Target for Initial threshold + Current Effective Target; omitted on portfolio batch warm.  
 - `maxDuration` on the route is capped for serverless.  
 - Response: `initial` / `current`, optional `asOfLastObservation`, `checkingDate`.  
 - **Always hydrate** schedule dates on the client after JSON.

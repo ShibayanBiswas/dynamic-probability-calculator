@@ -141,8 +141,10 @@ export function LifecycleProductList({
     );
   }, [snapshotPool, query]);
 
-  // Warm every ISIN in the book passed to this list so Full workbook never exports empty probs.
-  const { progress: probWarm, ensureWarmed } = useLazyPortfolioProbabilities(products);
+  // Warm every ISIN in the book; search hits jump the queue for fast Vercel fills.
+  const { progress: probWarm, ensureWarmed } = useLazyPortfolioProbabilities(products, {
+    priorityProducts: query.trim() ? filtered : undefined,
+  });
   const [exportBusy, setExportBusy] = useState(false);
   const [, startExportTransition] = useTransition();
 

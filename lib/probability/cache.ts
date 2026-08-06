@@ -26,6 +26,8 @@ export function probabilityCacheKey(parts: {
   /** Required for Current Prob — threshold depends on desk levels. */
   niftyLevel?: number;
   sensexLevel?: number;
+  /** Absolute Target Level override from Target Underlying % (empty = master). */
+  targetLevel?: number;
 }): string {
   return [
     parts.isin,
@@ -37,6 +39,7 @@ export function probabilityCacheKey(parts: {
     parts.bookRevision ?? "",
     roundLevel(parts.niftyLevel),
     roundLevel(parts.sensexLevel),
+    roundLevel(parts.targetLevel),
   ].join("|");
 }
 
