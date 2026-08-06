@@ -560,20 +560,28 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
 
       try {
         const mode = surface === "summary" ? "both" : surface === "initial" ? "initial" : "current";
-        const res = await fetch("/api/probability/run", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          signal: controller.signal,
-          body: JSON.stringify({
-            isin: product.isin,
-            mode,
-            valuationDate: formatDeskDate(checkingDate),
-            niftyLevel: pastFinalObservation ? undefined : niftyLevel,
-            sensexLevel: pastFinalObservation ? undefined : sensexLevel,
-            includePaths,
-            bookRevision: `${dataset.workbookName}:${dataset.loadedAt}`,
-          }),
-        });
+        // Hard client ceilings — never wait past the serverless maxDuration.
+        const timeoutMs = includePaths ? 55_000 : 20_000;
+        const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+        let res: Response;
+        try {
+          res = await fetch("/api/probability/run", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            signal: controller.signal,
+            body: JSON.stringify({
+              isin: product.isin,
+              mode,
+              valuationDate: formatDeskDate(checkingDate),
+              niftyLevel: pastFinalObservation ? undefined : niftyLevel,
+              sensexLevel: pastFinalObservation ? undefined : sensexLevel,
+              includePaths,
+              bookRevision: `${dataset.workbookName}:${dataset.loadedAt}`,
+            }),
+          });
+        } finally {
+          window.clearTimeout(timeout);
+        }
         const json = (await res.json()) as {
           ok?: boolean;
           error?: string;
@@ -601,7 +609,13 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
           return nextCurrent;
         });
       } catch (err) {
-        if (controller.signal.aborted) return;
+        if (controller.signal.aborted) {
+          // Timeout / navigation — clear stuck path spinner without wiping KPIs.
+          if (includePaths && pathsAbortRef.current === controller) {
+            setError("Path load timed out — try Reveal again.");
+          }
+          return;
+        }
         setError(err instanceof Error ? err.message : "Probability run failed");
         if (!includePaths) {
           setInitialResult(null);

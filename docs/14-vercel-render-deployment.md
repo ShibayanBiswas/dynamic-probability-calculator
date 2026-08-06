@@ -1,6 +1,6 @@
 ﻿# Deploy Dynamic Probability Calculator — Vercel + Render
 
-**Updated:** 2026-08-04
+**Updated:** 2026-08-06
 
 **Repo:** https://github.com/ShibayanBiswas/dynamic-probability-calculator  
 **Example production:** https://dynamic-probability-calculator-9aso.vercel.app  
@@ -87,13 +87,28 @@ npm run sync:index-2001
 - Pinned deps (no `"latest"`)  
 - `engines.node` = `20.x`  
 - `framer-motion` pinned compatible with `motion-dom`  
-- `vercel.json` uses `npm install`  
+- `vercel.json` uses `npm install` + function budgets (`probability/run` **60s / 1024MB**, sheets **60s**, bootstrap **30s**)  
 - Product bootstrap prefers **static CDN master seed** (`USE_STATIC_SEED`) — do not expect a full Mongo product dump in one browser payload  
-- Mongo still valuable for `index_prices` overlays and Yahoo sync  
-- Probability API: `includePaths` opt-in; route `maxDuration` capped (~60s) for serverless  
+- Mongo still valuable for **recent** `index_prices` overlays and background Yahoo sync  
+- Probability API: `includePaths` opt-in; Yahoo sync is **background-only** (never blocks the response); Mongo overlay is recent-window + timed  
+- Summary results are LRU-cached; **full path tables are not cached** (avoids serverless OOM)  
+- Portfolio warm-up batches slim payloads (probabilities only) and pauses when the tab is hidden  
+- Client path/headline fetches abort on hard ceilings (55s / 20s) so the UI never hangs forever  
 - Never commit `MONGODB_URI` or Atlas passwords  
 
-## 6) Post-deploy smoke
+## 6) Smoothness checklist (do not regress)
+
+| Surface | Expectation |
+|---------|-------------|
+| First paint / Home | CDN seed → KPIs without waiting on Mongo bootstrap |
+| Probability KPIs | Summary POST < ~3–8s cold; cached thereafter |
+| Initial / Current paths | Only after Reveal; virtualized table; progress bar clears on finish/timeout |
+| Lifecycle Initial/Current Prob | Lazy batches of 16 ISINs; no path payloads |
+| Intel master sheets | maxDuration 60s; prefer cached sheet payload |
+
+If a deploy feels “stuck”, check Vercel function logs for `mongo index overlay` timeouts (safe fallback to Gift CSV) and confirm Hobby vs Pro plan supports `maxDuration: 60`.
+
+## 7) Post-deploy smoke
 
 1. `/probability` — schedule above specs; KPIs load  
 2. `/initial-probability` — inline progress; path frontier near latest series day  

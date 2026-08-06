@@ -3,6 +3,7 @@ import path from "path";
 
 import { NextResponse } from "next/server";
 
+import { runInBackground, withTimeout } from "@/lib/async-utils";
 import { getIndexPricesBetween, syncIndexPricesFromYahoo } from "@/lib/db/index-prices";
 import niftyHistory from "@/lib/data/valuation-index-history.json";
 import sensexHistory from "@/lib/data/sensex-index-history.json";
@@ -29,7 +30,10 @@ import type { ProductRecord } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-/** Path tables can be ~6k rows; allow headroom on Fluid Compute without hanging the default 10s budget. */
+/**
+ * Path tables can be ~6k rows. Keep under Pro/Fluid budgets; Hobby may still
+ * complete summary-only runs faster via Gift CSV + short Mongo overlay.
+ */
 export const maxDuration = 60;
 
 type Series = IndexBar[];
@@ -77,6 +81,14 @@ function loadBundledSeries(): Series {
   return mergeForwardFilledSeries(niftyMap, loadSensexBundled());
 }
 
+/** ISO date N calendar days before `endKey` (UTC noon arithmetic). */
+function daysBefore(endKey: string, days: number): string {
+  const [y, m, d] = endKey.split("-").map(Number);
+  const dt = new Date(Date.UTC(y!, m! - 1, d!, 12, 0, 0));
+  dt.setUTCDate(dt.getUTCDate() - days);
+  return toLocalDateKey(dt);
+}
+
 async function loadSeries(): Promise<Series> {
   const end = toLocalDateKey(new Date());
   const cacheKey = `${SERIES_FLOOR}:${end}:ffill:giftnifty-2001`;
@@ -84,14 +96,13 @@ async function loadSeries(): Promise<Series> {
     return seriesCache.series;
   }
 
-  // Refresh recent Mongo bars so the path frontier tracks the latest trading session.
-  try {
+  // Never await Yahoo on the request path — Gift CSV + Mongo overlay are enough for KPIs/paths.
+  // Background refresh keeps the frontier current without risking Vercel timeouts.
+  runInBackground("probability-yahoo-sync", (async () => {
     const from = new Date();
     from.setUTCDate(from.getUTCDate() - 45);
     await syncIndexPricesFromYahoo(from);
-  } catch {
-    /* Yahoo optional — Gift CSV + existing Mongo still drive the book */
-  }
+  })());
 
   // Always seed from Gift/NSP Nifty since 2001 so paths never truncate at Yahoo ~2007.
   const niftyMap = loadNiftyFromGiftCsv();
@@ -100,12 +111,24 @@ async function loadSeries(): Promise<Series> {
   }
   const sensexMap = loadSensexBundled();
 
-  const mongoRows = await getIndexPricesBetween(SERIES_FLOOR, end);
-  if (mongoRows.length >= 1000) {
-    for (const r of mongoRows) {
-      if (r.nifty > 0) niftyMap.set(r.date, r.nifty);
-      if (r.sensex > 0) sensexMap.set(r.date, r.sensex);
+  // Overlay only recent Mongo bars (Gift already has deep history). Full 2001→today
+  // scans burn cold-start time/memory on Vercel for little gain.
+  const overlayStart = daysBefore(end, process.env.VERCEL ? 450 : 900);
+  try {
+    const mongoRows = await withTimeout(
+      getIndexPricesBetween(overlayStart, end),
+      process.env.VERCEL ? 8_000 : 15_000,
+      "mongo index overlay",
+    );
+    if (mongoRows.length >= 50) {
+      for (const r of mongoRows) {
+        if (r.nifty > 0) niftyMap.set(r.date, r.nifty);
+        if (r.sensex > 0) sensexMap.set(r.date, r.sensex);
+      }
     }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "mongo overlay failed";
+    console.warn(`[probability/run] ${message} — using Gift/bundled series`);
   }
 
   const series = mergeForwardFilledSeries(niftyMap, sensexMap);
@@ -264,11 +287,26 @@ export async function POST(request: Request) {
             includePaths: false,
             bookRevision: body.bookRevision,
           });
+          // Portfolio warm-up only needs headline probs — drop schedule/path shells.
           batchResults.push({
             isin,
             ok: true,
-            initial: results.initial,
-            current: results.current,
+            initial: results.initial
+              ? {
+                  ...results.initial,
+                  schedule: [],
+                  pathSchedule: [],
+                  paths: [],
+                }
+              : undefined,
+            current: results.current
+              ? {
+                  ...results.current,
+                  schedule: [],
+                  pathSchedule: [],
+                  paths: [],
+                }
+              : undefined,
             checkingDate: results.checkingDate,
             asOfLastObservation: results.asOfLastObservation,
           });

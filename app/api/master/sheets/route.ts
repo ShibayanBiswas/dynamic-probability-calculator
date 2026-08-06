@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { loadMasterSheetsPayload } from "@/lib/server/master-sheets-api";
 import { warmMasterDatasetDiskCache } from "@/lib/server/master-file";
 
-export const maxDuration = 120;
+export const maxDuration = 60;
 
 const SHEET_TABS = new Set(["Primary", "Rollover", "NEW PRIMARY"]);
 

@@ -2,6 +2,24 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "buildCommand": "npm run build",
+  "functions": {
+    "app/api/probability/run/route.ts": {
+      "maxDuration": 60,
+      "memory": 1024
+    },
+    "app/api/master/sheets/route.ts": {
+      "maxDuration": 60,
+      "memory": 1024
+    },
+    "app/api/parse/bootstrap/route.ts": {
+      "maxDuration": 30,
+      "memory": 512
+    },
+    "app/api/analytics/category-stats/route.ts": {
+      "maxDuration": 30,
+      "memory": 1024
+    }
+  },
   "headers": [
     {
       "source": "/data/(.*)",

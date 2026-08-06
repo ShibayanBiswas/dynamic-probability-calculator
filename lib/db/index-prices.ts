@@ -15,6 +15,8 @@ async function fetchYahooDaily(symbol: string, period1: number, period2: number)
     const res = await fetch(url, {
       headers: { "User-Agent": "Mozilla/5.0 SP-Dashboard/1.0" },
       cache: "no-store",
+      // Hard cap — never let Yahoo hang a Vercel probability cold start.
+      signal: AbortSignal.timeout(process.env.VERCEL ? 6_000 : 12_000),
     });
     if (!res.ok) return null;
     const json = (await res.json()) as {
@@ -123,11 +125,21 @@ export async function getIndexPricesBetween(startDate: string, endDate: string) 
   try {
     const db = await getMongoDb();
     if (!db) return [];
-    return db
+    const cursor = db
       .collection<IndexPriceRow>(COLLECTIONS.indexPrices)
-      .find({ date: { $gte: startDate, $lte: endDate } })
-      .sort({ date: 1 })
-      .toArray();
+      .find(
+        { date: { $gte: startDate, $lte: endDate } },
+        { projection: { _id: 0, date: 1, nifty: 1, sensex: 1 } },
+      )
+      .sort({ date: 1 });
+    // Cap wait on serverless — Gift CSV already covers deep history.
+    const timeoutMs = process.env.VERCEL ? 8_000 : 20_000;
+    return await Promise.race([
+      cursor.toArray(),
+      new Promise<IndexPriceRow[]>((_, reject) => {
+        setTimeout(() => reject(new Error("index_prices query timed out")), timeoutMs);
+      }),
+    ]);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Mongo index load failed";
     console.warn(`[index-prices] ${message}`);

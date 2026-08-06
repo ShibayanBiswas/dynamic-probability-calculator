@@ -16,10 +16,12 @@ import {
 } from "@/lib/probability/portfolio-prob-store";
 import type { ProductRecord } from "@/lib/types";
 
-const BATCH_SIZE = 24;
-const BETWEEN_BATCH_MS = 16;
+const BATCH_SIZE = 16;
+const BETWEEN_BATCH_MS = 48;
 /** Soft cap so very large books still warm without unbounded queue growth. */
-const MAX_WARM_ISINS = 400;
+const MAX_WARM_ISINS = 320;
+/** Per-batch ceiling — keep under Vercel function budget with headroom. */
+const BATCH_FETCH_TIMEOUT_MS = 45_000;
 
 /** Last inputs that invalidate stored portfolio probabilities. */
 let lastInvalidateKey = "";
@@ -63,11 +65,18 @@ export function useLazyPortfolioProbabilities(products: ProductRecord[]) {
 
     async function drain() {
       while (!cancelled && generationRef.current === generation && queueRef.current.length > 0) {
+        if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+          await new Promise((r) => setTimeout(r, 400));
+          continue;
+        }
         const batch = queueRef.current.splice(0, BATCH_SIZE);
+        const controller = new AbortController();
+        const timer = window.setTimeout(() => controller.abort(), BATCH_FETCH_TIMEOUT_MS);
         try {
           const res = await fetch("/api/probability/run", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            signal: controller.signal,
             body: JSON.stringify({
               isins: batch,
               mode: "both",
@@ -98,6 +107,8 @@ export function useLazyPortfolioProbabilities(products: ProductRecord[]) {
           }
         } catch {
           /* ignore batch failures; remaining queue may retry on next effect */
+        } finally {
+          window.clearTimeout(timer);
         }
         if (queueRef.current.length > 0) {
           await new Promise((r) => setTimeout(r, BETWEEN_BATCH_MS));

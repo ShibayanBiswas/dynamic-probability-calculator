@@ -54,6 +54,8 @@ export function getCachedProbability(key: string): ProbabilityRunResult | null {
 }
 
 export function setCachedProbability(key: string, value: ProbabilityRunResult): void {
+  // Never cache full path tables — ~6k rows × LRU would OOM Fluid / Hobby memory.
+  if (value.paths.length > 0) return;
   if (store.size >= MAX_ENTRIES) {
     const oldest = store.keys().next().value;
     if (oldest) store.delete(oldest);
