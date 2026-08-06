@@ -22,8 +22,8 @@ Expired products and names whose **last observation has already settled** are **
 | 10 Years | Allotment (else Trade) | Rollover if present, else Maturity |
 
 Initial uses a Start Level cushion (Nifty ×1.01 / Sensex ×1.006, ceiling to 100) vs Target÷Entry.  
-Current uses remaining observation averages vs Effective Target÷desk mark when fixings have settled (else Target÷mark; 15:30 IST rule).  
-Effective Target on the lifecycle table is the same remaining-hurdle average formula.
+Current uses remaining observation averages vs Effective Target÷desk mark when ≥1 fixing has settled (else Target÷mark; ET column blank; 15:30 IST rule).  
+Effective Target on the lifecycle table uses the same remaining-hurdle formula and is blank until at least one observation has settled (Primary SP parity).
 
 **Read:** [docs/12-probability-plain-english.md](docs/12-probability-plain-english.md) · **Deep audit:** [docs/16-product-type-probability-logic.md](docs/16-product-type-probability-logic.md)
 

@@ -240,8 +240,8 @@ const allForwardRun = runProbabilityBacktest({
 assert(allForwardRun.schedule.filter((s) => s.date).length === 2, "two schedule slots on Observation Schedule");
 assert(allForwardRun.pathSchedule.length === 2, "two remaining path slots");
 assert(
-  Math.abs((allForwardRun.effectiveTargetLevel ?? NaN) - 13700) < 1e-9,
-  "no passed → Effective Target = Target",
+  allForwardRun.effectiveTargetLevel == null,
+  "no passed → Effective Target blank",
 );
 assert(
   Math.abs((allForwardRun.threshold ?? NaN) - (13700 / 24200 - 1)) < 1e-12,

@@ -114,8 +114,7 @@ export function buildProductSpecCards(
   const coupon = getCouponLabel(product);
   const tenorFromMaster = masterTenorDays(product);
   const obsMetrics = computeObservationScheduleMetrics(product, asOf);
-  // Show Effective Target whenever at least one observation has settled (remaining hurdle),
-  // or when nothing has settled yet (collapses to Target). Blank only when not computable.
+  // Effective Target only when ≥1 observation has settled (Primary SP parity); else "—".
   const effectiveTargetDisplay = formatEffectiveTargetCell(obsMetrics.effectiveTarget);
 
   const lastObsRaw =

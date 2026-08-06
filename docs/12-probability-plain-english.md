@@ -72,7 +72,7 @@ Default filter is **All**. Rows after the Yes frontier stay Path Taken = No so *
 ## Success rules (plain words)
 
 - **Initial success:** average path performance beats **Target Level ÷ Entry Level − 1**.  
-- **Current success:** average of **remaining** observation levels beats **Effective Target ÷ today’s mark − 1** (Effective Target = master Target when nothing has settled yet).  
+- **Current success:** average of **remaining** observation levels beats **Effective Target ÷ today’s mark − 1** when at least one observation has settled; otherwise **Target ÷ today’s mark − 1** (Effective Target stays blank).  
 - **Current Target Underlying (display / default):** with settled fixings this is **Effective Target ÷ Entry − 1** (not the original Target %). Example: Entry 17,400 and ET 20,087.65 → about **15.4%**, while master Target Underlying stays **33%** on Initial.  
 - **Probability:** successful included paths ÷ all included paths.
 
@@ -80,13 +80,13 @@ Entry comes from Actual Entry / Entry / Initial / Initial Fixing fields — neve
 
 ## Effective Target (lifecycle table)
 
-Once some Average dates have already printed:
+Shown only after **at least one** observation date has settled (same rule as Primary SP):
 
 1. Count how many observation dates exist and how many have settled.  
 2. Subtract the sum of printed levels from (Total × Target).  
 3. Divide by remaining observations.
 
-That is the **remaining hurdle average**. It can show for custom underlyings too; Initial/Current path engines cannot.
+If **none** have settled yet, Effective Target is **—** (blank); the desk still uses master Target for Current Prob hurdles. It can show for custom underlyings too; Initial/Current path engines cannot.
 
 ## After the last observation has passed
 

@@ -462,7 +462,7 @@ export const logicModules: LogicModule[] = [
 
       "Observation Level columns stay blank for future dates, unsettled same-day slots, and empty Average workbook slots.",
 
-      "When no fixings have settled yet, Effective Target equals master Target Level.",
+      "When no fixings have settled yet, Effective Target is blank (—); the hurdle stays master Target Level.",
 
     ],
 

@@ -82,8 +82,8 @@ Earliest path start = first day where **both** legs exist after fill.
   Edits interpret the percent as desired ET vs Entry and **back-solve** Target Level  
   `T = (ET × Remaining + Σpassed) / N` so Effective Target tracks `Entry × (1 + pct)`.  
   Excel `Probability!D22` remains master Target÷Entry−1 — intentional desk UX.  
-- **Required Underlying (Current):** `effectiveTarget / todayLevel − 1`  
-  Effective Target matches lifecycle: `(Total×Target − Σpassed levels) / Remaining` when fixings have settled; else working Target.  
+- **Required Underlying (Current):** `effectiveTarget / todayLevel − 1` when ≥1 fixing settled; else `target / todayLevel − 1`  
+  Effective Target = `(Total×Target − Σpassed levels) / Remaining` only when `passed ≥ 1` and `remaining > 0`; otherwise blank (`—`).  
   `todayLevel` = request `niftyLevel`/`sensexLevel` (desk mark), else series close on checking date.  
 
 Probability = `successCount / includedCount` when threshold ready; otherwise not ready.

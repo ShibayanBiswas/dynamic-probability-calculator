@@ -142,8 +142,8 @@ export function computeCurrentEffectiveTargetLevel(args: {
   const remaining = total - passedDates.length;
   if (remaining <= 0) return null;
 
-  // No fixings settled yet → Effective Target collapses to master Target.
-  if (passedDates.length === 0) return targetLevel;
+  // No fixings settled yet → no Effective Target (hurdle stays master Target via caller).
+  if (passedDates.length === 0) return null;
 
   let sumPassed = 0;
   for (const d of passedDates) {

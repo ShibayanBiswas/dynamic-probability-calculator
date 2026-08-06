@@ -86,7 +86,7 @@ ET = (TotalObs × Target − Σ passed levels) / RemainingObs
 |------|--------|
 | Passed | Settled after NSE cash close on that IST day (`lib/observation-settlement.ts`) |
 | Levels | Bundled Nifty/Sensex valuation history or custom helper — **not** Gift+Mongo path series |
-| Blank | Missing Target, Remaining ≤ 0, or missing passed level |
+| Blank | Missing Target, **0 observations passed**, Remaining ≤ 0, or missing passed level |
 
 `npm run verify:effective-target` · `npm run verify:obs-settlement`
 

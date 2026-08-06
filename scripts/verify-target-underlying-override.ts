@@ -151,10 +151,7 @@ const currentMaster = runProbabilityBacktest({
   niftyLevel: 24200,
   includePaths: false,
 });
-assert(
-  nearly(currentMaster.effectiveTargetLevel!, masterTarget),
-  "0 passed → Effective Target collapses to master Target",
-);
+assert(currentMaster.effectiveTargetLevel == null, "0 passed → Effective Target is blank");
 assert(
   nearly(currentMaster.threshold!, masterTarget / 24200 - 1),
   "0 passed Current threshold = Target / today − 1",
@@ -169,10 +166,7 @@ const currentOverride = runProbabilityBacktest({
   targetLevel: level34,
   includePaths: false,
 });
-assert(
-  nearly(currentOverride.effectiveTargetLevel!, level34),
-  "0 passed + override → ET = working Target Level",
-);
+assert(currentOverride.effectiveTargetLevel == null, "0 passed + override → ET still blank");
 assert(
   nearly(currentOverride.threshold!, level34 / 24200 - 1),
   "0 passed Current threshold uses working Target",

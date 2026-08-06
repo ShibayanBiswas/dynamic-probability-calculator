@@ -41,7 +41,7 @@ function handCompute(product: ProductRecord, asOf: Date) {
   const passed = passedDates.length;
   const remaining = Math.max(0, total - passed);
   const target = getTargetLevel(product);
-  if (target == null || !(target > 0) || remaining <= 0 || total <= 0) {
+  if (target == null || !(target > 0) || remaining <= 0 || total <= 0 || passed < 1) {
     return { total, passed, remaining, effectiveTarget: null as number | null, sumPassed: 0, target };
   }
   let sumPassed = 0;
@@ -156,7 +156,7 @@ function main() {
     }
   }
 
-  // Edge: product with all obs remaining → ET = target
+  // Edge: product with all obs remaining → ET blank (Primary SP parity)
   const allRemaining = ongoing.find((p) => {
     const m = computeObservationScheduleMetrics(p, asOf);
     const t = getTargetLevel(p);
@@ -164,11 +164,16 @@ function main() {
   });
   if (allRemaining) {
     const m = computeObservationScheduleMetrics(allRemaining, asOf);
-    const t = getTargetLevel(allRemaining)!;
-    if (m.effectiveTarget == null || !almostEqual(m.effectiveTarget, t)) {
-      fails.push(`allRemaining ET should equal target for ${allRemaining.isin}: ${m.effectiveTarget} vs ${t}`);
+    if (m.effectiveTarget != null) {
+      fails.push(`allRemaining ET should be null for ${allRemaining.isin}: ${m.effectiveTarget}`);
     } else {
-      samples.push({ edge: "allRemaining→ET=target", isin: allRemaining.isin, ET: m.effectiveTarget, target: t });
+      samples.push({
+        edge: "allRemaining→ET=null",
+        isin: allRemaining.isin,
+        ET: m.effectiveTarget,
+        target: getTargetLevel(allRemaining),
+        passed: m.passed,
+      });
     }
   }
 
@@ -181,6 +186,7 @@ function main() {
     const mEarly = computeObservationScheduleMetrics(withObs, early);
     const mLate = computeObservationScheduleMetrics(withObs, late);
     if (mEarly.passed !== 0) fails.push(`early asOf should have 0 passed ${withObs.isin}`);
+    if (mEarly.effectiveTarget != null) fails.push(`early asOf ET should be null ${withObs.isin}`);
     if (mLate.remaining !== 0) fails.push(`late asOf should have 0 remaining ${withObs.isin}`);
     if (mLate.effectiveTarget != null) fails.push(`late asOf ET should be null ${withObs.isin}`);
     samples.push({
@@ -229,7 +235,7 @@ function main() {
   }
 
   console.log("\n=== PASS ===");
-  console.log("Effective Target = (Total×Target − Σpassed levels) / Remaining — verified full ongoing book.");
+  console.log("Effective Target = (Total×Target − Σpassed) / Remaining when passed≥1; else — — verified full ongoing book.");
 }
 
 main();

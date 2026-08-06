@@ -169,8 +169,12 @@ function main() {
       includePaths: true,
     });
     assert(
-      Math.abs((run.effectiveTargetLevel ?? NaN) - target) < 1e-6,
-      `all-remaining ET=Target ${run.effectiveTargetLevel} vs ${target}`,
+      run.effectiveTargetLevel == null,
+      `all-remaining ET blank ${run.effectiveTargetLevel}`,
+    );
+    assert(
+      Math.abs((run.threshold ?? NaN) - (target / today - 1)) < 1e-12,
+      `all-remaining threshold = Target/today`,
     );
     const present = run.schedule.filter((s) => s.date);
     assert(present.every((s) => s.daysFromBase > 0), "all-remaining no passed slots");
