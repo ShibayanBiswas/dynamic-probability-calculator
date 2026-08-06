@@ -92,7 +92,8 @@ npm run sync:index-2001
 - Mongo still valuable for **recent** `index_prices` overlays and background Yahoo sync  
 - Probability API: `includePaths` opt-in; Yahoo sync is **background-only** (never blocks the response); Mongo overlay is recent-window + timed  
 - Summary results are LRU-cached; **full path tables are not cached** (avoids serverless OOM)  
-- Portfolio warm-up batches slim payloads (probabilities only) and pauses when the tab is hidden  
+- Portfolio warm-up batches slim payloads (probabilities only), pauses when the tab is hidden, and covers the **full lifecycle book** (no soft ISIN cap)
+- Lifecycle **Export view / Full workbook** wait until every product Initial/Current Prob is stored, then download client-side
 - Client path/headline fetches abort on hard ceilings (55s / 20s) so the UI never hangs forever  
 - Never commit `MONGODB_URI` or Atlas passwords  
 
@@ -103,7 +104,8 @@ npm run sync:index-2001
 | First paint / Home | CDN seed → KPIs without waiting on Mongo bootstrap |
 | Probability KPIs | Summary POST < ~3–8s cold; cached thereafter |
 | Initial / Current paths | Only after Reveal; virtualized table; progress bar clears on finish/timeout |
-| Lifecycle Initial/Current Prob | Lazy batches of 16 ISINs; no path payloads |
+| Lifecycle Initial/Current Prob | Lazy batches of ~20 ISINs; slim payloads; full-book warm |
+| Lifecycle Excel downloads | Buttons gated until probs ready; progress in subtitle; deferred blob revoke |
 | Intel master sheets | maxDuration 60s; prefer cached sheet payload |
 
 If a deploy feels “stuck”, check Vercel function logs for `mongo index overlay` timeouts (safe fallback to Gift CSV) and confirm Hobby vs Pro plan supports `maxDuration: 60`.

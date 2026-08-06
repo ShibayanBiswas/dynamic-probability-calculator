@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { Download, Search } from "lucide-react";
 
 import {
@@ -141,7 +141,10 @@ export function LifecycleProductList({
     );
   }, [snapshotPool, query]);
 
-  useLazyPortfolioProbabilities(filtered);
+  // Warm every ISIN in the book passed to this list so Full workbook never exports empty probs.
+  const { progress: probWarm, ensureWarmed } = useLazyPortfolioProbabilities(products);
+  const [exportBusy, setExportBusy] = useState(false);
+  const [, startExportTransition] = useTransition();
 
   const columnLabels = useMemo(() => lifecyclePortfolioColumnLabels(lifecycle), [lifecycle]);
   const tableHeaders = useMemo(
@@ -155,29 +158,64 @@ export function LifecycleProductList({
     [filtered],
   );
 
+  const probsReady = probWarm.ready || probWarm.total === 0;
+  const exportBlocked = exportBusy || (!probsReady && probWarm.total > 0);
+
   const handleDownload = () => {
-    if (filtered.length === 0) return;
-    void downloadProductsExcel(
-      filtered,
-      buildDeskExportFilename({
-        screen: LIFECYCLE_FILTER_LABELS[lifecycle],
-        asOf,
-        extension: "xlsx",
-      }),
-      {
-        sheetName: LIFECYCLE_FILTER_LABELS[lifecycle].slice(0, 31),
-        asOf,
-        niftyLevel,
-        sensexLevel,
-        lifecycleFilter: lifecycle,
-      },
-    );
+    if (filtered.length === 0 || exportBusy) return;
+    setExportBusy(true);
+    startExportTransition(() => {
+      void (async () => {
+        try {
+          await ensureWarmed(filtered);
+          await downloadProductsExcel(
+            filtered,
+            buildDeskExportFilename({
+              screen: LIFECYCLE_FILTER_LABELS[lifecycle],
+              asOf,
+              extension: "xlsx",
+            }),
+            {
+              sheetName: LIFECYCLE_FILTER_LABELS[lifecycle].slice(0, 31),
+              asOf,
+              niftyLevel,
+              sensexLevel,
+              lifecycleFilter: lifecycle,
+            },
+          );
+        } finally {
+          setExportBusy(false);
+        }
+      })();
+    });
   };
 
   const handleDownloadAll = () => {
-    if (products.length === 0) return;
-    void downloadLifecycleWorkbook(products, undefined, asOf, { niftyLevel, sensexLevel });
+    if (products.length === 0 || exportBusy) return;
+    setExportBusy(true);
+    startExportTransition(() => {
+      void (async () => {
+        try {
+          // Full workbook spans every live lifecycle sheet — wait for the whole book.
+          await ensureWarmed(products);
+          await downloadLifecycleWorkbook(products, undefined, asOf, { niftyLevel, sensexLevel });
+        } finally {
+          setExportBusy(false);
+        }
+      })();
+    });
   };
+
+  const exportViewLabel = exportBusy
+    ? "Preparing export…"
+    : !probsReady
+      ? `Computing probs ${formatNumber(probWarm.warmed)}/${formatNumber(probWarm.total)}`
+      : "Export view";
+  const fullWorkbookLabel = exportBusy
+    ? "Preparing export…"
+    : !probsReady
+      ? `Computing probs ${formatNumber(probWarm.warmed)}/${formatNumber(probWarm.total)}`
+      : "Full workbook";
 
   return (
     <Panel className={compact ? "!p-3" : "!p-4"} glow="cyan">
@@ -191,7 +229,15 @@ export function LifecycleProductList({
             {products.length > 0 ? (
               <>
                 {snapshotsLoading ? (
-                  <span className="text-amber-800">Computing live marks from desk index levels… · </span>
+                  <span className="text-amber-800 dark:text-amber-300">
+                    Computing live marks from desk index levels… ·{" "}
+                  </span>
+                ) : null}
+                {!probsReady ? (
+                  <span className="text-amber-800 dark:text-amber-300">
+                    Computing Initial/Current Prob {formatNumber(probWarm.warmed)}/
+                    {formatNumber(probWarm.total)}… ·{" "}
+                  </span>
                 ) : null}
                 <span suppressHydrationWarning>as of {asOf.toLocaleString("en-IN")}</span>
               </>
@@ -199,13 +245,31 @@ export function LifecycleProductList({
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button disabled={filtered.length === 0} variant="ghost" onClick={handleDownload}>
+          <Button
+            disabled={filtered.length === 0 || exportBlocked}
+            variant="ghost"
+            onClick={handleDownload}
+            title={
+              !probsReady
+                ? "Downloads wait until every product probability in this view is calculated"
+                : undefined
+            }
+          >
             <Download className="h-4 w-4" />
-            Export view
+            {exportViewLabel}
           </Button>
-          <Button disabled={products.length === 0} variant="accent" onClick={handleDownloadAll}>
+          <Button
+            disabled={products.length === 0 || exportBlocked}
+            variant="accent"
+            onClick={handleDownloadAll}
+            title={
+              !probsReady
+                ? "Full workbook waits until all product probabilities are calculated"
+                : undefined
+            }
+          >
             <Download className="h-4 w-4" />
-            Full workbook
+            {fullWorkbookLabel}
           </Button>
         </div>
       </div>

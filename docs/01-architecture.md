@@ -86,7 +86,7 @@ ProbabilityDashboard
 | `lib/probability/as-of.ts` | Past-final clamp + JSON date hydrate |
 | `lib/probability/cache.ts` | Result LRU (isin, mode, date, levels, indexMax, bookRevision) |
 | `app/api/probability/run/route.ts` | Single + batch; series/product caches; `includePaths` opt-in |
-| `lib/hooks/use-lazy-portfolio-probabilities.ts` | Portfolio column warm (batch, soft cap) |
+| `lib/hooks/use-lazy-portfolio-probabilities.ts` | Full-book portfolio Prob warm + `ensureWarmed` for gated Excel downloads |
 | `lib/product-dates.ts` | Working start + schedule end by phase |
 | `lib/product-lifecycle.ts` | Status + `UI_LIFECYCLE_FILTERS` |
 | `lib/portfolio-lifecycle-columns.ts` | Register columns incl. Initial Level + as-of mark date |

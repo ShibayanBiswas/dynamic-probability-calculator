@@ -353,8 +353,12 @@ async function saveWorkbook(wb: ExcelJS.Workbook, filename: string) {
   const a = document.createElement("a");
   a.href = url;
   a.download = filename.endsWith(".xlsx") ? filename : `${filename}.xlsx`;
+  a.rel = "noopener";
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  a.remove();
+  // Defer revoke so the browser can finish the download hand-off (esp. large books on Vercel).
+  window.setTimeout(() => URL.revokeObjectURL(url), 2_000);
 }
 
 function stamp() {

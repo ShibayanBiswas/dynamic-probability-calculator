@@ -32,6 +32,35 @@ export function setProbabilityPair(
   bump();
 }
 
+/** True when the store has an entry for every ISIN (null probs count as attempted). */
+export function arePortfolioProbabilitiesReady(isins: string[]): boolean {
+  for (const isin of isins) {
+    if (!isin) continue;
+    if (!store.has(isin)) return false;
+  }
+  return true;
+}
+
+export function countWarmedPortfolioProbabilities(isins: string[]): { warmed: number; total: number } {
+  let total = 0;
+  let warmed = 0;
+  for (const isin of isins) {
+    if (!isin) continue;
+    total += 1;
+    if (store.has(isin)) warmed += 1;
+  }
+  return { warmed, total };
+}
+
+export function missingPortfolioProbabilityIsins(isins: string[]): string[] {
+  const out: string[] = [];
+  for (const isin of isins) {
+    if (!isin) continue;
+    if (!store.has(isin)) out.push(isin);
+  }
+  return out;
+}
+
 export function subscribeProbabilityStore(listener: () => void): () => void {
   listeners.add(listener);
   return () => listeners.delete(listener);

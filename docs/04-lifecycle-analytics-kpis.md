@@ -101,7 +101,11 @@ ET = (TotalObs × Target − Σ passed levels) / RemainingObs
 
 ## Probability columns warm path
 
-`useLazyPortfolioProbabilities` → batch `POST /api/probability/run` with `includePaths: false`. Soft cap per warm cycle (see hook). Invalidates when valuation date or book revision changes.
+`useLazyPortfolioProbabilities` warms **every ISIN** in the Portfolio by Lifecycle book via batch `POST /api/probability/run` with `includePaths: false` (batches of 20). Failed batches still mark the ISIN as attempted (null probs) so downloads never hang.
+
+**Export view** and **Full workbook** stay disabled until the warm store has an entry for every product ISIN, then build the Excel client-side. Progress shows as `Computing Initial/Current Prob x/y`. Invalidates when valuation date, desk levels, or book revision change.
+
+Observation schedule columns on the register display as **Observation 1–7** (master fields remain Average 1 / Avg. 2–7). **Effective Target** uses the remaining-hurdle average and feeds Current Prob once fixings have settled (15:30 IST).
 
 ## Logic Atlas lifecycle claims
 

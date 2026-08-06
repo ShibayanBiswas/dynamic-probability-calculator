@@ -55,12 +55,13 @@ Deep logic audit: [16-product-type-probability-logic.md](16-product-type-probabi
 | Requirement | Status | Where |
 |-------------|--------|-------|
 | Yellow columns in lifecycle tables | **PASS** | `portfolio-lifecycle-columns.ts` + Underlying |
-| Probs calculated; identity from master | **PASS** | Lazy portfolio probs + master fields |
+| Probs calculated; identity from master | **PASS** | Full-book lazy warm + gated lifecycle Excel downloads |
 | No texts in brackets `()` | **PASS** | Display names / headers / atlas scrub |
 | Past final obs panels | **PASS** | `as-of.ts` + `past-final-observation-panels.tsx` |
 | Docs + local app | **PASS** | `docs/*`, `:3001` |
 | Date JSON hydrate | **PASS** | `formatDisplayDate` + `hydrateProbabilityRunResult` |
-| Excel/PDF exports | **PASS** | `export-probability-screen.ts` |
+| Excel/PDF exports | **PASS** | `export-probability-screen.ts` + lifecycle gated workbook |
+| Lifecycle download after all probs | **PASS** | `ensurePortfolioProbabilities` + disabled Export until store ready |
 
 ## Intentional deltas vs NSP Excel (not bugs)
 
@@ -85,7 +86,10 @@ Deep logic audit: [16-product-type-probability-logic.md](16-product-type-probabi
 | Path frontier trim / All-paths default | **PASS** | `engine.ts` + path table filter |
 | Desk mark 15:30 IST | **PASS** | `desk-mark-as-of.ts` |
 | Lifecycle Initial Level + as-of + phase dates | **PASS** | `portfolio-lifecycle-columns.ts` |
+| Observation 1–7 desk labels | **PASS** | `PORTFOLIO_OBS_COLUMN_LABELS` (master Average keys unchanged) |
+| Effective Target on specs + register | **PASS** | `product-specifications.ts` + ET columns |
 | Primary-grade Excel/PDF | **PASS** | `export-probability-screen.ts` |
+| Lifecycle Excel gated on full-book probs | **PASS** | `use-lazy-portfolio-probabilities` + lifecycle list |
 | Vercel harden (CDN seed, includePaths, maxDuration) | **PASS** | bootstrap + `api/probability/run` |
 | Docs cover product-type logic | **PASS** | docs 01–16, especially 12 + 16 |
 
