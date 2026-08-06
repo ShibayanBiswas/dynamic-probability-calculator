@@ -58,7 +58,7 @@ export const logicModules: LogicModule[] = [
         label: "Row Normalizer",
         kind: "process",
         description:
-          "Merged master rows are reduced to one desk row per ISIN. Phase 2 overrides Phase 1, which overrides Ten Years, which overrides blank rollover.",
+          "Merged master rows are reduced to one desk row per ISIN. Phase 2 outranks Phase 1, which outranks Ten Years, which outranks blank rollover.",
       },
       {
         id: "formula",
@@ -70,13 +70,15 @@ export const logicModules: LogicModule[] = [
         id: "obs",
         label: "Observation Calendar",
         kind: "lookup",
-        description: "Final observation dates and tenor metadata are linked to each product.",
+        description:
+          "Observation 1–7 dates from the master Average fields, plus last-observation and tenor metadata, are linked to each product.",
       },
       {
         id: "ext",
         label: "Lifecycle Archive",
         kind: "lookup",
-        description: "Matured and perpetual structures are retained for audit.",
+        description:
+          "Matured rows remain in the master book for audit. Live desk pills exclude expired products and products whose last observation has already settled.",
       },
       {
         id: "feed",
@@ -207,7 +209,7 @@ export const logicModules: LogicModule[] = [
 
     purpose:
 
-      "Initial and Current probability are computed from daily historical index paths. Rollover Phase tenure sets the start date. Observation offsets and Effective Target frame the remaining hurdle without debenture pricing.",
+      "Initial and Current probability are computed from daily historical index paths. Rollover Phase sets Actual Start. Current uses valuation-date offsets, remaining observations only, and Effective Target versus today’s mark when fixings have settled.",
 
     stageCount: 6,
 
@@ -245,7 +247,7 @@ export const logicModules: LogicModule[] = [
 
         description:
 
-          "Nifty and Sensex closes for the valuation date are supplied for Current Probability and percent required.",
+          "Nifty and Sensex closes for the valuation date are supplied for Current Probability and percent required. Initial Probability does not use these marks.",
 
       },
 
@@ -259,7 +261,7 @@ export const logicModules: LogicModule[] = [
 
         description:
 
-          "Observation 1–7 dates (master Average fields) become day offsets from phase start for Initial Probability, or from the valuation date for Current Probability.",
+          "Observation 1–7 dates become day offsets from Actual Start for Initial Probability, or from the valuation date for Current Probability. Current keeps passed slots visible; the path average uses remaining slots only.",
 
       },
 
@@ -273,7 +275,7 @@ export const logicModules: LogicModule[] = [
 
         description:
 
-          "Initial mode tests Target Underlying (target versus entry). Current mode tests Required Underlying versus today’s mark.",
+          "Initial mode tests Target Underlying (Target ÷ Entry − 1). Current mode tests Required Underlying as Effective Target ÷ today’s mark − 1 when fixings have settled, else master Target ÷ mark − 1.",
 
       },
 
@@ -287,7 +289,7 @@ export const logicModules: LogicModule[] = [
 
         description:
 
-          "Each daily path looks up prior closes on simulated observation dates and measures underlying performance.",
+          "Each daily path looks up prior closes on simulated observation dates and measures underlying performance — versus adjusted Start Level for Initial, versus path-start close for Current.",
 
       },
 
@@ -325,11 +327,13 @@ export const logicModules: LogicModule[] = [
 
       "Phase tenure is set by Rollover Phase. Blank runs from Allotment to Maturity. Phase 1 runs from Allotment to POED. Phase 2 runs from Trade Date to Maturity. Ten Years runs from Allotment to Rollover.",
 
-      "Included paths require the index history to cover every simulated observation.",
+      "Included paths require the index history to cover every simulated observation used in the average.",
 
-      "The last included path has its last observation on Actual Start — Allotment or Trade by phase.",
+      "Initial: the last included path ends with its final observation on Actual Start. Current: the last included path ends on the latest series session.",
 
-      "Effective Target on the lifecycle register uses passed observation levels versus Target Level.",
+      "Effective Target on the lifecycle register and Current hurdle uses (N × Target − Σ passed levels) ÷ remaining when fixings have settled.",
+
+      "Valuation Date does not change Initial Probability math — Initial always measures from Actual Start.",
 
     ],
 
@@ -359,7 +363,7 @@ export const logicModules: LogicModule[] = [
 
     purpose:
 
-      "Observation levels, counts, and Effective Target are derived from the master observation schedule (Average 1–7 workbook fields) and bundled index history. No debenture count or price mark is required.",
+      "Observation levels, counts, and Effective Target are derived from the master observation schedule (Average 1–7 workbook fields) and bundled index history. The same Effective Target feeds Current Probability when fixings have settled. No debenture count or price mark is required.",
 
     stageCount: 5,
 
@@ -407,7 +411,8 @@ export const logicModules: LogicModule[] = [
 
         kind: "process",
 
-        description: "Total, passed, and remaining observation dates are counted as of today.",
+        description:
+          "Total, passed, and remaining observation dates are counted as of the checking date. Same-day fixings settle only after NSE cash close.",
 
       },
 
@@ -433,7 +438,7 @@ export const logicModules: LogicModule[] = [
 
         description:
 
-          "Total Obs × Target, minus the sum of passed levels, then divided by Remaining Obs. Blank when Target or a passed level is missing.",
+          "Total Obs × Target, minus the sum of passed levels, then divided by Remaining Obs. Blank when Target is missing, remaining is zero, or a passed level is missing.",
 
       },
 
@@ -453,9 +458,11 @@ export const logicModules: LogicModule[] = [
 
     insights: [
 
-      "Effective Target is independent of Initial and Current probability engines.",
+      "Effective Target also becomes the Current Probability hurdle level once any observation fixing has settled.",
 
-      "Observation Level columns stay blank for future dates and empty Average slots.",
+      "Observation Level columns stay blank for future dates, unsettled same-day slots, and empty Average workbook slots.",
+
+      "When no fixings have settled yet, Effective Target equals master Target Level.",
 
     ],
 
@@ -503,7 +510,7 @@ export const logicModules: LogicModule[] = [
         label: "KPI Band",
         kind: "output",
         description:
-          "Live Notional from merged master trade amounts, ongoing count, and observation-due and expiry tiles are shown. A dash is shown while the book loads. Ongoing means phase still live and last observation not yet settled.",
+          "Live Notional from merged master trade amounts, ongoing count, and observation-due tiles are shown. A dash is shown while the book loads. Ongoing means phase still live and last observation not yet settled. This desk has no Expiring 3M / 1M tiles.",
       },
       {
         id: "universe",
@@ -676,7 +683,7 @@ export const logicModules: LogicModule[] = [
     insights: [
       "Percent required compares Effective Target to the selected-date Nifty or Sensex level.",
       "Passed observation slots stay on the schedule and path table as ALREADY PASSED; only remaining slots feed the average.",
-      "Caching keys on ISIN, mode, valuation date, underlying, and latest index date.",
+      "Caching keys on ISIN, mode, valuation date, underlying, latest index date, and desk Nifty/Sensex marks.",
     ],
     outputs: ["Current probability", "Path table", "Effective Target", "Percent required"],
   },

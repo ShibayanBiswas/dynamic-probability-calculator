@@ -6,6 +6,10 @@ import {
   getProductMaturityDate,
   getProductTradeOpeningDate,
 } from "@/lib/product-dates";
+import {
+  computeObservationScheduleMetrics,
+  formatEffectiveTargetCell,
+} from "@/lib/portfolio-observation-metrics";
 import type { ProductRecord } from "@/lib/types";
 import {
   getCouponLabel,
@@ -34,6 +38,7 @@ export type ProductSpecOptions = {
   notionalFormat?: "crores" | "currency";
   /** @deprecated Observation dates have a dedicated panel. */
   includeObservationDates?: boolean;
+  /** Checking / valuation date for Effective Target (defaults to now). */
   asOf?: Date;
 };
 
@@ -49,6 +54,7 @@ export const PRODUCT_SPECIFICATION_LABELS = [
   "ISIN Number",
   "Initial Entry Level",
   "Target Level",
+  "Effective Target",
   "Last Observation Date",
   "Trade Amount in Rupees",
   "Maturity Date",
@@ -92,13 +98,13 @@ function masterTenorDays(product: ProductRecord): number | undefined {
 
 /**
  * Fixed Product Specifications rail — NEW PRIMARY sheet fields in desk-export order.
- * Missing cells always show "—".
+ * Missing cells always show "—". Effective Target uses the checking date when provided.
  */
 export function buildProductSpecCards(
   product: ProductRecord,
-  _options: ProductSpecOptions = {},
+  options: ProductSpecOptions = {},
 ): ProductSpecCard[] {
-  void _options;
+  const asOf = options.asOf ?? new Date();
 
   const tradeDate = getProductTradeOpeningDate(product);
   const allotment = getProductAllotmentDate(product);
@@ -107,6 +113,10 @@ export function buildProductSpecCards(
   const target = getTargetLevel(product);
   const coupon = getCouponLabel(product);
   const tenorFromMaster = masterTenorDays(product);
+  const obsMetrics = computeObservationScheduleMetrics(product, asOf);
+  // Show Effective Target whenever at least one observation has settled (remaining hurdle),
+  // or when nothing has settled yet (collapses to Target). Blank only when not computable.
+  const effectiveTargetDisplay = formatEffectiveTargetCell(obsMetrics.effectiveTarget);
 
   const lastObsRaw =
     product.lastObservationDateRaw?.trim() ||
@@ -145,6 +155,10 @@ export function buildProductSpecCards(
         target != null && Number.isFinite(target)
           ? formatNumber(target)
           : dash(rawField(product, "Target Level", "Target Nifty", "Target Nifty ")),
+    },
+    {
+      label: "Effective Target",
+      value: effectiveTargetDisplay,
     },
     {
       label: "Last Observation Date",

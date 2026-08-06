@@ -1005,7 +1005,7 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
                 </HorizontalBand>
 
                 <HorizontalBand className="mt-4">
-                  <ProductSpecificationsPanel product={product} />
+                  <ProductSpecificationsPanel product={product} options={{ asOf: checkingDate }} />
                 </HorizontalBand>
 
                 {surface === "summary" ? (

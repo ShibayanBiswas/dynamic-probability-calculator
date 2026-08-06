@@ -431,7 +431,9 @@ export async function downloadProbabilityScreenExcel(input: ProbabilityScreenExp
 
   row += 1;
   row = addExcelSection(sheet, row, "Product Specifications", 1, 8);
-  for (const card of buildProductSpecCards(input.product)) {
+  for (const card of buildProductSpecCards(input.product, {
+    asOf: parseExcelishDate(input.checkingDate) ?? undefined,
+  })) {
     styleMetaRow(sheet, row, card.label, stripUserFacingBrackets(String(card.value)));
     row += 1;
   }
@@ -781,7 +783,9 @@ export async function downloadProbabilityScreenPdf(input: ProbabilityScreenExpor
 
   pdf.addSection("Product Specifications");
   pdf.addKeyValueTable(
-    buildProductSpecCards(input.product).map((c) => [c.label, stripUserFacingBrackets(String(c.value))]),
+    buildProductSpecCards(input.product, {
+      asOf: parseExcelishDate(input.checkingDate) ?? undefined,
+    }).map((c) => [c.label, stripUserFacingBrackets(String(c.value))]),
   );
 
   pdf.addDisclaimer();
