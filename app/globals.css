@@ -298,7 +298,43 @@ textarea {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
-  /* 5+ headline tiles — fill the full row; horizontal scroll only when min-widths overflow */
+  /* Equal-width KPI row — fills entire horizontal view; scrolls only when minmax overflows */
+  .kpi-band-equal-row {
+    display: grid;
+    width: 100%;
+    max-width: 100%;
+    gap: 0.75rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 0.55rem;
+    scrollbar-gutter: stable;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: auto;
+    scrollbar-color: rgba(212, 178, 76, 0.65) rgba(212, 178, 76, 0.12);
+  }
+
+  .kpi-band-equal-row::-webkit-scrollbar {
+    height: 10px;
+    display: block;
+  }
+
+  .kpi-band-equal-row::-webkit-scrollbar-track {
+    background: rgba(212, 178, 76, 0.12);
+    border-radius: 999px;
+  }
+
+  .kpi-band-equal-row::-webkit-scrollbar-thumb {
+    background: rgba(212, 178, 76, 0.65);
+    border-radius: 999px;
+  }
+
+  .kpi-band-equal-row > .kpi-card {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Legacy scroll helpers kept for older classnames */
   .kpi-band-scroll {
     display: flex;
     flex-wrap: nowrap;
@@ -333,7 +369,6 @@ textarea {
   }
 
   .kpi-band-scroll .kpi-card-scroll {
-    /* Grow to share the full viewport row; min-width triggers scroll when cramped */
     flex: 1 0 11.5rem;
     width: auto;
     min-width: 11.5rem;

@@ -77,7 +77,7 @@ Deep logic audit: [16-product-type-probability-logic.md](16-product-type-probabi
 
 | Requirement | Status | Where |
 |-------------|--------|-------|
-| KPI cards full horizontal width like Primary SP | **PASS** | `KpiBand` — 5+ tiles fill the full row (`flex: 1`); horizontal scrollbar only when min-widths overflow |
+| KPI cards full horizontal width like Primary SP | **PASS** | `KpiBand` — ≤7 tiles equal-width row (`minmax(10.75rem, 1fr)`) fills the full viewport; scrollbar only on overflow |
 | Desk tab = Initial + Current Probability only | **PASS** | `components/dashboard/desk-hub.tsx` |
 | Probability / Initial / Current = Primary Valuation spine | **PASS** | Filter → Interface/Product List → Inputs → Report as-of → Reveal + downloads in footer |
 | Summary Reveal: Specs → Results (H-scroll) → Payoff → Obs | **PASS** | `past-final-observation-panels.tsx` |

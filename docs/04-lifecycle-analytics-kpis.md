@@ -129,7 +129,7 @@ On Probability / Initial / Current input panels:
 
 On Current with settled fixings, edits are interpreted as desired ET vs Entry and **back-solve** Target Level so Effective Target tracks `Entry × (1 + pct)`. Probability at the default seed matches the master-Target run (back-solve recovers master \(T\)).
 
-**Current Probability KPI band** also shows a **Target Underlying** card (alongside Required Underlying). 5+ KPI tiles **fill the full row**; a horizontal scrollbar appears only when the viewport is too narrow for their min-widths.
+**Current Probability KPI band** also shows a **Target Underlying** card (alongside Required Underlying). Home Live Notional / Ongoing / Obs-due tiles and Current Prob KPIs use the same **equal-width full-row** band (scroll only when the viewport is too narrow).
 
 Verify: `npm run verify:target-underlying` · `npm run windup:final`
 

@@ -354,24 +354,28 @@ export function KpiBand({
       ? { cyan: "#c9a040", purple: "#b8956a", green: "#4ade80", amber: "#d4b24c", rose: "#a8821f" }
       : { cyan: "#a8821f", purple: "#7a1e2c", green: "#15803d", amber: "#b45309", rose: "#be123c" };
   const count = items.length;
-  // 5+ tiles: fill the full row; horizontal scroll only when min-widths overflow.
-  const useScroll = count >= 5;
-  const denseColumns = !useScroll && count >= 8 ? 4 : !useScroll && count >= 5 ? Math.min(count, 5) : undefined;
+  // ≤7 tiles: one equal-width row that fills the full viewport; scroll only if min-widths overflow.
+  // ≥8 tiles: 4-column wrap (dense portfolio strips).
+  const singleRow = count > 0 && count < 8;
 
   return (
     <div
       className={cn(
         "w-full gap-3 md:gap-4",
-        useScroll
-          ? cn("kpi-band-scroll", count >= 6 && "kpi-band-scroll-dense")
+        singleRow
+          ? "kpi-band-equal-row"
           : cn("kpi-band-grid kpi-band-fill", count >= 5 && "kpi-band-dense", count >= 8 && "kpi-band-wide"),
       )}
       role="list"
       aria-label="Headline metrics"
       style={
-        denseColumns
-          ? ({ gridTemplateColumns: `repeat(${denseColumns}, minmax(0, 1fr))` } as CSSProperties)
-          : undefined
+        singleRow
+          ? ({
+              gridTemplateColumns: `repeat(${count}, minmax(10.75rem, 1fr))`,
+            } as CSSProperties)
+          : count >= 8
+            ? ({ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" } as CSSProperties)
+            : undefined
       }
     >
       {items.map((item, index) => {
@@ -383,9 +387,8 @@ export function KpiBand({
             role="listitem"
             animate={{ opacity: 1, y: 0 }}
             className={cn(
-              "kpi-card kpi-card-live",
-              useScroll ? "kpi-card-scroll" : "kpi-card-fill min-w-0",
-              !useScroll && count >= 5 && "kpi-card-dense",
+              "kpi-card kpi-card-live kpi-card-fill min-w-0",
+              !singleRow && count >= 5 && "kpi-card-dense",
             )}
             initial={{ opacity: 0, y: 16, scale: 0.96 }}
             style={{ "--kpi-accent": colors[accent] } as CSSProperties}
