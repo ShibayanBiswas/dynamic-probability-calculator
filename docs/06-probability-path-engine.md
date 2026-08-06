@@ -24,7 +24,10 @@ Deep product-type audit: [16-product-type-probability-logic.md](16-product-type-
 Path rows carry one column per full-schedule slot. Current renders already-passed slots as
 `ALREADY PASSED` / `—` placeholders (`observationDates[i] = observationLevels[i] = null`) — they are
 excluded from the average, frontier and probability, but keep their column position. Default path
-filter is **All**; a bounded sample of trailing Path-Taken-No rows feeds the Excluded filter.
+filter is **All**. Path-Taken-No rows past the frontier are omitted so the **last path** in the
+table is the last Yes: final observation = **Actual Start** (Initial) or **latest series session**
+(Current). Current path day offsets for projections are measured from that latest session so the
+final obs lands on it; the Observation Schedule card still shows days from the valuation date.
 
 ### Actual Start by phase
 

@@ -130,8 +130,20 @@ function main() {
       Math.abs((row.averageObservationLevel ?? NaN) - row.observationLevels[remIdx]!) < 1e-9,
       "689 avg = remaining only",
     );
-    assert(current.paths.some((p) => !p.pathIncluded), "689 has Path-Taken-No sample");
-    assert(current.probability != null && current.probability > 0.99, `689 current prob ${current.probability}`);
+assert(
+  current.paths.length > 0 && current.paths.every((p) => p.pathIncluded),
+  "689 path table stops at frontier (all Yes)",
+);
+assert(
+  current.paths.at(-1)!.observationDates.filter(Boolean).at(-1) === current.lastIndexDate,
+  `689 current last path final obs = ${current.lastIndexDate}`,
+);
+const initLast = initial.paths.at(-1)!;
+assert(initLast.pathIncluded, "689 initial last path is Yes");
+assert(
+  initLast.observationDates.filter(Boolean).at(-1) === "2021-12-07",
+  "689 initial last path final obs = Allotment",
+);
   }
 
   // --- 2. All remaining: ET = Target, no placeholders ---

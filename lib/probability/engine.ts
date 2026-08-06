@@ -182,6 +182,11 @@ function addDaysToDateKey(dateKey: string, days: number): string {
   return toLocalDateKey(dt);
 }
 
+function dateFromDateKey(dateKey: string): Date {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  return new Date(y!, m! - 1, d!, 12, 0, 0);
+}
+
 function barTimeFromDateKey(dateKey: string): number {
   const [y, m, d] = dateKey.split("-").map(Number);
   return Date.UTC(y!, m! - 1, d!, 12, 0, 0);
@@ -218,7 +223,7 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
   const baseDate = mode === "initial" ? (phaseStart ?? valuationDate) : valuationDate;
 
   // Observation Schedule card: always the full Average 1–7 schedule from the mode base.
-  // Path backtest + probability: Current drops passed / non-positive day offsets only.
+  // Path average: Current keeps only remaining slots (days from valuation > 0).
   const schedule = buildObservationSchedule(product, baseDate);
   const pathSchedule =
     mode === "current"
@@ -235,6 +240,12 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
   const initialFrontierTime = phaseStart
     ? barTimeFromDateKey(toLocalDateKey(phaseStart))
     : lastIndexTime;
+  const initialFrontierKey = phaseStart ? toLocalDateKey(phaseStart) : null;
+
+  // Current path day offsets are measured from the latest series session so the last
+  // included path’s final observation lands on that session (“as of today” / prior close).
+  // Observation Schedule days remain valuation-based for the schedule card.
+  const currentPathOffsetBaseKey = mode === "current" ? lastIndexDate : null;
 
   let effectiveTargetLevel: number | null = null;
   let threshold: number | null = null;
@@ -272,10 +283,6 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
   let includedCount = 0;
   let successCount = 0;
   let stillEligible = true;
-  // Excel Backtesting keeps cascading Path-Taken-No rows after the frontier.
-  // Keep a bounded trailing No sample so the Excluded filter is not empty.
-  const MAX_TRAILING_EXCLUDED = 250;
-  let trailingExcluded = 0;
 
   // Frontier clock: Initial → Actual Start; Current → latest series bar (today / prev session).
   const frontierTime = mode === "initial" ? initialFrontierTime : lastIndexTime;
@@ -302,7 +309,14 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
         continue;
       }
 
-      const projectedKey = addDaysToDateKey(startBar.date, slot.daysFromBase);
+      const obsDate =
+        typeof slot.date === "string" ? new Date(slot.date) : (slot.date as Date);
+      const pathDays =
+        mode === "current" && currentPathOffsetBaseKey
+          ? differenceInCalendarDays(startOfDay(obsDate), startOfDay(dateFromDateKey(currentPathOffsetBaseKey)))
+          : slot.daysFromBase;
+
+      const projectedKey = addDaysToDateKey(startBar.date, pathDays);
       const obsTime = barTimeFromDateKey(projectedKey);
       if (obsTime > maxObsTime) maxObsTime = obsTime;
       if (!maxProjectedDateKey || projectedKey > maxProjectedDateKey) {
@@ -311,9 +325,9 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
 
       const obsBar = lookupPriorBar(series, obsTime);
       if (obsBar) {
-        // Initial: show Excel-style projected calendar dates so the last path’s
-        // final observation lands on Actual Start. Current: show trading session used.
-        observationDates.push(mode === "initial" ? projectedKey : obsBar.date);
+        // Always show the projected calendar date so Initial last Yes ends on Actual Start
+        // and Current last Yes ends on the latest series session when offsets align.
+        observationDates.push(projectedKey);
         const lvl = closeAt(obsBar, underlying);
         observationLevels.push(lvl);
         levelSum += lvl;
@@ -337,7 +351,6 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
 
     // Initial: NSP Path Taken — Actual Start >= MAX(projected obs dates).
     // Current: series last bar >= MAX(projected obs times).
-    const initialFrontierKey = phaseStart ? toLocalDateKey(phaseStart) : null;
     let pathIncluded = false;
     if (!stillEligible || presentSlotCount === 0 || maxObsTime === -Infinity) {
       pathIncluded = false;
@@ -374,8 +387,12 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
     }
 
     if (includePaths) {
-      // Push first (including the first Path-Taken-No), then stop after a bounded
-      // trailing No sample — matches Excel cascade without shipping every No row.
+      // Stop at the frontier — do not append Path-Taken-No rows past it.
+      // Last path in the table is the last Yes: final obs = Actual Start (Initial)
+      // or the latest series session (Current).
+      if (!stillEligible && !pathIncluded) {
+        break;
+      }
       paths.push({
         pathStartDate: startBar.date,
         underlyingClosingLevel: close,
@@ -386,10 +403,6 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
         underlyingPerformance: performance,
         pathIncluded,
       });
-      if (!stillEligible && !pathIncluded) {
-        trailingExcluded += 1;
-        if (trailingExcluded >= MAX_TRAILING_EXCLUDED) break;
-      }
     } else if (!stillEligible) {
       break;
     }

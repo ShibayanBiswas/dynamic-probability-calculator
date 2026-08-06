@@ -96,9 +96,14 @@ assert(
   lastIncluded!.observationLevels.filter((l) => l != null).length === 2,
   "last included covers both Average slots",
 );
-// Last included path’s final observation lands on Actual Start (allotment).
+// Last path in the table is the last Yes — final observation lands on Actual Start (allotment).
 const lastObsDate = lastIncluded!.observationDates.filter(Boolean).at(-1);
 assert(lastObsDate === "2020-01-01", `initial last path final obs = allotment, got ${lastObsDate}`);
+assert(initial.paths.at(-1)?.pathIncluded, "initial path table ends on last Yes (no trailing No)");
+assert(
+  initial.paths.at(-1)!.observationDates.filter(Boolean).at(-1) === "2020-01-01",
+  "initial table last row final obs = allotment",
+);
 
 /**
  * Current with one passed obs (2024-01-02) and one remaining (2027-01-15).
@@ -163,8 +168,13 @@ assert(
   "average uses remaining slots only",
 );
 assert(
-  current.paths.some((p) => !p.pathIncluded),
-  "path payload samples Path-Taken-No rows past the frontier for Excluded filter",
+  current.paths.length > 0 && current.paths.every((p) => p.pathIncluded),
+  "path payload stops at frontier — last path is Path Taken = Yes",
+);
+const tableLastObs = current.paths.at(-1)!.observationDates.filter(Boolean).at(-1);
+assert(
+  tableLastObs === current.lastIndexDate,
+  `current last path final obs = latest series session, got ${tableLastObs} vs ${current.lastIndexDate}`,
 );
 assert(current.includedCount > 0, "current included paths");
 assert(current.paths[0]?.adjustedStartLevel == null, "current has no adjusted start");
@@ -189,12 +199,12 @@ assert(
   "requiredUnderlyingFromHurdleLevel matches",
 );
 
-const currentLast = [...current.paths].reverse().find((p) => p.pathIncluded);
-assert(currentLast, "current last included");
+const currentLast = current.paths.at(-1);
+assert(currentLast?.pathIncluded, "current last path is Yes");
 const currentLastObs = currentLast!.observationDates.filter(Boolean).at(-1);
 assert(
-  currentLastObs === "2027-01-15" || currentLastObs === current.lastIndexDate,
-  `current last path final obs near frontier, got ${currentLastObs}`,
+  currentLastObs === current.lastIndexDate,
+  `current last path final obs = latest series session, got ${currentLastObs}`,
 );
 
 /** All remaining — no passed — ET equals Target. */

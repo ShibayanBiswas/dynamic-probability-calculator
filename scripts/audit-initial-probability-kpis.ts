@@ -14,6 +14,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { differenceInCalendarDays, startOfDay } from "date-fns";
+
 import sensexHistory from "../lib/data/sensex-index-history.json";
 import { isObservationFixingSettled } from "../lib/observation-settlement";
 import { computeObservationScheduleMetrics } from "../lib/portfolio-observation-metrics";
@@ -264,26 +266,40 @@ function main() {
     includePaths: true,
   });
 
-  // Hand replication of the Backtesting sheet on remaining slots only.
+  // Hand replication: remaining slots only; path day offsets from series frontier
+  // so the last Yes path’s final observation lands on lastIndexDate.
   const currentSchedule = buildObservationSchedule(product, asOf).filter(
     (s) => s.date != null && s.daysFromBase > 0,
   );
+  const frontierKey = lastBar.date;
+  const frontierDate = startOfDay(
+    new Date(
+      Number(frontierKey.slice(0, 4)),
+      Number(frontierKey.slice(5, 7)) - 1,
+      Number(frontierKey.slice(8, 10)),
+      12,
+    ),
+  );
+  const pathDays = currentSchedule.map((slot) => {
+    const d = typeof slot.date === "string" ? new Date(slot.date) : (slot.date as Date);
+    return differenceInCalendarDays(startOfDay(d), frontierDate);
+  });
   const currentThreshold =
     engineET != null && todayLevel > 0 ? engineET / todayLevel - 1 : null;
   let cTaken = 0;
   let cSuccess = 0;
   let cLastStart: string | null = null;
   let cLastFinalObs: string | null = null;
-  const frontierKey = lastBar.date;
 
   for (const bar of series) {
     let sum = 0;
     let filled = 0;
     let maxObsKey = "";
-    for (const slot of currentSchedule) {
+    for (let si = 0; si < currentSchedule.length; si++) {
+      const days = pathDays[si]!;
       const [y, m, d] = bar.date.split("-").map(Number);
       const projected = new Date(Date.UTC(y!, m! - 1, d!, 12));
-      projected.setUTCDate(projected.getUTCDate() + slot.daysFromBase);
+      projected.setUTCDate(projected.getUTCDate() + days);
       const key = toLocalDateKey(projected);
       if (key > maxObsKey) maxObsKey = key;
       const obsBar = lookupPriorBar(
@@ -307,10 +323,11 @@ function main() {
     if (currentThreshold != null && performance >= currentThreshold) cSuccess += 1;
   }
 
-  console.log("\n=== Current Probability  (Backtesting sheet) ===");
+  console.log("\n=== Current Probability  (remaining + frontier offsets) ===");
   console.log({
     remainingSlotsInPathTable: currentSchedule.length,
     daysFromValuation: currentSchedule.map((s) => s.daysFromBase),
+    daysFromSeriesFrontier: pathDays,
     threshold: pct(currentThreshold, 2),
     handTaken: cTaken,
     engineTaken: current.includedCount,
@@ -327,6 +344,7 @@ function main() {
   const currentOk =
     cTaken === current.includedCount &&
     cSuccess === current.successCount &&
+    cLastFinalObs === frontierKey &&
     (handET == null || (engineET != null && Math.abs(handET - engineET) < 1e-6)) &&
     (lifecycleET == null || handET == null || Math.abs(lifecycleET - handET) < 0.51) &&
     (current.threshold == null ||
