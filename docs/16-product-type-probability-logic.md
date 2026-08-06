@@ -96,7 +96,7 @@ Almost nothing about phase. Current always:
 5. Performance = average of **remaining** obs levels ÷ path close − 1.  
 6. Success if performance ≥ **Effective Target ÷ today mark − 1** (falls back to master Target ÷ today when nothing has settled yet).  
 7. Today mark = desk mark (prev session before 15:30 IST, today after close), else series close on the checking date.  
-8. Path frontier = latest series trading bar ≥ MAX(projected **remaining** obs dates). Trailing Path-Taken-No rows are sampled for the Excluded filter; default filter is **All**.
+8. Path frontier = latest series trading bar ≥ MAX(projected **remaining** obs dates). Path-Taken-No rows past the frontier are omitted so the last table row is the last Yes (final obs on/near the latest series session). Default filter is **All**.
 
 Phase still matters indirectly because **only live-book products** appear in pickers, and live-book uses phase end + last-observation settlement.
 

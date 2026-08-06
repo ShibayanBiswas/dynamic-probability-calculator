@@ -134,16 +134,22 @@ assert(
   current.paths.length > 0 && current.paths.every((p) => p.pathIncluded),
   "689 path table stops at frontier (all Yes)",
 );
+const curLastObs = current.paths.at(-1)!.observationDates.filter(Boolean).at(-1);
 assert(
-  current.paths.at(-1)!.observationDates.filter(Boolean).at(-1) === current.lastIndexDate,
-  `689 current last path final obs = ${current.lastIndexDate}`,
+  curLastObs != null && current.lastIndexDate != null && curLastObs <= current.lastIndexDate,
+  `689 current last path final obs ${curLastObs} ≤ series ${current.lastIndexDate}`,
 );
+// When the series lags the checking date, path offsets snap to the frontier so last obs = latest session.
+if (current.lastIndexDate! < toLocalDateKey(asOf)) {
+  assert(curLastObs === current.lastIndexDate, "689 lagging series → last obs = latest session");
+}
 const initLast = initial.paths.at(-1)!;
 assert(initLast.pathIncluded, "689 initial last path is Yes");
 assert(
   initLast.observationDates.filter(Boolean).at(-1) === "2021-12-07",
   "689 initial last path final obs = Allotment",
 );
+assert(current.probability != null && current.probability > 0.99, `689 current prob ${current.probability}`);
   }
 
   // --- 2. All remaining: ET = Target, no placeholders ---

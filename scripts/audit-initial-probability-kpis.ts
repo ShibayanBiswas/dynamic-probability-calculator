@@ -266,12 +266,14 @@ function main() {
     includePaths: true,
   });
 
-  // Hand replication: remaining slots only; path day offsets from series frontier
-  // so the last Yes path’s final observation lands on lastIndexDate.
+  // Hand replication: remaining slots only. Path day offsets match the engine:
+  // checking-date offsets when the series is current; series-frontier offsets when it lags.
   const currentSchedule = buildObservationSchedule(product, asOf).filter(
     (s) => s.date != null && s.daysFromBase > 0,
   );
   const frontierKey = lastBar.date;
+  const checkingKey = toLocalDateKey(asOf);
+  const useFrontierOffsets = frontierKey < checkingKey;
   const frontierDate = startOfDay(
     new Date(
       Number(frontierKey.slice(0, 4)),
@@ -281,6 +283,7 @@ function main() {
     ),
   );
   const pathDays = currentSchedule.map((slot) => {
+    if (!useFrontierOffsets) return slot.daysFromBase;
     const d = typeof slot.date === "string" ? new Date(slot.date) : (slot.date as Date);
     return differenceInCalendarDays(startOfDay(d), frontierDate);
   });
@@ -311,7 +314,6 @@ function main() {
         filled += 1;
       }
     }
-    // Backtesting "To be taken": MAX(nifty dates) >= MAX(path observation dates)
     if (frontierKey < maxObsKey) break;
     if (filled !== currentSchedule.length) continue;
     const close = closeAt(bar, underlying);
@@ -323,11 +325,12 @@ function main() {
     if (currentThreshold != null && performance >= currentThreshold) cSuccess += 1;
   }
 
-  console.log("\n=== Current Probability  (remaining + frontier offsets) ===");
+  console.log("\n=== Current Probability  (remaining + path offsets) ===");
   console.log({
     remainingSlotsInPathTable: currentSchedule.length,
     daysFromValuation: currentSchedule.map((s) => s.daysFromBase),
-    daysFromSeriesFrontier: pathDays,
+    pathOffsetMode: useFrontierOffsets ? "series-frontier (series lags desk)" : "checking-date (Excel D34)",
+    daysUsedInPaths: pathDays,
     threshold: pct(currentThreshold, 2),
     handTaken: cTaken,
     engineTaken: current.includedCount,
@@ -344,7 +347,7 @@ function main() {
   const currentOk =
     cTaken === current.includedCount &&
     cSuccess === current.successCount &&
-    cLastFinalObs === frontierKey &&
+    (useFrontierOffsets ? cLastFinalObs === frontierKey : cLastFinalObs != null && cLastFinalObs <= frontierKey) &&
     (handET == null || (engineET != null && Math.abs(handET - engineET) < 1e-6)) &&
     (lifecycleET == null || handET == null || Math.abs(lifecycleET - handET) < 0.51) &&
     (current.threshold == null ||

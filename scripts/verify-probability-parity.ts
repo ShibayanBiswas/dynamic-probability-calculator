@@ -173,8 +173,10 @@ assert(
 );
 const tableLastObs = current.paths.at(-1)!.observationDates.filter(Boolean).at(-1);
 assert(
-  tableLastObs === current.lastIndexDate,
-  `current last path final obs = latest series session, got ${tableLastObs} vs ${current.lastIndexDate}`,
+  tableLastObs != null &&
+    current.lastIndexDate != null &&
+    tableLastObs <= current.lastIndexDate,
+  `current last path final obs ≤ latest series session, got ${tableLastObs} vs ${current.lastIndexDate}`,
 );
 assert(current.includedCount > 0, "current included paths");
 assert(current.paths[0]?.adjustedStartLevel == null, "current has no adjusted start");
@@ -203,8 +205,10 @@ const currentLast = current.paths.at(-1);
 assert(currentLast?.pathIncluded, "current last path is Yes");
 const currentLastObs = currentLast!.observationDates.filter(Boolean).at(-1);
 assert(
-  currentLastObs === current.lastIndexDate,
-  `current last path final obs = latest series session, got ${currentLastObs}`,
+  currentLastObs != null &&
+    current.lastIndexDate != null &&
+    currentLastObs <= current.lastIndexDate,
+  `current last path final obs ≤ latest series session, got ${currentLastObs}`,
 );
 
 /** All remaining — no passed — ET equals Target. */

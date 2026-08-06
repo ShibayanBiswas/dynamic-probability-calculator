@@ -242,10 +242,13 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
     : lastIndexTime;
   const initialFrontierKey = phaseStart ? toLocalDateKey(phaseStart) : null;
 
-  // Current path day offsets are measured from the latest series session so the last
-  // included path’s final observation lands on that session (“as of today” / prior close).
-  // Observation Schedule days remain valuation-based for the schedule card.
-  const currentPathOffsetBaseKey = mode === "current" ? lastIndexDate : null;
+  // Current path offsets: Excel Backtesting uses checking date (D34). When the series
+  // frontier is still on/after that checking date, keep those offsets for Excel parity.
+  // When the series lags the desk clock, measure remaining path offsets from the latest
+  // series session so the last Yes path’s final observation lands on that session.
+  const checkingKey = toLocalDateKey(valuationDate);
+  const currentPathOffsetBaseKey =
+    mode === "current" && lastIndexDate && lastIndexDate < checkingKey ? lastIndexDate : null;
 
   let effectiveTargetLevel: number | null = null;
   let threshold: number | null = null;

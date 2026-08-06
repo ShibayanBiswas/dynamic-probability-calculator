@@ -644,7 +644,7 @@ export const logicModules: LogicModule[] = [
         label: "Daily Path Starts",
         kind: "process",
         description:
-          "Every index trading day becomes a path start — last included path ends so its final observation lands on today’s mark or the previous trading session.",
+          "Every index trading day becomes a path start — last included path ends so its final observation lands on the latest trading session (Excel checking-date offsets when the series is current).",
       },
       {
         id: "cp-levels",
