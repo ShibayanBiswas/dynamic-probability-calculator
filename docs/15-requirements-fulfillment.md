@@ -77,7 +77,7 @@ Deep logic audit: [16-product-type-probability-logic.md](16-product-type-probabi
 
 | Requirement | Status | Where |
 |-------------|--------|-------|
-| KPI cards full horizontal width like Primary SP | **PASS** | `KpiBand` — 5+ tiles single-row scroll with visible scrollbar |
+| KPI cards full horizontal width like Primary SP | **PASS** | `KpiBand` — 5+ tiles fill the full row (`flex: 1`); horizontal scrollbar only when min-widths overflow |
 | Desk tab = Initial + Current Probability only | **PASS** | `components/dashboard/desk-hub.tsx` |
 | Probability / Initial / Current = Primary Valuation spine | **PASS** | Filter → Interface/Product List → Inputs → Report as-of → Reveal + downloads in footer |
 | Summary Reveal: Specs → Results (H-scroll) → Payoff → Obs | **PASS** | `past-final-observation-panels.tsx` |
@@ -102,6 +102,8 @@ Deep logic audit: [16-product-type-probability-logic.md](16-product-type-probabi
 ## Wind-up verdict (2026-08-06)
 
 **YES — you can wind up this project** for Primary Probability desk delivery, provided the intentional Excel deltas above are accepted as product rules (not defects).
+
+Live Current Prob check (Accelerator 689, as of 06-08-2026): Target Underlying **15.4%** (= ET÷Entry−1), Required Underlying ≈ **−18.5%**, Latest Index Date **06-08-2026**, path counts follow the live series frontier (e.g. 6,355 / 6,334 when Mongo extends through that session).
 
 Evidence gate: `npm run verify:probability-desk` (includes `windup:final`) + `npm run verify:seamlessness` + NSP Excel formula parity (`verify:nsp-excel`) + full-book Effective Target (`verify:effective-target` 2134/2134).
 

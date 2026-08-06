@@ -298,17 +298,20 @@ textarea {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
-  /* 5+ headline tiles — single-row horizontal scroll with a visible scrollbar */
+  /* 5+ headline tiles — fill the full row; horizontal scroll only when min-widths overflow */
   .kpi-band-scroll {
     display: flex;
     flex-wrap: nowrap;
+    align-items: stretch;
     width: 100%;
+    max-width: 100%;
     gap: 0.75rem;
     overflow-x: auto;
     overflow-y: hidden;
     padding-bottom: 0.55rem;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
     scrollbar-gutter: stable;
     scrollbar-width: auto;
     scrollbar-color: rgba(212, 178, 76, 0.65) rgba(212, 178, 76, 0.12);
@@ -330,15 +333,26 @@ textarea {
   }
 
   .kpi-band-scroll .kpi-card-scroll {
-    flex: 0 0 auto;
-    width: min(14.5rem, 72vw);
-    min-width: 12.5rem;
+    /* Grow to share the full viewport row; min-width triggers scroll when cramped */
+    flex: 1 0 11.5rem;
+    width: auto;
+    min-width: 11.5rem;
+    max-width: none;
     scroll-snap-align: start;
   }
 
   .kpi-band-scroll-dense .kpi-card-scroll {
-    width: min(12.75rem, 68vw);
-    min-width: 11.25rem;
+    flex: 1 0 10.75rem;
+    min-width: 10.75rem;
+  }
+
+  @media (max-width: 639px) {
+    .kpi-band-scroll .kpi-card-scroll,
+    .kpi-band-scroll-dense .kpi-card-scroll {
+      flex: 0 0 auto;
+      width: min(12.5rem, 78vw);
+      min-width: min(11rem, 72vw);
+    }
   }
 
   /* ≤4 KPIs: one full-width row; denser bands share the row via grid 1fr columns */

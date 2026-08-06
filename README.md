@@ -38,7 +38,7 @@ Effective Target on the lifecycle table is the same remaining-hurdle average for
 - Lifecycle **search** prioritizes probability warm-up so searched rows fill Initial/Current Prob quickly on Vercel  
 - Probability inputs: editable **Target Underlying %**; read-only **Target Level** (no settled obs) or **Effective Target** (≥1 settled)  
 - **Current + settled fixings:** Target Underlying defaults to **Effective Target ÷ Entry − 1** (e.g. 689 → ~15.4%); Initial stays Target÷Entry−1  
-- **Current Probability** KPI band includes Target Underlying + Required Underlying; 5+ tiles scroll horizontally  
+- **Current Probability** KPI band includes Target Underlying + Required Underlying; 5+ tiles fill the full row and scroll horizontally only when needed  
 - Wind-up gate: `npm run windup:final` · full desk: `npm run verify:probability-desk`  
 - Primary-grade Excel/PDF exports  
 - Logic Atlas Active pipeline cards with detail, metrics, tags  

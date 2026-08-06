@@ -354,7 +354,7 @@ export function KpiBand({
       ? { cyan: "#c9a040", purple: "#b8956a", green: "#4ade80", amber: "#d4b24c", rose: "#a8821f" }
       : { cyan: "#a8821f", purple: "#7a1e2c", green: "#15803d", amber: "#b45309", rose: "#be123c" };
   const count = items.length;
-  // 5+ tiles: single-row horizontal scroll with a visible scrollbar (never squeeze to unreadability).
+  // 5+ tiles: fill the full row; horizontal scroll only when min-widths overflow.
   const useScroll = count >= 5;
   const denseColumns = !useScroll && count >= 8 ? 4 : !useScroll && count >= 5 ? Math.min(count, 5) : undefined;
 
