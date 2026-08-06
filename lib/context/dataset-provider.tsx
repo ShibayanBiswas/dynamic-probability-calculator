@@ -95,6 +95,7 @@ async function fetchBootstrapDataset(): Promise<DashboardDataset | null> {
         if (!retry.ok) return null;
         return await parseJsonIdle<DashboardDataset>(await retry.text());
       }
+      // Empty / error payloads (true failures) — do not treat USE_STATIC_SEED as failure above.
       if (!response.ok) return null;
       if (payload && "products" in payload && Array.isArray(payload.products)) {
         return payload as DashboardDataset;

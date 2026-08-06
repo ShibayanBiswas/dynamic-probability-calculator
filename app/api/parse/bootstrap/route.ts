@@ -33,7 +33,8 @@ function staticSeedHint() {
       url: `/data/master-seed.json?v=${v}`,
     },
     {
-      status: 503,
+      // 200 so deploy health checks / monitors do not treat intentional CDN handoff as an outage.
+      status: 200,
       headers: {
         "Cache-Control": "no-store",
       },

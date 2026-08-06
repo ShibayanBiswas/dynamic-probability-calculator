@@ -58,6 +58,7 @@
     "verify:ui-conservation": "npx tsx scripts/verify-ui-logic-conservation.ts",
     "verify:explorer": "npx tsx scripts/verify-explorer-annotations.ts",
     "verify:exports": "npx tsx scripts/verify-screen-exports.ts",
+    "smoke:local": "node scripts/local-deploy-smoke.mjs",
     "verify:calc": "npx tsx scripts/verify-calculation-core.ts",
     "verify:edge-cases": "npx tsx scripts/verify-edge-cases.ts",
     "verify:data-quality": "npx tsx scripts/verify-data-quality-guards.ts",

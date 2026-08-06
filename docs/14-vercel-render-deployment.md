@@ -115,10 +115,13 @@ If a deploy feels “stuck”, check Vercel function logs for `mongo index overl
 
 ## 7) Post-deploy smoke
 
-1. `/probability` — schedule above specs; KPIs load  
-2. `/initial-probability` — inline progress; path frontier near latest series day  
-3. `/intelligence` — Logic Atlas Connected + detailed Active pipeline  
-4. Lifecycle table — Initial Level + As of Today's Date columns present  
-5. Optional: `npm run verify:probability-desk` locally against the same seed  
+1. `/` — wait for `Loaded: … · N desk products` (CDN seed); Portfolio by Lifecycle shows Ongoing count  
+2. `/probability` — schedule above specs; KPIs load; Target Underlying input present  
+3. `/initial-probability` / `/current-probability` — Reveal → Included / Excluded / All paths filters; Download Paths Excel  
+4. Lifecycle Export view / Full workbook — enable after `Computing Initial/Current Prob x/y` completes  
+5. Local mirror: `npm run dev` then `npm run smoke:local` (APIs + Playwright downloads)  
+6. Optional: `npm run verify:probability-desk` locally against the same seed  
 
 Product-type logic reference: [16-product-type-probability-logic.md](16-product-type-probability-logic.md)
+
+**Note:** `/api/parse/bootstrap` on Vercel returns `{ code: "USE_STATIC_SEED" }` with HTTP **200** and points the client at `/data/master-seed.json` — do not treat that as an outage.
