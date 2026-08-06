@@ -113,6 +113,7 @@ function ScheduleCard({
   }
   // Present slots only — display as 1…N regardless of master Average 1–7 column index.
   const present = result.schedule.filter((s) => s.date);
+  const isCurrent = result.mode === "current";
   if (present.length === 0) {
     return (
       <Panel className="!p-4" glow="cyan">
@@ -126,6 +127,9 @@ function ScheduleCard({
       <SectionTitle>Observation Schedule</SectionTitle>
       <p className="mt-1 text-sm text-stone-500">
         Observation slots and day offsets. {daysRowLabel} are measured from {baseLabel}.
+        {isCurrent
+          ? " Passed slots stay visible here; the path average uses remaining slots only."
+          : ""}
       </p>
       <div className="schedule-table-wrap mt-3 w-full overflow-x-auto [-webkit-overflow-scrolling:touch]">
         <table className="schedule-table w-full min-w-full text-sm">
@@ -156,6 +160,23 @@ function ScheduleCard({
                 </td>
               ))}
             </tr>
+            {isCurrent ? (
+              <tr>
+                <th scope="row">Status</th>
+                {present.map((s, displayIdx) => (
+                  <td
+                    key={`st-${displayIdx}`}
+                    className={
+                      s.daysFromBase > 0
+                        ? "whitespace-nowrap text-stone-700"
+                        : "whitespace-nowrap text-stone-400"
+                    }
+                  >
+                    {s.daysFromBase > 0 ? "Remaining" : "Already passed"}
+                  </td>
+                ))}
+              </tr>
+            ) : null}
           </tbody>
         </table>
       </div>
@@ -179,17 +200,21 @@ function PathBacktestTable({
   mode?: "initial" | "current";
 }) {
   const parentRef = useRef<HTMLDivElement>(null);
-  const [pathFilter, setPathFilter] = useState<PathViewFilter>("included");
+  // Default All paths — same as Excel Initial Prob / Backtesting sheets showing Yes and No.
+  const [pathFilter, setPathFilter] = useState<PathViewFilter>("all");
   const [exportingPaths, setExportingPaths] = useState(false);
   const paths = result?.paths ?? [];
-  // Path columns follow pathSchedule (Current = remaining only); Observation Schedule uses full schedule.
-  const columnSchedule =
-    result == null
-      ? []
-      : result.pathSchedule != null
-        ? result.pathSchedule
-        : result.schedule;
-  const presentIndexes = columnSchedule.map((s, i) => (s.date ? i : -1)).filter((i) => i >= 0);
+  // One column per present schedule slot; passed Current slots render as ALREADY PASSED.
+  const presentIndexes = result
+    ? result.schedule.map((s, i) => (s.date ? i : -1)).filter((i) => i >= 0)
+    : [];
+  const averagedIndexes = new Set(
+    result
+      ? result.schedule
+          .map((s, i) => (s.date && (result.mode === "initial" || s.daysFromBase > 0) ? i : -1))
+          .filter((i) => i >= 0)
+      : [],
+  );
   const displayPaths = paths.filter((p) => {
     if (pathFilter === "included") return p.pathIncluded;
     if (pathFilter === "excluded") return !p.pathIncluded;
@@ -264,7 +289,8 @@ function PathBacktestTable({
               </>
             ) : (
               <>
-                Remaining observations only — passed dates are excluded. Hurdle uses{" "}
+                Averaged on remaining observations only — passed slots show{" "}
+                <span className="font-semibold text-stone-700">ALREADY PASSED</span>. Hurdle uses{" "}
                 <span className="font-semibold text-stone-700">Effective Target</span> when fixings
                 have settled
                 {result.effectiveTargetLevel != null && result.effectiveTargetLevel > 0 ? (
@@ -336,16 +362,29 @@ function PathBacktestTable({
             <span>Start</span>
             <span>Underlying Closing Level</span>
             {showAdjustedStart ? <span>Start Level</span> : null}
-            {presentIndexes.map((_idx, displayIdx) => (
-              <span key={`od-${displayIdx}`}>Average Date {displayIdx + 1}</span>
+            {presentIndexes.map((idx, displayIdx) => (
+              <span key={`od-${displayIdx}`}>
+                Average Date {displayIdx + 1}
+                {averagedIndexes.has(idx) ? "" : " · passed"}
+              </span>
             ))}
-            {presentIndexes.map((_idx, displayIdx) => (
-              <span key={`ol-${displayIdx}`}>Average Level {displayIdx + 1}</span>
+            {presentIndexes.map((idx, displayIdx) => (
+              <span key={`ol-${displayIdx}`}>
+                Average Level {displayIdx + 1}
+                {averagedIndexes.has(idx) ? "" : " · passed"}
+              </span>
             ))}
             <span>Average Underlying Level</span>
             <span>Underlying Performance</span>
             <span>Path Taken</span>
           </div>
+          {rowCount === 0 ? (
+            <p className="px-2 py-6 text-sm text-stone-500">
+              {pathFilter === "excluded"
+                ? "No excluded rows in this sample — every path short of the frontier was Path Taken = Yes."
+                : "No paths match this filter."}
+            </p>
+          ) : null}
           <div style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
             {virtualizer.getVirtualItems().map((virtualRow) => {
               const row = displayPaths[virtualRow.index]!;
@@ -363,12 +402,28 @@ function PathBacktestTable({
                   <span>{formatLevel(row.underlyingClosingLevel)}</span>
                   {showAdjustedStart ? <span>{formatLevel(row.adjustedStartLevel)}</span> : null}
                   {presentIndexes.map((idx) => (
-                    <span key={`pd-${idx}`} className="whitespace-nowrap">
-                      {row.observationDates[idx] ?? "—"}
+                    <span
+                      key={`pd-${idx}`}
+                      className={
+                        averagedIndexes.has(idx)
+                          ? "whitespace-nowrap"
+                          : "whitespace-nowrap text-stone-400"
+                      }
+                    >
+                      {averagedIndexes.has(idx)
+                        ? (row.observationDates[idx] ?? "—")
+                        : "ALREADY PASSED"}
                     </span>
                   ))}
                   {presentIndexes.map((idx) => (
-                    <span key={`pl-${idx}`}>{formatLevel(row.observationLevels[idx])}</span>
+                    <span
+                      key={`pl-${idx}`}
+                      className={averagedIndexes.has(idx) ? "" : "text-stone-400"}
+                    >
+                      {averagedIndexes.has(idx)
+                        ? formatLevel(row.observationLevels[idx])
+                        : "—"}
+                    </span>
                   ))}
                   <span>{formatLevel(row.averageObservationLevel)}</span>
                   <span>{formatPct(row.underlyingPerformance)}</span>
@@ -380,14 +435,13 @@ function PathBacktestTable({
         </div>
       </div>
       <p className="mt-2 text-xs text-stone-500">
-        Showing {formatNumber(rowCount, 0)} of {formatNumber(paths.length, 0)} frontier paths ·
-        Included {formatNumber(result.includedCount, 0)} · Successes{" "}
-        {formatNumber(result.successCount, 0)}
+        Showing {formatNumber(rowCount, 0)} of {formatNumber(paths.length, 0)} paths · Included{" "}
+        {formatNumber(result.includedCount, 0)} · Successes {formatNumber(result.successCount, 0)}
         {seriesStart ? ` · Series from ${seriesStart}` : ""}
         {result.lastIndexDate ? ` · As of ${result.lastIndexDate}` : ""}
         {lastIncludedFinalObs ? ` · Last included final obs ${lastIncludedFinalObs}` : ""}
-        {pathFilter === "excluded" && rowCount === 0
-          ? " · Trailing Path-Taken-No rows beyond the trading-day frontier are omitted"
+        {paths.some((p) => !p.pathIncluded)
+          ? " · Trailing Path-Taken-No rows beyond the frontier are sampled (not the full Excel cascade)"
           : ""}
       </p>
     </Panel>

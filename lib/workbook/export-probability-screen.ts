@@ -267,14 +267,22 @@ function writePathsSheet(
     headerRow = addExcelSection(sheet, headerRow, "Historical Path Backtest", 1, 10);
   }
 
-  const pathSlots = result.pathSchedule ?? result.schedule;
-  const presentIdx = pathSlots.map((s, i) => (s.date ? i : -1)).filter((i) => i >= 0);
+  const presentIdx = result.schedule.map((s, i) => (s.date ? i : -1)).filter((i) => i >= 0);
+  const averagedIdx = new Set(
+    result.schedule
+      .map((s, i) => (s.date && (result.mode === "initial" || s.daysFromBase > 0) ? i : -1))
+      .filter((i) => i >= 0),
+  );
   const headers = [
     "Start",
     "Underlying Closing Level",
     ...(result.mode === "initial" ? ["Start Level"] : []),
-    ...presentIdx.map((_i, display) => `Average Date ${display + 1}`),
-    ...presentIdx.map((_i, display) => `Average Level ${display + 1}`),
+    ...presentIdx.map((i, display) =>
+      averagedIdx.has(i) ? `Average Date ${display + 1}` : `Average Date ${display + 1} (passed)`,
+    ),
+    ...presentIdx.map((i, display) =>
+      averagedIdx.has(i) ? `Average Level ${display + 1}` : `Average Level ${display + 1} (passed)`,
+    ),
     "Average Underlying Level",
     "Underlying Performance",
     "Path Taken",
@@ -303,8 +311,14 @@ function writePathsSheet(
     if (result.mode === "initial") {
       values.push(path.adjustedStartLevel ?? "—");
     }
-    for (const i of presentIdx) values.push(path.observationDates[i] ?? "—");
-    for (const i of presentIdx) values.push(path.observationLevels[i] ?? "—");
+    for (const i of presentIdx) {
+      values.push(
+        averagedIdx.has(i) ? (path.observationDates[i] ?? "—") : "ALREADY PASSED",
+      );
+    }
+    for (const i of presentIdx) {
+      values.push(averagedIdx.has(i) ? (path.observationLevels[i] ?? "—") : "—");
+    }
     values.push(path.averageObservationLevel ?? "—");
     values.push(path.underlyingPerformance ?? "—");
     values.push(path.pathIncluded ? "Yes" : "No");

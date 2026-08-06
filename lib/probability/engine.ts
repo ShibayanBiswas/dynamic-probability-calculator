@@ -30,7 +30,9 @@ export type PathRow = {
   pathStartDate: string;
   underlyingClosingLevel: number;
   adjustedStartLevel: number | null;
+  /** One entry per full-schedule slot; `null` for blank or already-passed slots. */
   observationDates: (string | null)[];
+  /** One entry per full-schedule slot; `null` for blank or already-passed slots. */
   observationLevels: (number | null)[];
   averageObservationLevel: number | null;
   underlyingPerformance: number | null;
@@ -46,8 +48,9 @@ export type ProbabilityRunResult = {
    */
   schedule: ObservationSchedule[];
   /**
-   * Slots used by the Historical Path Backtest columns and probability math.
+   * Slots that feed the average, frontier and probability math.
    * Current: remaining only (`daysFromBase > 0`). Initial: same as `schedule`.
+   * Path rows still carry one column per `schedule` slot, with `null` for the rest.
    */
   pathSchedule: ObservationSchedule[];
   includedCount: number;
@@ -269,6 +272,10 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
   let includedCount = 0;
   let successCount = 0;
   let stillEligible = true;
+  // Excel Backtesting keeps cascading Path-Taken-No rows after the frontier.
+  // Keep a bounded trailing No sample so the Excluded filter is not empty.
+  const MAX_TRAILING_EXCLUDED = 250;
+  let trailingExcluded = 0;
 
   // Frontier clock: Initial → Actual Start; Current → latest series bar (today / prev session).
   const frontierTime = mode === "initial" ? initialFrontierTime : lastIndexTime;
@@ -285,8 +292,11 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
     let levelSum = 0;
     let levelCount = 0;
 
-    for (const slot of pathSchedule) {
-      if (!slot.date) {
+    // Columns span the full schedule so blank and already-passed slots keep their
+    // place as null placeholders; only path slots feed the average and frontier.
+    for (const slot of schedule) {
+      const usedInAverage = slot.date != null && (mode === "initial" || slot.daysFromBase > 0);
+      if (!usedInAverage) {
         observationDates.push(null);
         observationLevels.push(null);
         continue;
@@ -364,9 +374,8 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
     }
 
     if (includePaths) {
-      if (!stillEligible && !pathIncluded) {
-        break;
-      }
+      // Push first (including the first Path-Taken-No), then stop after a bounded
+      // trailing No sample — matches Excel cascade without shipping every No row.
       paths.push({
         pathStartDate: startBar.date,
         underlyingClosingLevel: close,
@@ -377,6 +386,10 @@ export function runProbabilityBacktest(args: RunProbabilityArgs): ProbabilityRun
         underlyingPerformance: performance,
         pathIncluded,
       });
+      if (!stillEligible && !pathIncluded) {
+        trailingExcluded += 1;
+        if (trailingExcluded >= MAX_TRAILING_EXCLUDED) break;
+      }
     } else if (!stillEligible) {
       break;
     }

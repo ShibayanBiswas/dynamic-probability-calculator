@@ -137,8 +137,34 @@ assert(
 assert(current.pathSchedule.length === 1, "current pathSchedule keeps only remaining positive-day obs");
 assert(current.pathSchedule[0]?.daysFromBase! > 0, "remaining days positive");
 assert(
-  current.paths[0]?.observationDates.length === current.pathSchedule.length,
-  "path row observation columns align with pathSchedule",
+  current.paths[0]?.observationDates.length === current.schedule.length,
+  "path row observation columns span the full schedule",
+);
+// Passed slot keeps its column as a null placeholder, and is left out of the average.
+const passedIdx = current.schedule.findIndex((s) => s.date != null && s.daysFromBase <= 0);
+const remainingIdx = current.schedule.findIndex((s) => s.date != null && s.daysFromBase > 0);
+assert(passedIdx >= 0 && remainingIdx >= 0, "fixture has one passed and one remaining slot");
+const currentIncludedRow = current.paths.find((p) => p.pathIncluded)!;
+assert(
+  currentIncludedRow.observationDates[passedIdx] == null &&
+    currentIncludedRow.observationLevels[passedIdx] == null,
+  "passed slot renders as placeholder on path rows",
+);
+assert(
+  currentIncludedRow.observationDates[remainingIdx] != null &&
+    currentIncludedRow.observationLevels[remainingIdx] != null,
+  "remaining slot carries date and level on path rows",
+);
+assert(
+  Math.abs(
+    (currentIncludedRow.averageObservationLevel ?? NaN) -
+      currentIncludedRow.observationLevels[remainingIdx]!,
+  ) < 1e-9,
+  "average uses remaining slots only",
+);
+assert(
+  current.paths.some((p) => !p.pathIncluded),
+  "path payload samples Path-Taken-No rows past the frontier for Excluded filter",
 );
 assert(current.includedCount > 0, "current included paths");
 assert(current.paths[0]?.adjustedStartLevel == null, "current has no adjusted start");

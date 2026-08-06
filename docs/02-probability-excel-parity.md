@@ -97,7 +97,7 @@ Desk: last bar of merged series (Mongo overlay + Gift CSV) — usually **newer**
 | Start Level | `CEILING.MATH(close×1.01,100)` (Nifty) / `×1.006` (Sensex) | Same |
 | Performance | `Avg / StartLevel − 1` | Same |
 | Path frontier | `Probability!$D$16 ≥ MAX(obs dates)` (allotment cutoff) | Actual Start ≥ MAX(projected obs) — same NSP rule; Phase 2 uses Trade |
-| Current schedule | All Average slots with Days from checking date | **Observation Schedule:** all present Average slots (incl. passed / ≤0 days). **Path backtest + probability:** remaining only (`days > 0`) with Effective Target hurdle |
+| Current schedule | All Average slots with Days from checking date | **Observation Schedule:** all present Average slots + Remaining/Already passed status. **Path backtest:** same columns; passed cells = `ALREADY PASSED` / `—`. **Average + probability:** remaining only (`days > 0`) with Effective Target. Default path filter = **All**. Trailing Path-Taken-No rows are sampled for Excluded. |
 | MAX slots | Often Avg 1–6 only in one MAX | All **present** slots (Initial) / remaining positive-day slots (Current) |
 
 ---
