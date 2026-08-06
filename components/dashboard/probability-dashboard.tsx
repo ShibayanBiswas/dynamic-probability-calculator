@@ -364,13 +364,13 @@ function PathBacktestTable({
             {showAdjustedStart ? <span>Start Level</span> : null}
             {presentIndexes.map((idx, displayIdx) => (
               <span key={`od-${displayIdx}`}>
-                Average Date {displayIdx + 1}
+                Observation Date {displayIdx + 1}
                 {averagedIndexes.has(idx) ? "" : " · passed"}
               </span>
             ))}
             {presentIndexes.map((idx, displayIdx) => (
               <span key={`ol-${displayIdx}`}>
-                Average Level {displayIdx + 1}
+                Observation Level {displayIdx + 1}
                 {averagedIndexes.has(idx) ? "" : " · passed"}
               </span>
             ))}

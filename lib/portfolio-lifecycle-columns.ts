@@ -1,5 +1,6 @@
 import {
   observationDateCells,
+  PORTFOLIO_OBS_COLUMN_LABELS,
 } from "@/lib/portfolio-observation-columns";
 import {
   computeObservationScheduleMetrics,
@@ -58,15 +59,8 @@ export type PortfolioLifecycleColumnDef =
   | { kind: "observationCounts" }
   | { kind: "effectiveTarget" };
 
-export const PORTFOLIO_AVG_COLUMN_LABELS = [
-  "Average 1",
-  "Average 2",
-  "Average 3",
-  "Average 4",
-  "Average 5",
-  "Average 6",
-  "Average 7",
-] as const;
+/** @deprecated Use {@link PORTFOLIO_OBS_COLUMN_LABELS} — Observation 1–7. */
+export const PORTFOLIO_AVG_COLUMN_LABELS = PORTFOLIO_OBS_COLUMN_LABELS;
 
 /** Desk mark column — previous trading day until NSE close, then today. */
 export const PORTFOLIO_AS_OF_TODAY_COLUMN_LABEL = "As of Today's Date";
@@ -125,7 +119,7 @@ function expandColumnDef(
     case "dynamic":
       return [labels[def.field]];
     case "observations":
-      return [...PORTFOLIO_AVG_COLUMN_LABELS];
+      return [...PORTFOLIO_OBS_COLUMN_LABELS];
     case "observationLevels":
       return [...PORTFOLIO_OBS_LEVEL_COLUMN_LABELS];
     case "observationCounts":

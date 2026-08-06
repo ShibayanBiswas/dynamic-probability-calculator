@@ -278,10 +278,10 @@ function writePathsSheet(
     "Underlying Closing Level",
     ...(result.mode === "initial" ? ["Start Level"] : []),
     ...presentIdx.map((i, display) =>
-      averagedIdx.has(i) ? `Average Date ${display + 1}` : `Average Date ${display + 1} (passed)`,
+      averagedIdx.has(i) ? `Observation Date ${display + 1}` : `Observation Date ${display + 1} (passed)`,
     ),
     ...presentIdx.map((i, display) =>
-      averagedIdx.has(i) ? `Average Level ${display + 1}` : `Average Level ${display + 1} (passed)`,
+      averagedIdx.has(i) ? `Observation Level ${display + 1}` : `Observation Level ${display + 1} (passed)`,
     ),
     "Average Underlying Level",
     "Underlying Performance",
@@ -344,7 +344,7 @@ function writePathsSheet(
     to: { row: headerRow + maxRows, column: headers.length },
   };
   sheet.columns = headers.map((h) => ({
-    width: h.startsWith("Average Date") || h === "Start" ? 12 : h.includes("Performance") ? 14 : 15,
+    width: h.startsWith("Observation Date") || h === "Start" ? 12 : h.includes("Performance") ? 14 : 15,
   }));
 }
 

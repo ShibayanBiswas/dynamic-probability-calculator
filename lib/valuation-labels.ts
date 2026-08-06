@@ -143,7 +143,7 @@ export function portfolioLifecycleColumnHint(
   if (header === labels.absReturn) {
     return "Path performance versus entry on the observation-average path — not Absolute Return on deal price.";
   }
-  if (/^Observation Level \d+$/.test(header) || /^Average \d+$/.test(header)) {
+  if (/^Observation Level \d+$/.test(header) || /^Observation \d+$/.test(header)) {
     return "Underlying index close or observation date from the master — blank em dash when the date is empty, still ahead, or history is missing.";
   }
   if (header === "Initial Prob") {
@@ -159,7 +159,7 @@ export function portfolioLifecycleColumnHint(
     return "Full phase tenor days divided by 365.";
   }
   if (header === "Total Observation Dates") {
-    return "Count of unique scheduled observation dates on the master Average 1 through Average 7.";
+    return "Count of unique scheduled observation dates on the master Observation 1 through Observation 7.";
   }
   if (header === "Observation Dates Passed") {
     return "Scheduled observation dates settled as of today — same calendar day stays pending until NSE cash close 15:30 IST.";
