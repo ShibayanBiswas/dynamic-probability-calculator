@@ -1,6 +1,6 @@
 # 16 — Probability logic by product type (full audit)
 
-**As of:** 2026-08-04 · Verified against `lib/product-dates.ts`, `lib/probability/engine.ts`, `lib/portfolio-observation-metrics.ts`, `lib/product-lifecycle.ts`, `lib/logic-atlas.ts`
+**As of:** 2026-08-06 · Verified against `lib/product-dates.ts`, `lib/probability/engine.ts`, `lib/portfolio-observation-metrics.ts`, `lib/product-lifecycle.ts`, `lib/logic-atlas.ts`
 
 This document is the desk’s **source of truth** for how Rollover Phase / product type changes probability. For a shorter layman tour see [12-probability-plain-english.md](12-probability-plain-english.md). For formulas only see [11-calculation-review.md](11-calculation-review.md).
 
@@ -90,13 +90,17 @@ Identical math, but step 1 uses **Trade Date**, not Allotment. That shortens or 
 Almost nothing about phase. Current always:
 
 1. Locks checking date (if last observation is already settled as of the requested date, checking date freezes to that last obs day).  
-2. Builds day offsets from **checking date → each present Average date** (past slots can be 0 or negative).  
-3. Uses **raw path-start close** (no Start Level).  
-4. Performance = avg obs ÷ path close − 1.  
-5. Success if performance ≥ **Target ÷ today mark − 1**.  
-6. Today mark = desk mark (prev session before 15:30 IST, today after close), else series close on the checking date.
+2. Builds day offsets from **checking date → each present Average date** (past slots can be 0 or negative). **Observation Schedule** keeps every present slot.  
+3. **Path table** still shows every present slot; passed slots (`days ≤ 0`) render as **ALREADY PASSED** / **—** and are **not** averaged.  
+4. Uses **raw path-start close** (no Start Level).  
+5. Performance = average of **remaining** obs levels ÷ path close − 1.  
+6. Success if performance ≥ **Effective Target ÷ today mark − 1** (falls back to master Target ÷ today when nothing has settled yet).  
+7. Today mark = desk mark (prev session before 15:30 IST, today after close), else series close on the checking date.  
+8. Path frontier = latest series trading bar ≥ MAX(projected **remaining** obs dates). Trailing Path-Taken-No rows are sampled for the Excluded filter; default filter is **All**.
 
 Phase still matters indirectly because **only live-book products** appear in pickers, and live-book uses phase end + last-observation settlement.
+
+**Intentional desk override vs raw NSP Backtesting:** Excel Backtesting still projects every Average offset (including negative) into `AVERAGEIF` and hurdles with master Target / today (`Probability!D33`). This desk averages remaining slots only and hurdles with Effective Target when fixings have settled — per product ops rules.
 
 ---
 
@@ -181,7 +185,7 @@ Atlas modules were audited against the engine and corrected where copy drifted:
 |-------|-----------------------------------------------|
 | Offsets | Calendar days from Average dates; trading-day snap at **path lookup**, not before offsets |
 | Effective Target levels | Bundled valuation history, not Gift+Mongo path series |
-| Current schedule | All **present** Average slots, not “remaining only” |
+| Current schedule | All **present** Average slots with Remaining / Already passed status; path average uses remaining only |
 | Portfolio clock | ~60s poll; advances on IST day / EOD — mark policy is separate |
 | Phase end caveats | Phase 1 POED validity; 10Y Rollover fallback to Maturity |
 | Bootstrap | Vercel prefers CDN seed; Mongo overlays prices/paths |

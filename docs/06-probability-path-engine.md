@@ -22,8 +22,9 @@ Deep product-type audit: [16-product-type-probability-logic.md](16-product-type-
 | `current` | Checking date; **full** Observation Schedule; average uses remaining (`days > 0`) | No (`null`) | Path start close | `EffectiveTarget/todayLevel − 1` | Latest series bar ≥ MAX(projected obs) |
 
 Path rows carry one column per full-schedule slot. Current renders already-passed slots as
-`—` placeholders (`observationDates[i] = observationLevels[i] = null`) — they are excluded
-from the average, frontier and probability, but keep their column position.
+`ALREADY PASSED` / `—` placeholders (`observationDates[i] = observationLevels[i] = null`) — they are
+excluded from the average, frontier and probability, but keep their column position. Default path
+filter is **All**; a bounded sample of trailing Path-Taken-No rows feeds the Excluded filter.
 
 ### Actual Start by phase
 

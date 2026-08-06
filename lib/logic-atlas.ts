@@ -613,7 +613,7 @@ export const logicModules: LogicModule[] = [
     ],
     insights: [
       "Included paths require the index history to cover every simulated observation.",
-      "The last included path has its last observation on the current trading day.",
+      "The last included path has its final observation on Actual Start (Allotment or Trade by phase).",
       "Daily path starts use Nifty history from 2001-01-01 (Gift AIF / NSP nifty sheet parity), forward-filled with Sensex.",
     ],
     outputs: ["Initial probability", "Path table", "Observation schedule"],
@@ -624,7 +624,7 @@ export const logicModules: LogicModule[] = [
     subtitle: "Daily historical paths from the valuation date",
     accent: "green",
     purpose:
-      "Day offsets are measured from the checking date to remaining future observations only. Passed fixings drop out of the path table. The hurdle uses Effective Target versus today’s mark. Success compares path performance to that percent required.",
+      "Day offsets are measured from the checking date for every observation slot. Passed fixings stay visible as ALREADY PASSED placeholders and are left out of the path average. The hurdle uses Effective Target versus today’s mark. Success compares path performance to that percent required.",
     stageCount: 5,
     metrics: [
       { label: "Frequency", value: "Daily" },
@@ -675,6 +675,7 @@ export const logicModules: LogicModule[] = [
     ],
     insights: [
       "Percent required compares Effective Target to the selected-date Nifty or Sensex level.",
+      "Passed Average slots stay on the schedule and path table as ALREADY PASSED; only remaining slots feed the average.",
       "Caching keys on ISIN, mode, valuation date, underlying, and latest index date.",
     ],
     outputs: ["Current probability", "Path table", "Effective Target", "Percent required"],

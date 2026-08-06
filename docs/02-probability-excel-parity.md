@@ -1,6 +1,6 @@
 # 02 — Probability Excel parity
 
-**Updated:** 2026-08-04 · Product-type deep dive: [16-product-type-probability-logic.md](16-product-type-probability-logic.md)
+**Updated:** 2026-08-06 · Product-type deep dive: [16-product-type-probability-logic.md](16-product-type-probability-logic.md)
 
 Reference workbook (local, gitignored): `NSP's under Risk.xlsm`
 
@@ -135,6 +135,7 @@ Small pp deltas vs a stale NSP workbook are expected when the desk series fronti
 npm run verify:nsp-excel
 npm run verify:probability
 npm run verify:series-floor
+npm run audit:probability-edges
 npm run verify:probability-desk
 ```
 
@@ -142,5 +143,7 @@ npm run verify:probability-desk
 
 1. Backtesting Days = obs − checking date (serial-safe)  
 2. Target % / % Required formulas  
-3. Current Prob within band of Backtesting `S4/S3`  
+3. Current Prob within band of Backtesting `S4/S3` (products with **no** passed fixings — same hurdle as Excel)  
 4. Series / paths from **2001-01-01**
+
+`audit-probability-edge-cases.ts` asserts Current overrides for passed slots: full schedule + ALREADY PASSED placeholders, remaining-only average, Effective Target hurdle, all-passed / all-remaining edges, blank Average slots, and Initial Actual Start frontier.
