@@ -142,9 +142,6 @@ function FlowNode({
           </p>
           <p className="mt-1 font-semibold text-ink dark:text-stone-100">{node.label}</p>
           <p className="mt-1 text-xs leading-5 text-stone-600 dark:text-stone-400">{node.description}</p>
-          {node.detail ? (
-            <p className="mt-1 text-[11px] leading-4 text-stone-500 dark:text-stone-500">{node.detail}</p>
-          ) : null}
         </div>
       </div>
     </motion.button>

@@ -294,9 +294,6 @@ export function LogicAtlasConsole() {
                     <p className="text-sm leading-relaxed text-stone-700 dark:text-stone-300">
                       {activeNode.description}
                     </p>
-                    {activeNode.detail ? (
-                      <p className="mt-2 text-sm leading-6 text-stone-500 dark:text-stone-400">{activeNode.detail}</p>
-                    ) : null}
                   </motion.div>
                 ) : (
                   <motion.ul

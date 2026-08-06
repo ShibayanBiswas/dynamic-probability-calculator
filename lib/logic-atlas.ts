@@ -10,8 +10,6 @@ export type LogicNode = {
   label: string;
   kind: LogicNodeKind;
   description: string;
-  /** Optional extra line under the card description — keep short. */
-  detail?: string;
 };
 
 export type LogicFlow = {
@@ -568,15 +566,15 @@ export const logicModules: LogicModule[] = [
         id: "ip-schedule",
         label: "Observation Offsets",
         kind: "input",
-        description: "Days from actual phase start to each observation date.",
-        detail: "Allotment for Blank / Phase 1 / 10Y; Trade Date for Phase 2.",
+        description:
+          "Days from actual phase start to each observation date — Allotment for Blank / Phase 1 / 10Y; Trade Date for Phase 2.",
       },
       {
         id: "ip-paths",
         label: "Daily Path Starts",
         kind: "process",
-        description: "Every index trading day becomes a path start.",
-        detail: "History runs from 2001-01-01 through the Actual Start frontier.",
+        description:
+          "Every index trading day becomes a path start — history runs from 2001-01-01 through the Actual Start frontier.",
       },
       {
         id: "ip-levels",
@@ -588,8 +586,8 @@ export const logicModules: LogicModule[] = [
         id: "ip-start",
         label: "Adjusted Start Level",
         kind: "engine",
-        description: "Closing level is bumped and ceiling-rounded to the next hundred.",
-        detail: "Nifty bump 1%; Sensex bump 0.6%, then round up to the next hundred.",
+        description:
+          "Closing level is bumped and ceiling-rounded to the next hundred — Nifty bump 1%; Sensex bump 0.6%, then round up to the next hundred.",
       },
       {
         id: "ip-perf",
@@ -601,8 +599,8 @@ export const logicModules: LogicModule[] = [
         id: "ip-prob",
         label: "Initial Probability",
         kind: "output",
-        description: "Share of included paths that clear the target versus entry threshold.",
-        detail: "Last included path ends with its final observation on Actual Start.",
+        description:
+          "Share of included paths that clear the target versus entry threshold — last included path ends with its final observation on Actual Start.",
       },
     ],
     flows: [
@@ -638,15 +636,15 @@ export const logicModules: LogicModule[] = [
         id: "cp-schedule",
         label: "Forward Offsets",
         kind: "input",
-        description: "Days from valuation date to each remaining observation.",
-        detail: "Passed observation dates are excluded; only positive day counts remain.",
+        description:
+          "Days from valuation date to each observation — schedule keeps all slots; path average uses remaining positive day counts only.",
       },
       {
         id: "cp-paths",
         label: "Daily Path Starts",
         kind: "process",
-        description: "Every index trading day becomes a path start.",
-        detail: "Last included path ends on today’s mark or the previous trading session.",
+        description:
+          "Every index trading day becomes a path start — last included path ends on today’s mark or the previous trading session.",
       },
       {
         id: "cp-levels",
@@ -658,15 +656,15 @@ export const logicModules: LogicModule[] = [
         id: "cp-perf",
         label: "Underlying Performance",
         kind: "engine",
-        description: "Average observation level divided by path start close, minus one.",
-        detail: "Hurdle uses Effective Target when past fixings exist, else master Target.",
+        description:
+          "Average observation level divided by path start close, minus one — hurdle uses Effective Target when past fixings exist, else master Target.",
       },
       {
         id: "cp-prob",
         label: "Current Probability",
         kind: "output",
-        description: "Share of included paths that clear percent required.",
-        detail: "Effective Target = (N × Target − Σ passed levels) ÷ remaining.",
+        description:
+          "Share of included paths that clear percent required — Effective Target = (N × Target − Σ passed levels) ÷ remaining.",
       },
     ],
     flows: [
