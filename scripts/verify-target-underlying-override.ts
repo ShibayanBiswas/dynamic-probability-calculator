@@ -10,9 +10,13 @@ import {
   targetUnderlying,
 } from "../lib/probability/engine";
 import {
+  defaultTargetUnderlyingFraction,
   formatTargetUnderlyingPercentInput,
   parseTargetUnderlyingPercentInput,
+  targetLevelFromDesiredEffectiveTarget,
+  underlyingPercentFromEntry,
   workingTargetLevel,
+  workingTargetLevelForSurface,
 } from "../lib/probability/target-override";
 import { getProbabilityEntryLevel, getTargetLevel } from "../lib/product-utils";
 import { computeObservationScheduleMetrics } from "../lib/portfolio-observation-metrics";
@@ -262,8 +266,76 @@ assert(
   "path schedule length unchanged by target override",
 );
 
-// ── Display card value: Target Underlying stays the edited fraction ─────────
-assert(nearly(0.34, pct34), "Current tab Target Underlying card shows edited 34.0%");
+// ── Current + settled: default TU = ET÷Entry−1; edits back-solve Target Level ─
+const entryPassed = getProbabilityEntryLevel(withPassed)!;
+assert(metricsMaster.sumPassed != null, "sumPassed exposed for back-solve");
+const defaultCurrentTu = defaultTargetUnderlyingFraction(withPassed, checkDate, "current");
+assert(defaultCurrentTu != null, "Current default TU");
+assert(
+  nearly(defaultCurrentTu!, underlyingPercentFromEntry(entryPassed, metricsMaster.effectiveTarget)!),
+  "Current default TU = Effective Target ÷ Entry − 1",
+);
+assert(
+  !nearly(defaultCurrentTu!, targetUnderlying(withPassed)!),
+  "Current default differs from master Target÷Entry−1 when fixings settled",
+);
+assert(
+  nearly(
+    defaultTargetUnderlyingFraction(withPassed, checkDate, "initial")!,
+    targetUnderlying(withPassed)!,
+  ),
+  "Initial surface still defaults to master Target÷Entry−1",
+);
+assert(
+  nearly(
+    defaultTargetUnderlyingFraction(noPassed, checkDate, "current")!,
+    targetUnderlying(noPassed)!,
+  ),
+  "Current + 0 passed defaults to master Target÷Entry−1",
+);
+
+// Seeding ET% and back-solving must recover master Target Level (probability unchanged).
+const solvedFromDefault = workingTargetLevelForSurface(
+  withPassed,
+  defaultCurrentTu,
+  checkDate,
+  "current",
+)!;
+assert(
+  nearly(solvedFromDefault, getTargetLevel(withPassed)!),
+  "ET÷Entry−1 seed back-solves to master Target Level",
+);
+
+const desiredEt20 = entryPassed * 1.2;
+const solvedT20 = targetLevelFromDesiredEffectiveTarget({
+  total: metricsMaster.total,
+  remaining: metricsMaster.remaining,
+  sumPassed: metricsMaster.sumPassed!,
+  desiredEffectiveTarget: desiredEt20,
+})!;
+const surfaceT20 = workingTargetLevelForSurface(withPassed, 0.2, checkDate, "current")!;
+assert(nearly(surfaceT20, solvedT20), "surface helper matches algebraic back-solve");
+const metricsFrom20 = computeObservationScheduleMetrics(withPassed, checkDate, {
+  targetLevel: surfaceT20,
+});
+assert(
+  nearly(metricsFrom20.effectiveTarget!, desiredEt20, 1e-6),
+  "editing Current TU to 20% sets Effective Target = Entry×1.20",
+);
+
+// Initial surface ignores ET% interpretation (classic Entry×(1+pct)).
+assert(
+  nearly(workingTargetLevelForSurface(withPassed, 0.2, checkDate, "initial")!, entryPassed * 1.2),
+  "Initial surface keeps classic Target Level = Entry×(1+TU)",
+);
+
+// Display / format
+assert(
+  formatTargetUnderlyingPercentInput(defaultCurrentTu) ===
+    (defaultCurrentTu! * 100).toFixed(1),
+  "Current default formats to one decimal",
+);
+assert(nearly(0.34, pct34), "edited fraction retained for 0-passed Current");
 assert(
   formatTargetUnderlyingPercentInput(pct34) === "34.0",
   "card formats as 34.0 for 34%",

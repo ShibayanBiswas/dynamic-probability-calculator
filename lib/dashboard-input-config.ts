@@ -83,7 +83,7 @@ export const INPUT_FIELD_HINTS: Record<string, InfoBlurb> = {
   },
   targetUnderlyingPct: {
     title: "Target Underlying",
-    body: "Editable performance hurdle as a percent (e.g. 36.0 means 36%).\nDefaults from master Target Level ÷ Entry Level − 1.\nChanging it updates Target Level = Entry × (1 + pct) and recalculates Initial and Current Probability.\nWhen observations have settled, Effective Target still follows from that Target Level and remains read-only.\nAlways editable — for zero or one-or-more passed observations.",
+    body: "Editable performance hurdle as a percent (e.g. 36.0 means 36%).\nOn Initial Prob / Summary / Current with no settled fixings: defaults to master Target ÷ Entry − 1; Target Level = Entry × (1 + pct).\nOn Current Prob with one or more settled fixings: defaults to Effective Target ÷ Entry − 1; edits back-solve Target Level so Effective Target tracks Entry × (1 + pct).\nEffective Target stays read-only. Always editable.",
   },
   debentures: {
     title: "No. of Debentures",

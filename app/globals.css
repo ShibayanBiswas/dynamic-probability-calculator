@@ -298,7 +298,7 @@ textarea {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
-  /* 6+ headline tiles — single-row horizontal scroll (Live Notional strip) */
+  /* 5+ headline tiles — single-row horizontal scroll with a visible scrollbar */
   .kpi-band-scroll {
     display: flex;
     flex-wrap: nowrap;
@@ -306,19 +306,26 @@ textarea {
     gap: 0.75rem;
     overflow-x: auto;
     overflow-y: hidden;
-    padding-bottom: 0.45rem;
+    padding-bottom: 0.55rem;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(212, 178, 76, 0.45) transparent;
+    scrollbar-gutter: stable;
+    scrollbar-width: auto;
+    scrollbar-color: rgba(212, 178, 76, 0.65) rgba(212, 178, 76, 0.12);
   }
 
   .kpi-band-scroll::-webkit-scrollbar {
-    height: 6px;
+    height: 10px;
+    display: block;
+  }
+
+  .kpi-band-scroll::-webkit-scrollbar-track {
+    background: rgba(212, 178, 76, 0.12);
+    border-radius: 999px;
   }
 
   .kpi-band-scroll::-webkit-scrollbar-thumb {
-    background: rgba(212, 178, 76, 0.45);
+    background: rgba(212, 178, 76, 0.65);
     border-radius: 999px;
   }
 

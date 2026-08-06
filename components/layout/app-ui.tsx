@@ -354,14 +354,17 @@ export function KpiBand({
       ? { cyan: "#c9a040", purple: "#b8956a", green: "#4ade80", amber: "#d4b24c", rose: "#a8821f" }
       : { cyan: "#a8821f", purple: "#7a1e2c", green: "#15803d", amber: "#b45309", rose: "#be123c" };
   const count = items.length;
-  const denseColumns = count >= 8 ? 4 : count >= 5 ? Math.min(count, 5) : undefined;
+  // 5+ tiles: single-row horizontal scroll with a visible scrollbar (never squeeze to unreadability).
+  const useScroll = count >= 5;
+  const denseColumns = !useScroll && count >= 8 ? 4 : !useScroll && count >= 5 ? Math.min(count, 5) : undefined;
 
   return (
     <div
       className={cn(
-        "kpi-band-grid kpi-band-fill w-full gap-3 md:gap-4",
-        count >= 5 && "kpi-band-dense",
-        count >= 8 && "kpi-band-wide",
+        "w-full gap-3 md:gap-4",
+        useScroll
+          ? cn("kpi-band-scroll", count >= 6 && "kpi-band-scroll-dense")
+          : cn("kpi-band-grid kpi-band-fill", count >= 5 && "kpi-band-dense", count >= 8 && "kpi-band-wide"),
       )}
       role="list"
       aria-label="Headline metrics"
@@ -379,7 +382,11 @@ export function KpiBand({
             key={item.label}
             role="listitem"
             animate={{ opacity: 1, y: 0 }}
-            className={cn("kpi-card kpi-card-fill kpi-card-live min-w-0", count >= 5 && "kpi-card-dense")}
+            className={cn(
+              "kpi-card kpi-card-live",
+              useScroll ? "kpi-card-scroll" : "kpi-card-fill min-w-0",
+              !useScroll && count >= 5 && "kpi-card-dense",
+            )}
             initial={{ opacity: 0, y: 16, scale: 0.96 }}
             style={{ "--kpi-accent": colors[accent] } as CSSProperties}
             transition={{ delay: index * 0.07, duration: 0.45, ease: deskEase }}

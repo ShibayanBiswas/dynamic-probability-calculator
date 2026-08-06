@@ -49,7 +49,8 @@ import {
 } from "@/lib/portfolio-observation-metrics";
 import {
   parseTargetUnderlyingPercentInput,
-  workingTargetLevel,
+  workingTargetLevelForSurface,
+  type ProbabilityTargetSurface,
 } from "@/lib/probability/target-override";
 import type { ProductCategory, ProductRecord } from "@/lib/types";
 import { cn, formatNumber } from "@/lib/utils";
@@ -89,6 +90,7 @@ export function ExcelInputPanel({
   activeProduct,
   onPickProduct,
   onResetDefaults,
+  probabilitySurface = "summary",
 }: {
   category: ProductCategory;
   products: ProductRecord[];
@@ -101,6 +103,8 @@ export function ExcelInputPanel({
   onPickProduct?: (product: ProductRecord) => void;
   /** Optional page-level reset (clears quality banners). Falls back to panel default pick. */
   onResetDefaults?: () => void;
+  /** Probability desk surface — drives Target Underlying default (ET÷Entry−1 on Current). */
+  probabilitySurface?: "summary" | "initial" | "current";
 }) {
   const selection = useProductSelection();
   const pickProduct = onPickProduct ?? ((picked: ProductRecord) => selection.selectProduct(picked));
@@ -379,6 +383,7 @@ export function ExcelInputPanel({
                     product={product}
                     asOf={asOf}
                     valuationDate={selection.valuationDate}
+                    probabilitySurface={probabilitySurface}
                   />
                 );
               }
@@ -624,24 +629,29 @@ export function DisclaimerBox({ children, className }: { children: ReactNode; cl
  * Probability desk absolute hurdle + editable Target Underlying %.
  * — 0 settled obs → read-only Target Level (from Entry × (1 + Target Underlying))
  * — ≥1 settled obs → read-only Effective Target (derived; not typed)
- * Target Underlying stays editable in both cases and drives dynamic recalculation.
+ * On Current Prob with settled fixings, Target Underlying defaults to ET÷Entry−1 and
+ * edits back-solve Target Level so Effective Target tracks Entry×(1+pct).
  */
 function ProbabilityTargetFields({
   fieldKey,
   product,
   asOf,
   valuationDate,
+  probabilitySurface,
 }: {
   fieldKey: string;
   product: ProductRecord | undefined;
   asOf: Date;
   valuationDate: string;
+  probabilitySurface: ProbabilityTargetSurface;
 }) {
   const selection = useProductSelection();
   const checkingDate = parseExcelishDate(valuationDate) ?? asOf;
 
   const fraction = parseTargetUnderlyingPercentInput(selection.targetUnderlyingPct);
-  const level = product ? workingTargetLevel(product, fraction) : null;
+  const level = product
+    ? workingTargetLevelForSurface(product, fraction, checkingDate, probabilitySurface)
+    : null;
   const metrics = product
     ? computeObservationScheduleMetrics(product, checkingDate, { targetLevel: level })
     : null;
@@ -670,6 +680,7 @@ function ProbabilityTargetFields({
     );
   }
 
+  const currentEtDefault = probabilitySurface === "current" && showEffectiveTarget;
   return (
     <FieldRow label="Target Underlying">
       <div className="relative">
@@ -680,7 +691,11 @@ function ProbabilityTargetFields({
           inputMode="decimal"
           value={selection.targetUnderlyingPct}
           onChange={(e) => selection.setField("targetUnderlyingPct", e.target.value)}
-          title="Editable in all cases — percent points (36.0 = 36%)"
+          title={
+            currentEtDefault
+              ? "Default = Effective Target ÷ Entry − 1. Edits move Effective Target; Target Level is back-solved."
+              : "Editable — percent points (36.0 = 36%). Default = Target ÷ Entry − 1."
+          }
         />
         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-stone-500">
           %

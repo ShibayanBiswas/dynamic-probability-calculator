@@ -53,6 +53,8 @@ export type ObservationScheduleMetrics = {
   total: number;
   passed: number;
   remaining: number;
+  /** Sum of underlying closes at settled observation dates; null if any passed level is missing. */
+  sumPassed: number | null;
   /** Raw Effective Target, or null when not computable. */
   effectiveTarget: number | null;
 };
@@ -77,29 +79,33 @@ export function computeObservationScheduleMetrics(
   const passed = passedDates.length;
   const remaining = Math.max(0, total - passed);
 
+  let sumPassed = 0;
+  let sumOk = true;
+  for (const date of passedDates) {
+    const level = underlyingLevelAtDate(product, date);
+    if (level == null || !(level > 0)) {
+      sumOk = false;
+      break;
+    }
+    sumPassed += level;
+  }
+  const sumPassedOut: number | null = sumOk ? sumPassed : null;
+
   const override = options?.targetLevel;
   const target =
     override != null && Number.isFinite(override) && override > 0
       ? override
       : getTargetLevel(product);
-  if (target == null || !(target > 0) || remaining <= 0 || total <= 0) {
-    return { total, passed, remaining, effectiveTarget: null };
-  }
-
-  let sumPassed = 0;
-  for (const date of passedDates) {
-    const level = underlyingLevelAtDate(product, date);
-    if (level == null || !(level > 0)) {
-      return { total, passed, remaining, effectiveTarget: null };
-    }
-    sumPassed += level;
+  if (target == null || !(target > 0) || remaining <= 0 || total <= 0 || sumPassedOut == null) {
+    return { total, passed, remaining, sumPassed: sumPassedOut, effectiveTarget: null };
   }
 
   return {
     total,
     passed,
     remaining,
-    effectiveTarget: (total * target - sumPassed) / remaining,
+    sumPassed: sumPassedOut,
+    effectiveTarget: (total * target - sumPassedOut) / remaining,
   };
 }
 

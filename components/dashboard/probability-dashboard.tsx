@@ -67,9 +67,10 @@ import {
   type ProbabilityRunResult,
 } from "@/lib/probability/engine";
 import {
+  defaultTargetUnderlyingFraction,
   formatTargetUnderlyingPercentInput,
   parseTargetUnderlyingPercentInput,
-  workingTargetLevel,
+  workingTargetLevelForSurface,
 } from "@/lib/probability/target-override";
 import {
   resolveHistoricalNiftyLevel,
@@ -548,30 +549,37 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
     lifecycle,
   ]);
 
-  // Seed Target Underlying from master when the selected product changes (not on remount edits).
-  const seededTargetProductRef = useRef<string | null>(null);
+  // Seed Target Underlying for the active surface:
+  // Current + settled fixings → Effective Target ÷ Entry − 1; else master Target ÷ Entry − 1.
+  const seededTargetKeyRef = useRef<string | null>(null);
   useEffect(() => {
     if (!product) {
-      seededTargetProductRef.current = null;
+      seededTargetKeyRef.current = null;
       return;
     }
-    if (seededTargetProductRef.current === product.rowId) return;
-    seededTargetProductRef.current = product.rowId;
+    const key = `${product.rowId}|${surface}|${formatDeskDate(checkingDate)}`;
+    if (seededTargetKeyRef.current === key) return;
+    seededTargetKeyRef.current = key;
     selection.setField(
       "targetUnderlyingPct",
-      formatTargetUnderlyingPercentInput(targetUnderlying(product)),
+      formatTargetUnderlyingPercentInput(
+        defaultTargetUnderlyingFraction(product, checkingDate, surface),
+      ),
     );
-    // Only re-seed on product identity — never on Target Underlying edits.
+    // Re-seed on product / surface / valuation — never on Target Underlying edits.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [product?.rowId]);
+  }, [product?.rowId, surface, selection.valuationDate]);
 
   const targetUnderlyingFraction = useMemo(
     () => parseTargetUnderlyingPercentInput(selection.targetUnderlyingPct),
     [selection.targetUnderlyingPct],
   );
   const overrideTargetLevel = useMemo(
-    () => (product ? workingTargetLevel(product, targetUnderlyingFraction) : null),
-    [product, targetUnderlyingFraction],
+    () =>
+      product
+        ? workingTargetLevelForSurface(product, targetUnderlyingFraction, checkingDate, surface)
+        : null,
+    [product, targetUnderlyingFraction, checkingDate, surface],
   );
 
   const runProbability = useCallback(
@@ -1006,6 +1014,7 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
                   activeProduct={product ?? undefined}
                   onPickProduct={selectFromPool}
                   onResetDefaults={resetToLifecycleDefaults}
+                  probabilitySurface={surface}
                 />
               </div>
             </Panel>
