@@ -483,6 +483,9 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
   const { filter: lifecycle, setFilter: setLifecycle } = useLifecycleFilter("ongoing");
   const [tab, setTab] = useState("interface");
   const [loadingPaths, setLoadingPaths] = useState(false);
+  const [loadingHeadline, setLoadingHeadline] = useState(false);
+  /** False until the first successful headline run for the current product/inputs. */
+  const [headlineReady, setHeadlineReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [initialResult, setInitialResult] = useState<ProbabilityRunResult | null>(null);
   const [currentResult, setCurrentResult] = useState<ProbabilityRunResult | null>(null);
@@ -536,9 +539,13 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
     return resolveHistoricalSensexLevel(checkingDate) ?? sensexLevel;
   }, [product, pastFinalObservation, checkingDate, sensexLevel]);
 
-  // Reset path unlock when product / surface / inputs change — keep first paint light.
+  // Reset path unlock + KPI readiness when product / surface / inputs change — hold every KPI at "—".
   useEffect(() => {
     setPathsUnlocked(false);
+    setHeadlineReady(false);
+    setLoadingHeadline(Boolean(product?.isin));
+    setInitialResult(null);
+    setCurrentResult(null);
   }, [
     product?.rowId,
     surface,
@@ -587,6 +594,8 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
       if (!product?.isin) {
         setInitialResult(null);
         setCurrentResult(null);
+        setHeadlineReady(false);
+        setLoadingHeadline(false);
         return;
       }
 
@@ -596,6 +605,10 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
       abortRef.current = controller;
 
       if (includePaths) setLoadingPaths(true);
+      else {
+        setLoadingHeadline(true);
+        setHeadlineReady(false);
+      }
       setError(null);
 
       try {
@@ -652,6 +665,7 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
           }
           return nextCurrent;
         });
+        if (!includePaths) setHeadlineReady(true);
       } catch (err) {
         if (controller.signal.aborted) {
           // Timeout / navigation — clear stuck path spinner without wiping KPIs.
@@ -664,12 +678,17 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
         if (!includePaths) {
           setInitialResult(null);
           setCurrentResult(null);
+          setHeadlineReady(false);
         }
       } finally {
         // Clear the bar unless a newer path run has already taken over.
         if (includePaths && pathsAbortRef.current === controller) {
           pathsAbortRef.current = null;
           setLoadingPaths(false);
+        }
+        if (!includePaths && headlineAbortRef.current === controller) {
+          headlineAbortRef.current = null;
+          setLoadingHeadline(false);
         }
       }
     },
@@ -743,55 +762,99 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
       : product
         ? targetUnderlying(product)
         : null;
+  // Prefer engine Current threshold (ET/today−1, including ET ≤ 0). Client fallback only
+  // when the headline result is not yet available (KPIs stay "—" until then anyway).
   const reqHurdleLevel =
-    currentResult?.effectiveTargetLevel != null && currentResult.effectiveTargetLevel > 0
+    currentResult?.effectiveTargetLevel != null &&
+    Number.isFinite(currentResult.effectiveTargetLevel)
       ? currentResult.effectiveTargetLevel
-      : overrideTargetLevel != null && overrideTargetLevel > 0
+      : overrideTargetLevel != null && Number.isFinite(overrideTargetLevel)
         ? overrideTargetLevel
         : product
           ? getTargetLevel(product)
           : null;
-  const req = product
-    ? reqHurdleLevel != null && reqHurdleLevel > 0
-      ? requiredUnderlyingFromHurdleLevel(
-          product,
-          reqHurdleLevel,
-          effectiveNiftyLevel,
-          effectiveSensexLevel,
-        )
-      : requiredUnderlying(product, effectiveNiftyLevel, effectiveSensexLevel)
-    : null;
+  const req =
+    currentResult?.threshold != null && Number.isFinite(currentResult.threshold)
+      ? currentResult.threshold
+      : product
+        ? reqHurdleLevel != null && Number.isFinite(reqHurdleLevel)
+          ? requiredUnderlyingFromHurdleLevel(
+              product,
+              reqHurdleLevel,
+              effectiveNiftyLevel,
+              effectiveSensexLevel,
+            )
+          : requiredUnderlying(product, effectiveNiftyLevel, effectiveSensexLevel)
+        : null;
   const daysLeftObs = product ? daysLeftToLastObservation(product, checkingDate) : null;
+  // Hold every summary KPI (probs, TU, Required, Days Left) at "—" until the run lands.
+  const kpisReady = Boolean(product) && headlineReady && !loadingHeadline;
 
   const kpiItems = useMemo(() => {
     if (surface === "summary") {
       return [
-        { label: "Initial Probability", value: formatPct(initialResult?.probability) },
-        { label: "Current Probability", value: formatPct(currentResult?.probability) },
-        { label: "Target Underlying", value: formatPct(tgt) },
-        { label: "Required Underlying", value: formatPct(req) },
-        { label: "Days Left", value: daysLeftObs != null ? formatNumber(daysLeftObs, 0) : "—" },
+        {
+          label: "Initial Probability",
+          value: kpisReady ? formatPct(initialResult?.probability) : "—",
+        },
+        {
+          label: "Current Probability",
+          value: kpisReady ? formatPct(currentResult?.probability) : "—",
+        },
+        { label: "Target Underlying", value: kpisReady ? formatPct(tgt) : "—" },
+        { label: "Required Underlying", value: kpisReady ? formatPct(req) : "—" },
+        {
+          label: "Days Left",
+          value: kpisReady && daysLeftObs != null ? formatNumber(daysLeftObs, 0) : "—",
+        },
       ];
     }
     const r = activeResult;
     if (surface === "current") {
       return [
-        { label: "Probability", value: formatPct(r?.probability) },
-        { label: "Paths Taken", value: r ? formatNumber(r.includedCount, 0) : "—" },
-        { label: "Successful Paths", value: r ? formatNumber(r.successCount, 0) : "—" },
-        { label: "Target Underlying", value: formatPct(tgt) },
-        { label: "Required Underlying", value: formatPct(req) },
-        { label: "Latest Index Date", value: r?.lastIndexDate ? formatDisplayDate(r.lastIndexDate) : "—" },
+        { label: "Probability", value: kpisReady ? formatPct(r?.probability) : "—" },
+        {
+          label: "Paths Taken",
+          value: kpisReady && r ? formatNumber(r.includedCount, 0) : "—",
+        },
+        {
+          label: "Successful Paths",
+          value: kpisReady && r ? formatNumber(r.successCount, 0) : "—",
+        },
+        { label: "Target Underlying", value: kpisReady ? formatPct(tgt) : "—" },
+        { label: "Required Underlying", value: kpisReady ? formatPct(req) : "—" },
+        {
+          label: "Latest Index Date",
+          value: kpisReady && r?.lastIndexDate ? formatDisplayDate(r.lastIndexDate) : "—",
+        },
       ];
     }
     return [
-      { label: "Probability", value: formatPct(r?.probability) },
-      { label: "Paths Taken", value: r ? formatNumber(r.includedCount, 0) : "—" },
-      { label: "Successful Paths", value: r ? formatNumber(r.successCount, 0) : "—" },
-      { label: "Target Underlying", value: formatPct(tgt) },
-      { label: "Latest Index Date", value: r?.lastIndexDate ? formatDisplayDate(r.lastIndexDate) : "—" },
+      { label: "Probability", value: kpisReady ? formatPct(r?.probability) : "—" },
+      {
+        label: "Paths Taken",
+        value: kpisReady && r ? formatNumber(r.includedCount, 0) : "—",
+      },
+      {
+        label: "Successful Paths",
+        value: kpisReady && r ? formatNumber(r.successCount, 0) : "—",
+      },
+      { label: "Target Underlying", value: kpisReady ? formatPct(tgt) : "—" },
+      {
+        label: "Latest Index Date",
+        value: kpisReady && r?.lastIndexDate ? formatDisplayDate(r.lastIndexDate) : "—",
+      },
     ];
-  }, [surface, initialResult, currentResult, activeResult, tgt, req, daysLeftObs]);
+  }, [
+    surface,
+    initialResult,
+    currentResult,
+    activeResult,
+    tgt,
+    req,
+    daysLeftObs,
+    kpisReady,
+  ]);
 
   const indexLabel = product ? getProductIndexFieldLabel(product) : "Nifty";
   const indexLevel = product
@@ -831,12 +894,18 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
       { label: "Coupon", value: getCouponLabel(product) ?? "—" },
       {
         label: "Initial Probability of Achieving Full Coupon",
-        value: formatPct(initialResult?.probability),
+        value: kpisReady ? formatPct(initialResult?.probability) : "—",
       },
-      { label: "Target Underlying", value: formatPct(tgt) },
-      { label: "Current Probability", value: formatPct(currentResult?.probability) },
-      { label: "Days Left", value: daysLeftObs != null ? formatNumber(daysLeftObs, 0) : "—" },
-      { label: "Required Underlying", value: formatPct(req) },
+      { label: "Target Underlying", value: kpisReady ? formatPct(tgt) : "—" },
+      {
+        label: "Current Probability",
+        value: kpisReady ? formatPct(currentResult?.probability) : "—",
+      },
+      {
+        label: "Days Left",
+        value: kpisReady && daysLeftObs != null ? formatNumber(daysLeftObs, 0) : "—",
+      },
+      { label: "Required Underlying", value: kpisReady ? formatPct(req) : "—" },
       {
         label: "Probability Checking Date",
         value: `${formatDisplayDate(checkingDate)}${pastFinalObservation ? " · last observation" : ""}`,
@@ -855,6 +924,7 @@ export function ProbabilityDashboard({ surface }: { surface: ProbabilitySurface 
     indexLabel,
     indexLevel,
     overrideTargetLevel,
+    kpisReady,
   ]);
 
   const exportPayload = useMemo(() => {
